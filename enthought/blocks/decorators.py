@@ -1,9 +1,16 @@
+
+
 import pdb
 import sys
 import linecache
 from inspect import getsourcefile, getfile
-from IPython.ultraTB import findsource
 import re
+
+# Third party
+from IPython.ultraTB import findsource
+
+#
+from block import Block
 
 #single_quotes = re.compile("'.*'")
 #double_quotes = re.compile('".*"')
@@ -91,7 +98,6 @@ def func2str(func,backframes=1):
     else:
         s = findsource_file(callframe, func.func_name)
     return s
-
     
 def func2co(func):
     """Decorator to turn a code-block defined as a function into
@@ -108,4 +114,20 @@ def func2co(func):
     s = func2str(func, backframes=2)
     return compile(s, 'anonymous', 'exec')
 
-        
+
+def func2block(func):
+    """Decorator to turn a code-block defined as a function into
+    a code-object.
+
+    @func2block
+    def code():
+        a = 3
+        b = 4
+        c = a + b
+
+    This will return code as a block from the code piece.
+    """
+    s = func2str(func, backframes=2)
+    return Block(s)
+    
+    
