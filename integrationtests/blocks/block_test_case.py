@@ -505,9 +505,19 @@ class BlockRestrictionTestCase(unittest.TestCase):
         if results == ['']:
             self.assertSimilar(restricted, Block(()))
         else:
-            self.assert_(restricted.ast in [Block(r).ast for r in results])
+            self.assertTrue(restricted.ast in [Block(r).ast for r in results])
 
     ### Tests #################################################################
+    
+    def test_restrict_on_nested_blocks(self):
+        b1 = Block('a=0;b=a+1')
+        b2 = Block('x=99;z=x-1')
+        composite=Block([b1,b2])
+        
+        self.assertSimilar( Block('a=0'), 
+                            composite.restrict(outputs=['a']))
+        self.assertSimilar( Block('x=99'), 
+                            composite.restrict(outputs=['x']))
 
     def test_restrict(self):
         'Restricted blocks'

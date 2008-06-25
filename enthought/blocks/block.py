@@ -150,7 +150,13 @@ class Block(HasTraits):
         elif is_sequence(x):
             if len(x) == 0:
                 self.ast = Stmt([])
-            self.sub_blocks = map(to_block, x)
+            sub_blocks = []
+            for block in map(to_block, x):
+                if block.sub_blocks is None or len(block.sub_blocks) == 0:
+                    sub_blocks.append(block)
+                else:
+                    sub_blocks += block.sub_blocks
+            self.sub_blocks = sub_blocks
             self._tidy_ast()
         else:
             raise ValueError('Expecting string, Node, or sequence. Got %r' % x)
@@ -306,7 +312,7 @@ class Block(HasTraits):
         
         inputs = set(inputs)
         outputs = set(outputs)
-
+        
         # Look for results in the cache
         cache_key = (frozenset(inputs), frozenset(outputs))
         if cache_key in self.__restrictions:
@@ -322,7 +328,7 @@ class Block(HasTraits):
             raise ValueError('Unknown inputs: %s' % (inputs - self.inputs - self.outputs))
         if not outputs.issubset(self.all_outputs):
             raise ValueError('Unknown outputs: %s' %(outputs-self.all_outputs))
-
+        
         # Validate the block to make sure it is safe for restriction
         if self.validate_for_restriction() is not None:
             raise RuntimeError("Block failed to validate")
@@ -330,7 +336,7 @@ class Block(HasTraits):
         # If we don't decompose, then we are already as restricted as possible
         if self.sub_blocks is None:
             return self
-        
+
         # we must keep a list of import blocks. Imports are lost because
         # they are not reachable during the reversing of the graph
         import_sub_blocks = []
@@ -405,8 +411,6 @@ class Block(HasTraits):
                     g[intermediate] = [Block("%s = %s" % \
                                         (intermediate[0], intermediate[0]))]
                                         
-                
-            
             inputs = map(In, inputs) + intermediates
 
             # if no inputs were valid, do not alter the graph
@@ -421,6 +425,13 @@ class Block(HasTraits):
         # and give it our filename
         remaining_sub_blocks = [node for node in reversed(graph.topological_sort(g))
                        if isinstance(node, Block)]
+        
+        # trim out redundant imports which can occur if a restricted output is
+        # one of the imports:
+        for sub_block in remaining_sub_blocks:
+            if sub_block in import_sub_blocks:
+                remaining_sub_blocks.remove(sub_block)
+        
         b = Block(import_sub_blocks + remaining_sub_blocks)
         b.filename = self.filename
 
@@ -459,7 +470,7 @@ class Block(HasTraits):
             self.ast = self.ast.node
         if isinstance(self.ast, Stmt) and len(self.ast.nodes) == 1:
             [self.ast] = self.ast.nodes
-
+            
     def _structure_changed(self, name, new):
         if not self._updating_structure:
             try:
