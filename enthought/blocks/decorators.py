@@ -9,7 +9,6 @@ import re
 # Third party
 from IPython.ultraTB import findsource
 
-#
 from block import Block
 
 #single_quotes = re.compile("'.*'")
@@ -82,9 +81,8 @@ def func2str(func,backframes=1):
 
     @func2str
     def code():
-        a = 3
-        b = 4
         c = a + b
+        d = a - b
 
     This will return a string of code: 'a = 3\nb = 4\nc = a + b\n'
     """
@@ -105,15 +103,13 @@ def func2co(func):
 
     @func2co
     def code():
-        a = 3
-        b = 4
         c = a + b
+        d = a - b
 
     This will return code as a compiled 'anonymous' code object
     """
     s = func2str(func, backframes=2)
     return compile(s, 'anonymous', 'exec')
-
 
 def func2block(func):
     """Decorator to turn a code-block defined as a function into
@@ -121,11 +117,10 @@ def func2block(func):
 
     @func2block
     def code():
-        a = 3
-        b = 4
-        c = a + b
+        d = a + b
+        c = a - b
 
-    This will return code as a block from the code piece.
+    This will return the code piece as a Block.
     """
     s = func2str(func, backframes=2)
     return Block(s)
