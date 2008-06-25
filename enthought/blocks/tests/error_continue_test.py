@@ -1,6 +1,6 @@
 """Text block execution with multiple exceptions"""
 import unittest
-from enthought.numerical_modeling.workflow.block.block import Block, CompositeException
+from enthought.blocks.block import Block, CompositeException
 
 block = """from math import log
 a=-1

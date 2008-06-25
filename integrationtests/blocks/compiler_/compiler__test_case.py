@@ -4,9 +4,9 @@ from copy import copy
 
 from enthought.testing.api import doctest_for_module
 
-import enthought.numerical_modeling.workflow.block.compiler_.compiler_ \
+import enthought.blocks.compiler_.compiler_ \
     as compiler_
-from enthought.numerical_modeling.workflow.block.compiler_.api import \
+from enthought.blocks.compiler_.api import \
     compile_ast, parse
 
 class CompilerDocTestCase(doctest_for_module(compiler_)):

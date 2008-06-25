@@ -14,10 +14,10 @@ from enthought.util.dict import map_keys, map_values
 import enthought.util.graph as graph
 from enthought.util.sequence import is_sequence
 
-from enthought.numerical_modeling.workflow.block.analysis import NameFinder
-from enthought.numerical_modeling.workflow.block.compiler_.api \
+from enthought.blocks.analysis import NameFinder
+from enthought.blocks.compiler_.api \
     import compile_ast, parse
-from enthought.numerical_modeling.workflow.block.parser_ import BlockTransformer
+from enthought.blocks.parser_ import BlockTransformer
 from enthought.numerical_modeling.util.uuid import UUID, uuid4
 
 ###############################################################################

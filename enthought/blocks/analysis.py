@@ -18,7 +18,7 @@ import enthought.util.tree as tree
 
 # Extend compiler.ast.Node with a structure-preserving children query
 import \
-    enthought.numerical_modeling.workflow.block.compiler_.ast.get_children_tree
+    enthought.blocks.compiler_.ast.get_children_tree
 
 # XXX Hack (see #1163)
 from enthought.numerical_modeling.name_magic import magically_bound_names

@@ -8,14 +8,14 @@ from enthought.util.functional import partial
 from enthought.util.sequence import all
 from enthought.util.tree import flatten, tree_zip
 
-import enthought.numerical_modeling.workflow.block.analysis as analysis
-from enthought.numerical_modeling.workflow.block.analysis import (
+import enthought.blocks.analysis as analysis
+from enthought.blocks.analysis import (
     ConstAssignExtractor, Transformer, free_vars, local_vars,
     conditional_local_vars,
 )
-from enthought.numerical_modeling.workflow.block.compiler_.ast.api import \
+from enthought.blocks.compiler_.ast.api import \
     similar
-from enthought.numerical_modeling.workflow.block.block import Block
+from enthought.blocks.block import Block
 
 class AnalysisDocTestCase(doctest_for_module(analysis)):
     pass
