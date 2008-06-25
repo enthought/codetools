@@ -120,11 +120,11 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
         self._check_round_trip_func_no_indent(code)
 
     def test_compare(self):
-        code = "x = a-1>b"
+        code = "x = a-1 > b"
         self._check_round_trip(code)
 
     def test_compare_multiple(self):
-        code = "x = 1>a>b"
+        code = "x = 1 > a > b"
         self._check_round_trip(code)
 
     def test_add(self):
@@ -307,13 +307,13 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
     def test_bitand(self):
         code = "from numpy import arange\n"\
                "x = arange(0.0, 10.0, 1.0)\n"\
-               "cond = (x>4) & (x<8)"
+               "cond = (x > 4) & (x < 8)"
         self._check_round_trip(code)
 
     def test_bitor(self):
         code = "from numpy import arange\n"\
                "x = arange(0.0, 10.0, 1.0)\n"\
-               "cond = (x>4) | (x<8)"
+               "cond = (x > 4) | (x < 8)"
         self._check_round_trip(code)
                
     def test_augassign(self):
