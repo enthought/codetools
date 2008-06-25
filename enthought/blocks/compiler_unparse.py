@@ -43,7 +43,7 @@ class UnparseCompilerAst:
         self._do_indent = True
         self._indent = 0
         self._dispatch(tree)
-        self.f.write("\n")
+        self._write("\n")
         self.f.flush()
 
     #########################################################################
@@ -55,9 +55,9 @@ class UnparseCompilerAst:
     def _fill(self, text = ""):
         "Indent a piece of text, according to the current indentation level"
         if self._do_indent:
-            self.f.write("\n"+"    "*self._indent + text)
+            self._write("\n"+"    "*self._indent + text)
         else:
-            self.f.write(text)
+            self._write(text)
 
     def _write(self, text):
         "Append a piece of text to the current line."
@@ -275,7 +275,7 @@ class UnparseCompilerAst:
         
     def _If(self, t):
         self._fill()
-
+        
         for i, (compare,code) in enumerate(t.tests):
             if i == 0:
                 self._write("if ")
@@ -358,7 +358,7 @@ class UnparseCompilerAst:
                 self._write(" or ")
                 
     def _Pass(self, t):
-        self._fill("pass\n")
+        self._write("pass\n")
 
     def _Printnl(self, t):
         self._fill("print ")
