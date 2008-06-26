@@ -1,5 +1,4 @@
 import warnings
-warnings.warn("""This location is deprecated.  Please update source file: enthought.contexts --> enthought.contexts""", DeprecationWarning) 
 from adapted_data_context import AdaptedDataContext
 from data_context import DataContext, ListenableMixin, PersistableMixin
 from function_filter_context import FunctionFilterContext
