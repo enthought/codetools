@@ -1,4 +1,3 @@
-import warnings
 from adapted_data_context import AdaptedDataContext
 from data_context import DataContext, ListenableMixin, PersistableMixin
 from function_filter_context import FunctionFilterContext
