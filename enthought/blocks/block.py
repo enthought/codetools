@@ -18,6 +18,7 @@ from enthought.blocks.analysis import NameFinder
 from enthought.blocks.compiler_.api \
     import compile_ast, parse
 from enthought.blocks.parser_ import BlockTransformer
+from enthought.blocks.compiler_unparse import unparse
 from enthought.numerical_modeling.util.uuid import UUID, uuid4
 
 ###############################################################################
@@ -159,7 +160,7 @@ class Block(HasTraits):
             self.sub_blocks = sub_blocks
             self._tidy_ast()
         else:
-            raise ValueError('Expecting string, Node, or sequence. Got %r' % x)
+            raise ValueError('Expecting file, string, Node, or sequence. Got %r' % x)
 
         # setup the inputs and outputs
         self._set_inputs_and_outputs()
@@ -324,7 +325,7 @@ class Block(HasTraits):
         # for restricting intermidiate inputs.
         if not (inputs or outputs):
             raise ValueError('Must provide inputs or outputs')
-        if not inputs.issubset(self.inputs) and not inputs.issubset(self.outputs):
+        if not inputs.issubset(self.inputs ^ self.outputs):
             raise ValueError('Unknown inputs: %s' % (inputs - self.inputs - self.outputs))
         if not outputs.issubset(self.all_outputs):
             raise ValueError('Unknown outputs: %s' %(outputs-self.all_outputs))
@@ -440,6 +441,12 @@ class Block(HasTraits):
 
         return b
 
+    def get_function(pseudo=False, context=None):
+        """Return a regular function which takes the inputs as arguments and
+        returns the outputs.  If pseudo is True, then return a
+        callable that essentially executes the block in a
+        """
+
     def validate_for_restriction(self):
         # Check to ensure that there is not sub_block that has the same
         # variable as an input and an output. Return the offending
@@ -514,6 +521,9 @@ class Block(HasTraits):
         self.inputs = set(v.free)
         self.outputs = set(v.locals)
         self.conditional_outputs = set(v.conditional_locals)
+        temp = [unparse(x).strip() for x in v.constlist]
+        temp2 = [x.split('=')[0].strip() for x in temp]
+        self.const_assign = (set(temp2), temp)
         
     def _get__code(self):
 

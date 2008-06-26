@@ -38,6 +38,7 @@ def local_vars(ast, *args, **kw):
 def conditional_local_vars(ast, *args, **kw):
     return walk(ast, NameFinder(*args, **kw)).conditional_locals
 
+
 ### Structure #################################################################
 
 def extract_const_assigns(ast):
@@ -56,7 +57,7 @@ def extract_const_assigns(ast):
     return ast, t.const_for
 
 def is_const(ast):
-    ''' Whether an AST represents a constant expression.
+    """ Whether an AST represents a constant expression.
 
         I'm not sure what "constant" means yet, but here are some examples:
 
@@ -94,7 +95,7 @@ def is_const(ast):
             ...     'lambda a: a',
             ... ))
             False
-    '''
+    """
     return (
         isinstance(ast, Const) or
         isinstance(ast, Name) and ast.name in ['None', 'True', 'False'] or
@@ -103,7 +104,7 @@ def is_const(ast):
     )
 
 def dependency_graph(asts, to_ast=lambda x: x):
-    ''' Compute the dependency graph for a set of ASTs.
+    """ Compute the dependency graph for a set of ASTs.
 
         'asts' is a sequence of either ASTs or objects 'x' such that
         'to_ast(x)' is an AST. The returned value is the dependency graph: a
@@ -168,7 +169,7 @@ def dependency_graph(asts, to_ast=lambda x: x):
             ...     [ 'a = f(z)', 'b = g(z,y)', 'c = h(a,b)', 'd = k(b,c)' ],
             ...     [ 'b = g(z,y)', 'a = f(z)', 'c = h(a,b)', 'd = k(b,c)' ],
             ... ]
-    '''
+    """
 
     def _dependency_graph(asts):
 
@@ -223,6 +224,7 @@ class NameFinder:
         self.locals = set(locals)
         self.conditional_locals = set(conditional_locals)
         self.globals = set(globals)
+        self.constlist = []
 
         # Consider built-in names as global to anything
         import __builtin__
@@ -547,6 +549,11 @@ class NameFinder:
 
     def visitAssign(self, node):
 
+        # Save Nodes corresponding to constant assignment
+        #  For later processing in blocks.
+        if node.expr.__repr__().startswith('Const'):
+            self.constlist.append(node)
+    
         # Walk 'expr' before 'nodes' so that lhs bindings don't capture rhs
         # free vars
         walk([node.expr] + node.nodes, self)

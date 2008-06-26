@@ -3,3 +3,4 @@ from block import Block, Expression, to_block
 from compiler_.api import compile_ast, parse
 from compiler_unparse import unparse
 from rename import rename
+from decorators import func2block, func2co, func2str
