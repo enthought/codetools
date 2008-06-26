@@ -295,6 +295,11 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         -------
         allowed : bool
         """
+        # WORKAROUND: subclassing from DataContext can cause the adapter to put the real 
+        # context in subcontext if used in a class which adapts. In this case
+        # call allows on the real context. This only happens occasionally and is a bug.
+        if self.subcontext is not None and isinstance(self.subcontext, DataContext):
+            return self.subcontext.allows(value, name)
         return True
 
     #### ICheckpointable interface ############################################
