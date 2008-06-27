@@ -3,7 +3,7 @@
 
 from enthought.traits.api import Bool, Instance, Interface
 
-from enthought.block_canvas.context.i_context import IListenableContext
+from enthought.contexts.i_context import IListenableContext
 
 
 class IExecutable(Interface):

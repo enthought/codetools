@@ -6,8 +6,8 @@ from enthought.traits.api import (Bool, HasTraits, Instance, List, Str,
     Undefined, implements, on_trait_change)
 from enthought.traits.protocols.api import adapt
 
-from enthought.block_canvas.context.data_context import DataContext
-from enthought.block_canvas.context.i_context import IContext, IListenableContext
+from enthought.contexts.data_context import DataContext
+from enthought.contexts.i_context import IContext, IListenableContext
 from interfaces import IExecutable, IExecutingContext
 
 

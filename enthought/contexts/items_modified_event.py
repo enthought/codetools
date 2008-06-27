@@ -1,11 +1,11 @@
-from enthought.traits.api import Instance, Str, List, Bool, Vetoable, VetoableEvent
+from enthought.traits.api import Instance, Str, List, Bool, Vetoable, VetoableEvent, Any
 
 
 class ItemsModified ( Vetoable ):
     """ Type of event fired when a DataContext has values added or removed.
     """
 
-    context = Instance('enthought.contexts.i_context.IContext')
+    context = Any #Instance('enthought.contexts.i_context.IContext')
     added = List(Str)
     removed = List(Str)
     modified = List(Str)
