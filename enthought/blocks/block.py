@@ -325,7 +325,7 @@ class Block(HasTraits):
         # for restricting intermidiate inputs.
         if not (inputs or outputs):
             raise ValueError('Must provide inputs or outputs')
-        if not inputs.issubset(self.inputs ^ self.outputs ^ self.fromimports):
+        if not inputs.issubset(self.inputs | self.outputs | self.fromimports):
             raise ValueError('Unknown inputs: %s' % (inputs - self.inputs - self.outputs - self.fromimports))
         if not outputs.issubset(self.all_outputs):
             raise ValueError('Unknown outputs: %s' %(outputs-self.all_outputs))
