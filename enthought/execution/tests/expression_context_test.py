@@ -1,5 +1,5 @@
-from enthought.block_canvas.context.api import DataContext
-from enthought.block_canvas.execution.api import ExpressionContext
+from enthought.contexts.api import DataContext
+from enthought.execution.api import ExpressionContext
 
 import unittest
 class ExpressionContextTest(unittest.TestCase):

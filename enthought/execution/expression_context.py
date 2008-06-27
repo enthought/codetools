@@ -6,8 +6,8 @@ from enthought.traits.api import implements, Str, Dict, Any, List, Instance, on_
 
 # Block Canvas imports
 from enthought.blocks.api import Block
-from enthought.block_canvas.context.data_context import ListenableMixin, PersistableMixin, DataContext
-from enthought.block_canvas.context.i_context import IContext, IListenableContext, ICheckpointable, \
+from enthought.contexts.data_context import ListenableMixin, PersistableMixin, DataContext
+from enthought.contexts.i_context import IContext, IListenableContext, ICheckpointable, \
                                                      IPersistableContext
 from enthought.block_canvas.context.items_modified_event import ItemsModified
 
@@ -90,8 +90,8 @@ class ExpressionContext(ListenableMixin, PersistableMixin, DictMixin):
     get = DictMixin.get
 
     def __str__(self):
-        underlying_str = str(underlying_context)
-        return '%s(%s)' % type(self).__name__, underlying_str
+        underlying_str = str(self.underlying_context)
+        return '%s(%s)' % (type(self).__name__, underlying_str)
 
     @on_trait_change('underlying_context:items_modified')
     def _underlying_context_items_modifed(self, event):

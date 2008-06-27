@@ -1,7 +1,7 @@
 
-from enthought.block_canvas.context.api import DataContext
+from enthought.contexts.api import DataContext
 
-from enthought.block_canvas.execution.executing_context import (CodeExecutable,
+from enthought.execution.executing_context import (CodeExecutable,
     ExecutingContext)
 
 
