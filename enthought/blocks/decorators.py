@@ -7,6 +7,8 @@ from inspect import getsourcefile, getfile
 import re
 
 # Third party
+from pkg_resources import require
+require('IPython >= 0.8.2.svn.2480')
 from IPython.ultraTB import findsource
 
 from block import Block
