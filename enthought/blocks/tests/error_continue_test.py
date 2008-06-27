@@ -1,17 +1,22 @@
 """Text block execution with multiple exceptions"""
 import unittest
 from enthought.blocks.block import Block, CompositeException
+from enthought.blocks.api import func2str
 
-block = """from math import log
-a=-1
-b=2
-c=log(a)
-d=3
-"""
+@func2str
+def block():
+    from math import log
+    a=-1
+    b=2
+    c=log(a)
+    d=3
 
-block2 = block + """e=log(a)
-f=4
-"""
+@func2str
+def block2_():
+    e=log(a)
+    f=4
+
+block2 = block + block2_
 
 
 class ErrorContinueTest(unittest.TestCase):

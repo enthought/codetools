@@ -462,8 +462,7 @@ class Block(HasTraits):
         simplefunc.__doc__ = "%s = <name>%s" % (retstr, callstr)
         simplefunc._block = block        
         return simplefunc
-                        
-
+        
     def validate_for_restriction(self):
         # Check to ensure that there is not sub_block that has the same
         # variable as an input and an output. Return the offending

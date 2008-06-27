@@ -11,7 +11,6 @@ from block import Block
 #double_quotes = re.compile('".*"')
 #triple_quotes = re.compile('""".*"""')
 
-
 # Perhaps we can remove docstrings at some point, but
 #  probably not worth it.
 def strip_whitespace(source, name):
