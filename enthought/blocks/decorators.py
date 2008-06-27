@@ -7,7 +7,6 @@ import re
 
 from block import Block
 
-
 #single_quotes = re.compile("'.*'")
 #double_quotes = re.compile('".*"')
 #triple_quotes = re.compile('""".*"""')

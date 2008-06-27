@@ -28,7 +28,6 @@ setup(
     include_package_data = True,
     install_requires = [
         TRAITS,
-        'IPython'
         ],
     license = 'BSD',
     name = 'CodeTools',
