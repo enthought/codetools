@@ -1,23 +1,17 @@
 
 
 import pdb
-import sys
+import sys, os
 import linecache
-from inspect import getsourcefile, getfile
 import re
 
-# Third party
-from pkg_resources import require
-require('IPython >= 0.8.2.svn.2480')
-from IPython.ultraTB import findsource
-
 from block import Block
+
 
 #single_quotes = re.compile("'.*'")
 #double_quotes = re.compile('".*"')
 #triple_quotes = re.compile('""".*"""')
 
-# Code adapted from IPython1
 
 # Perhaps we can remove docstrings at some point, but
 #  probably not worth it.
@@ -25,17 +19,16 @@ def strip_whitespace(source, name):
     # Expand tabs to avoid any confusion.
     wsource = [l.expandtabs(4) for l in source]
 
-    # Remove any code definition, docstring, and space lines
+    # Remove any code definition, and space lines
     #  at the beginning
-    instring = False
     for i, line in enumerate(wsource):
         if line.isspace():
             continue
         if line.startswith('def %s' % name):
             continue
         break
-    wsource = wsource[i:]            
-    
+    wsource = wsource[i:]
+
     # Detect the indentation level
     done = False
     for line in wsource:
@@ -57,16 +50,14 @@ def strip_whitespace(source, name):
             if not lead.lstrip().startswith('#'):
                 break
     # The real source is up to lno
-    src_lines = [l[col:] for l in wsource[:lno+1]]
+    src_lines = [l[col:] for l in wsource[:lno]]
     src = ''.join(src_lines)
     #print 'SRC:\n<<<<<<<>>>>>>>\n%s<<<<<>>>>>>' % src  # dbg
     return src
 
 def findsource_file(f, name):
-    linecache.checkcache()
-    s = findsource(f.f_code)
-    lnum = f.f_lineno
-    wsource = s[0][f.f_lineno:]
+    lines = linecache.getlines(f.f_code.co_filename)
+    wsource = lines[f.f_lineno:]
     return strip_whitespace(wsource, name)
 
 def findsource_ipython(f, name):
