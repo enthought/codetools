@@ -5,6 +5,7 @@ from compiler.ast import Module, Node, Pass, Stmt, Function, Discard
 from copy import copy
 from cStringIO import StringIO
 from traceback import format_exc
+from uuid import UUID, uuid4
 
 from enthought.traits.api import (Any, Bool, Default, Dict, Either, HasTraits,
                                   Instance, List, Property, Str, Trait)
@@ -19,7 +20,6 @@ from enthought.blocks.compiler_.api \
     import compile_ast, parse
 from enthought.blocks.parser_ import BlockTransformer
 from enthought.blocks.compiler_unparse import unparse
-from enthought.numerical_modeling.util.uuid import UUID, uuid4
 
 ###############################################################################
 # TODO:
@@ -325,8 +325,8 @@ class Block(HasTraits):
         # for restricting intermidiate inputs.
         if not (inputs or outputs):
             raise ValueError('Must provide inputs or outputs')
-        if not inputs.issubset(self.inputs ^ self.outputs):
-            raise ValueError('Unknown inputs: %s' % (inputs - self.inputs - self.outputs))
+        if not inputs.issubset(self.inputs ^ self.outputs ^ self.fromimports):
+            raise ValueError('Unknown inputs: %s' % (inputs - self.inputs - self.outputs - self.fromimports))
         if not outputs.issubset(self.all_outputs):
             raise ValueError('Unknown outputs: %s' %(outputs-self.all_outputs))
         
@@ -441,11 +441,28 @@ class Block(HasTraits):
 
         return b
 
-    def get_function(pseudo=False, context=None):
-        """Return a regular function which takes the inputs as arguments and
-        returns the outputs.  If pseudo is True, then return a
-        callable that essentially executes the block in a
+    def get_function(self, inputs=[], outputs=[]):
+        """Return a function which takes the list of input variables
+        as arguments and returns the given output_list.
+
+        These lists determine the calling order for the function. 
         """
+        block = self.restrict(inputs=inputs, outputs=outputs)
+        def simplefunc(*args):
+            namespace = {}
+            for i, arg in enumerate(args):
+                namespace[inputs[i]] = arg
+            block.execute(namespace)
+            vals = []
+            for name in outputs:
+                vals.append(namespace[name])
+            return tuple(vals)
+        callstr = '(%s)'% ','.join(inputs)
+        retstr = ','.join(outputs)
+        simplefunc.__doc__ = "%s = <name>%s" % (retstr, callstr)
+        simplefunc._block = block        
+        return simplefunc
+                        
 
     def validate_for_restriction(self):
         # Check to ensure that there is not sub_block that has the same
@@ -524,6 +541,9 @@ class Block(HasTraits):
         temp = [unparse(x).strip() for x in v.constlist]
         temp2 = [x.split('=')[0].strip() for x in temp]
         self.const_assign = (set(temp2), temp)
+        self.fromimports = set(v.fromimports)
+        self.outputs -= self.fromimports
+        self.imports_ast = v.imports
         
     def _get__code(self):
 

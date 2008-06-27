@@ -20,8 +20,6 @@ import enthought.util.tree as tree
 import \
     enthought.blocks.compiler_.ast.get_children_tree
 
-# XXX Hack (see #1163)
-from enthought.numerical_modeling.name_magic import magically_bound_names
 
 ###############################################################################
 # analysis public interface
@@ -225,14 +223,12 @@ class NameFinder:
         self.conditional_locals = set(conditional_locals)
         self.globals = set(globals)
         self.constlist = []
+        self.fromimports = []
+        self.imports = []
 
         # Consider built-in names as global to anything
         import __builtin__
         self.globals |= set(dir(__builtin__))
-
-        # Consider magically bound names as global to anything
-        # XXX Hack (see #1163)
-        self.globals |= set(magically_bound_names)
 
     ###########################################################################
     # NameFinder interface
@@ -357,19 +353,23 @@ class NameFinder:
                 
 
     def visitImport(self, node):
+        self.imports.append(node)
         for name, alias in node.names:
-
             # If 'name' is dotted (e.g. 'os.path'), then we only introduce a
             # binding for the first name in the dotted chain (i.e. 'os'). (If
             # 'name' isn't dotted, then 'name.split(".") == [name]'.)
             name = name.split('.')[0]
-
-            self._bind([alias or name])
+            val = alias or name
+            self._bind([val])
+            self.fromimports.append(val)
 
     def visitFrom(self, node):
+        self.imports.append(node)
         if node.names[0][0] != '*':
             for name, alias in node.names:
-                self._bind([alias or name])
+                val = alias or name
+                self._bind([val])
+                self.fromimports.append(val)
 
     def visitGlobal(self, node):
         raise NotImplementedError(

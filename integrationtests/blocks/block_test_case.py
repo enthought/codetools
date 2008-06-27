@@ -625,7 +625,8 @@ class BlockRestrictionTestCase(unittest.TestCase):
         
         sub_block = b.restrict(inputs=('a'))
         self.assertEqual(sub_block.inputs, set(['a']))
-        self.assertEqual(sub_block.outputs, set(['b', 'sin', 'pi']))
+        self.assertEqual(sub_block.outputs, set(['b']))
+        self.assertEqual(sub_block.fromimports, set(['pi', 'sin']))
         
         context = {'a':2, 'c':0.0}
         sub_block.execute(context)
@@ -639,7 +640,8 @@ class BlockRestrictionTestCase(unittest.TestCase):
         
         sub_block = b.restrict(inputs=('a'))
         self.assertEqual(sub_block.inputs, set(['a']))
-        self.assertEqual(sub_block.outputs, set(['b', 'math']))
+        self.assertEqual(sub_block.outputs, set(['b']))
+        self.assertEqual(sub_block.fromimports, set(['math']))
         
         context = {'a':2, 'c':0.0}
         sub_block.execute(context)
@@ -747,7 +749,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
         sub_block = block.restrict(inputs=['arange'])
         self.assertEqual(sub_block.inputs, set(['c1', 'b', 'c']))
         self.assertEqual(sub_block.outputs, set(['x', 'x1', 't1',
-                                                 't2', 't3', 'y', 'arange']))
+                                                 't2', 't3', 'y']))
 
     def test_inputs_are_dependent_outputs(self):
         """ restrict blocks with inputs which are intermediates and outputs"""
@@ -773,7 +775,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
         block = Block(code)
         sub_block = block.restrict(inputs=['inner.a'])
         self.assertEqual(sub_block.inputs, set(['inner.a', 'inner.c', 'x1', 't2']))
-        self.assertEqual(sub_block.outputs, set(['y', 'c1', 't3', 'arange', 't1']))
+        self.assertEqual(sub_block.outputs, set(['y', 'c1', 't3', 't1']))
 
         self.assertEqual(len(sub_block.sub_blocks), 5)
         self.assertSimilar(sub_block.sub_blocks[0], Block('from numpy import arange'))
@@ -795,7 +797,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
         block = Block(code)
         sub_block = block.restrict(inputs=['outter.a'])
         self.assertEqual(sub_block.inputs, set(['outter.a', 'outter.inner.c', 'x1', 't2']))
-        self.assertEqual(sub_block.outputs, set(['y', 'c1', 't3', 'arange', 't1']))
+        self.assertEqual(sub_block.outputs, set(['y', 'c1', 't3', 't1']))
 
         self.assertEqual(len(sub_block.sub_blocks), 5)
         self.assertSimilar(sub_block.sub_blocks[0], Block('from numpy import arange'))
