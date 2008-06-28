@@ -456,6 +456,8 @@ class Block(HasTraits):
         if isinstance(inputs, basestring):
             inputs = [inputs]
         block = self.restrict(inputs=inputs, outputs=outputs)
+        # Speed up execution of the block
+        block.no_filenames_in_tracebacks = True
         leni = len(inputs)
         leno = len(outputs)
         def simplefunc(*args):
