@@ -95,9 +95,12 @@ class Block(HasTraits):
     _code = Property
     __code = Any
 
+
     # Flag to break call cycles when we update 'ast' and 'sub_blocks'
     _updating_structure = Bool(False)
 
+    codestring = Property
+    _stored_string = Str('')
     # A cache for block restrictions. Invalidates when structure changes.
     __restrictions = Dict
 
@@ -138,6 +141,7 @@ class Block(HasTraits):
         if isinstance(x, basestring):
             # (BlockTransformer handles things like 'import *')
             self.ast = parse(x, mode='exec', transformer=BlockTransformer())
+            self._stored_string = x
         elif isinstance(x, Node):
             # push an exception handler onto the stack to ensure that the calling function gets the error
             #push_exception_handler(handler = lambda o,t,ov,nv: None, reraise_exceptions=True)
@@ -447,12 +451,22 @@ class Block(HasTraits):
 
         These lists determine the calling order for the function. 
         """
+        if isinstance(outputs, basestring):
+            outputs = [outputs]
+        if isinstance(inputs, basestring):
+            inputs = [inputs]
         block = self.restrict(inputs=inputs, outputs=outputs)
+        leni = len(inputs)
+        leno = len(outputs)
         def simplefunc(*args):
+            if len(args) != leni:
+                raise ValueError, "Must have %d inputs" % leni
             namespace = {}
             for i, arg in enumerate(args):
                 namespace[inputs[i]] = arg
             block.execute(namespace)
+            if leno == 1:
+                return namespace[outputs[0]]
             vals = []
             for name in outputs:
                 vals.append(namespace[name])
@@ -522,6 +536,7 @@ class Block(HasTraits):
                 self.__dep_graph_is_valid = False
                 self.__code = None
                 self.__restrictions.clear()
+                self._stored_string = ''
 
                 # update inputs and outputs
                 self._set_inputs_and_outputs()
@@ -543,6 +558,12 @@ class Block(HasTraits):
         self.fromimports = set(v.fromimports)
         self.outputs -= self.fromimports
         self.imports_ast = v.imports
+
+    def _get_codestring(self):
+        if self._stored_string != '':
+            return self._stored_string
+        else:
+            return unparse(self.ast)
         
     def _get__code(self):
 

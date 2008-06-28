@@ -47,6 +47,8 @@ def strip_whitespace(source, name):
         else:
             if not lead.lstrip().startswith('#'):
                 break
+    if (lno+1 == len(wsource)):
+        lno = lno + 1
     # The real source is up to lno
     src_lines = [l[col:] for l in wsource[:lno]]
     src = ''.join(src_lines)
