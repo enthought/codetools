@@ -63,7 +63,8 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
 
     # Don't run tests without a concrete test case
     def run(self, result=None):
-        if type(self) == AbstractContextTestCase:
+        if (type(self).__name__ == 'AbstractContextTestCase' or 
+            type(self) is AbstractContextTestCase):
             return result
         else:
             return super(AbstractContextTestCase, self).run(result)

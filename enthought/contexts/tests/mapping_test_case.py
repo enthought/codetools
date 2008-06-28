@@ -16,7 +16,8 @@ class BasicTestMappingProtocol(unittest.TestCase):
 
     # Don't run tests without a concrete test case
     def run(self, result=None):
-        if type(self) == BasicTestMappingProtocol:
+        if (type(self).__name__ == 'BasicTestMappingProtocol' or
+            type(self) is BasicTestMappingProtocol):
             return result
         else:
             return super(BasicTestMappingProtocol, self).run(result)
