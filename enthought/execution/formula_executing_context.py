@@ -123,7 +123,7 @@ class FormulaExecutingContext(DataContext):
                 new_datacontext[key] = self.data_context[key]
             
         new = FormulaExecutingContext(data_context=new_datacontext,
-                                      external_code=self.external_code,
+                                      external_block=self.external_block,
                                       execution_needed=self.execution_needed,
                                       auto_execute=self.auto_execute,
                                       _expressions=self._expressions)
