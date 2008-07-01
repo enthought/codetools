@@ -5,7 +5,6 @@ from compiler.ast import Module, Node, Pass, Stmt, Function, Discard
 from copy import copy
 from cStringIO import StringIO
 from traceback import format_exc
-from uuid import UUID, uuid4
 
 from enthought.traits.api import (Any, Bool, Default, Dict, Either, HasTraits,
                                   Instance, List, Property, Str, Trait)
@@ -20,6 +19,7 @@ from enthought.blocks.compiler_.api \
     import compile_ast, parse
 from enthought.blocks.parser_ import BlockTransformer
 from enthought.blocks.compiler_unparse import unparse
+from enthought.blocks.util.uuid import UUID, uuid4
 
 ###############################################################################
 # TODO:
