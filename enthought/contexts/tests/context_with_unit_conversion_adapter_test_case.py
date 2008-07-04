@@ -58,6 +58,16 @@ class ContextWithUnitConversionAdapterLogTestCase(DataContextTestCase):
         output = UnitArray((4,5,6),units=meters/second)
         return input, output
 
+    def _simple_eval_works(self, context, key_name, input, output):
+        """ A Context should work as an evaluation context Python's eval()
+
+            Note: depending how your adapters work, this will likely need to
+                  be over-ridden.
+        """
+        context[key_name] = input
+        expr = '%s + %s' % (key_name, key_name)
+        result = eval(expr, globals(), context)
+        self.failUnlessEqual(result, context[key_name]+context[key_name])
 
 class UnitConversionContextAdapterTestCase(unittest.TestCase):
     """ Other tests for UnitConversionContextAdapater

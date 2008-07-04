@@ -280,7 +280,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
     def _simple_eval_works(self, context, key_name, input, output):
         """ A Context should work as an evaluation context Python's eval()
 
-            Note: depending how your adpaters work, this will likely need to
+            Note: depending how your adapters work, this will likely need to
                   be over-ridden.
         """
         context[key_name] = input

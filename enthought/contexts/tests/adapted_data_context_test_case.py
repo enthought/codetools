@@ -1,6 +1,6 @@
 # Standard imports
 import unittest
-from numpy import all, allclose, array, isnan, linspace, nan
+from numpy import all, allclose, array, isnan, linspace, nan, ndarray
 
 # Enthought imports
 from enthought.units import convert
@@ -49,7 +49,8 @@ class AdaptedDataContextTestCase(unittest.TestCase):
             return C()
 
         # Layer multiple adapters
-        self.mask = (15.0 < depth) & (depth < 55.0)
+        d = depth.view(ndarray)
+        self.mask = (15.0 < d) & (d < 55.0)
         self.convert_out = lambda x: convert(x, units['in'], units['out'])
         self.convert_in = lambda x: convert(x, units['out'], units['in'])
         #self.context.push_adapter(
