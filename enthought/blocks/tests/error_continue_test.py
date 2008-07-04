@@ -3,12 +3,14 @@ import unittest
 from enthought.blocks.block import Block, CompositeException
 from enthought.blocks.api import func2str
 
+def raises_valuerror():
+    raise ValueError
+
 @func2str
 def block():
-    from math import log
     a=-1
     b=2
-    c=log(a)
+    c=raises_valuerror()
     d=3
 
 @func2str
@@ -21,7 +23,7 @@ block2 = block + block2_
 
 class ErrorContinueTest(unittest.TestCase):
     def test_single_exception(self):
-        ctx = {}
+        ctx = dict(raises_valuerror=raises_valuerror)
         b = Block(block)
         try:
             b.execute(ctx, continue_on_errors=True)

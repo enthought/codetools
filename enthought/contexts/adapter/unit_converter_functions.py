@@ -5,6 +5,8 @@
     they are used.
 """
 
+import numpy
+
 #Enthought Library imports
 from enthought import units
 from enthought.numerical_modeling.units.api import UnitArray
@@ -21,8 +23,11 @@ def unit_array_units_converter(unit_array, new_units):
     """ Convert a UnitArray from one set of units to another.
     """
     if unit_array.units != new_units:
-        # A conversion is needed.
-        result = units.convert(unit_array, unit_array.units, new_units)
+        # A conversion is needed. Must pass in a real ndarray instead of
+        # a UnitArray since operations on it will also try to conversions that
+        # we don't want it to do.
+        result = units.convert(unit_array.view(numpy.ndarray), unit_array.units,
+            new_units).view(UnitArray)
         result.units = new_units
     else:
         # No conversion needed.  Just return the unit_array.
