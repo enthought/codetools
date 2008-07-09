@@ -212,6 +212,17 @@ class UnparseCompilerAst:
         for node in t.nodes:
             self._dispatch(node)
 
+    def _Dict(self, t):
+        print dir(t)
+        self._write("{")
+        for  i, (k, v) in enumerate(t.items):
+            self._dispatch(k)
+            self._write(": ")
+            self._dispatch(v)
+            if i < len(t.items)-1:
+                self._write(", ")
+        self._write("}")
+
     def _Discard(self, t):
         """ Node for when return value is ignored such as in "foo(a)".
         """
@@ -741,15 +752,6 @@ class UnparseCompilerAst:
 #        if t.orelse:
 #            self._write(" else ")
 #            self._dispatch(t.orelse)
-#
-#    def _Dict(self, t):
-#        self._write("{")
-#        for k,v in zip(t.keys, t.values):
-#            self._dispatch(k)
-#            self._write(" : ")
-#            self._dispatch(v)
-#            self._write(", ")
-#        self._write("}")
 #
 #    unop = {"Invert":"~", "Not": "not", "UAdd":"+", "USub":"-"}
 #    def _UnaryOp(self, t):
