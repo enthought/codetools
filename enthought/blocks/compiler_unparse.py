@@ -213,7 +213,6 @@ class UnparseCompilerAst:
             self._dispatch(node)
 
     def _Dict(self, t):
-        print dir(t)
         self._write("{")
         for  i, (k, v) in enumerate(t.items):
             self._dispatch(k)
