@@ -3,7 +3,7 @@ from enthought.traits.api import Code, HasTraits, Instance, Str, Button
 from enthought.traits.ui.api import View, Group, Item
 from enthought.traits.ui.wx.constants import WindowColor
 
-from enthought.chaco2.chaco2_plot_container_editor import PlotContainerEditor
+from enthought.enable2.component_editor import ComponentEditor
 from enthought.chaco2.api import PlotComponent, VPlotContainer
 from enthought.chaco2.plot import Plot
 
@@ -24,7 +24,7 @@ class ExpressionContextDemo(HasTraits):
 
     traits_view = View('code',
                        'execute',
-                       Item('plots', editor=PlotContainerEditor()),
+                       Item('plots', editor=ComponentEditor()),
                        'value_expression',
                        'index_expression',
                        Item('view_expression', show_label=False),
