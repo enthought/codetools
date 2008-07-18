@@ -131,21 +131,21 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
 
     @performance
     def test_exec_is_not_slow(self):
-        """ Compare exec with Adapter to the speed of a dict. (slowdown < 2.0)
+        """ Compare exec with Adapter to the speed of a dict. (slowdown < 2.5)
 
             This test compares the costs of unit converting 1000 data points
             using pure python and then using our adapater code.  A factor of
-            2.0 is pretty lousy I'd say, so we don't want to do this much.
+            2.5 is pretty lousy I'd say, so we don't want to do this much.
             At the edge of function boundaries is OK.
         """
 
         ### Parameters ########################################################
 
         # Slowdown we will allow compared to standard python evaluation
-        allowed_slowdown = 2.0
+        allowed_slowdown = 2.5
 
         # Number of timer iterations.
-        N = 1
+        N = 1000
 
         ### Standard execution ################################################
         setup = "from numpy import arange\n" \
