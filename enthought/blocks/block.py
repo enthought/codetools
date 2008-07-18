@@ -47,11 +47,17 @@ class Block(HasTraits):
     ### Public traits ########################################################
 
     # Input and output parameters
-    inputs = Instance(set)
-    outputs = Instance(set)
-    conditional_outputs = Instance(set)
+    inputs = Property(Instance(set))
+    _inputs = Instance(set)
+    outputs = Property(Instance(set))
+    _outputs = Instance(set)
+    conditional_outputs = Property(Instance(set))
+    _conditional_outputs = Instance(set)
     all_outputs = Property(Instance(set))
     _get_all_outputs = lambda self: self.outputs | self.conditional_outputs
+    const_assign = Property(Instance(tuple))
+    fromimports = Property(Instance(set))
+    imports_ast = Property(Instance(Node))
 
     # The sequence of sub-blocks that make up this block, if any. If we don't
     # decompose into sub-blocks, 'sub_blocks' is None.
@@ -166,8 +172,8 @@ class Block(HasTraits):
         else:
             raise ValueError('Expecting file, string, Node, or sequence. Got %r' % x)
 
-        # setup the inputs and outputs
-        self._set_inputs_and_outputs()
+        # prepare the inputs and outputs
+        self._clear_cache_inputs_and_outputs()
         
         # We really want to keep the filename for "pristine" blocks, and
         # _structure_changed nukes it most times
@@ -541,25 +547,63 @@ class Block(HasTraits):
                 self._stored_string = ''
 
                 # update inputs and outputs
-                self._set_inputs_and_outputs()
+                self._clear_cache_inputs_and_outputs()
                 
             finally:
                 self._updating_structure = False
+    
+    def _clear_cache_inputs_and_outputs(self):
+        self._inputs = None
+        self._outputs = None
+        self._conditional_outputs = None
+        self._const_assign = None
+        self._fromimports = None
+        self._imports_ast = None
 
     def _set_inputs_and_outputs(self):
         if self.ast is None:
             return
         
         v = compiler.walk(self.ast, NameFinder())
-        self.inputs = set(v.free)
-        self.outputs = set(v.locals)
-        self.conditional_outputs = set(v.conditional_locals)
+        self._inputs = set(v.free)
+        self._outputs = set(v.locals)
+        self._conditional_outputs = set(v.conditional_locals)
         temp = [unparse(x).strip() for x in v.constlist]
         temp2 = [x.split('=')[0].strip() for x in temp]
-        self.const_assign = (set(temp2), temp)
-        self.fromimports = set(v.fromimports)
-        self.outputs -= self.fromimports
-        self.imports_ast = v.imports
+        self._const_assign = (set(temp2), temp)
+        self._fromimports = set(v.fromimports)
+        self._outputs -= self.fromimports
+        self._imports_ast = v.imports
+    
+    def _get_inputs(self):
+        if self._inputs is None:
+            self._set_inputs_and_outputs()
+        return self._inputs
+    
+    def _get_outputs(self):
+        if self._outputs is None:
+            self._set_inputs_and_outputs()
+        return self._outputs
+    
+    def _get_conditional_outputs(self):
+        if self._conditional_outputs is None:
+            self._set_inputs_and_outputs()
+        return self._conditional_outputs
+    
+    def _get_const_assign(self):
+        if self._const_assign is None:
+            self._set_inputs_and_outputs()
+        return self._const_assign
+    
+    def _get_fromimports(self):
+        if self._fromimports is None:
+            self._set_inputs_and_outputs()
+        return self._fromimports
+    
+    def _get_imports_ast(self):
+        if self._imports_ast is None:
+            self._set_inputs_and_outputs()
+        return self._imports_ast
 
     def _get_codestring(self):
         if self._stored_string != '':
