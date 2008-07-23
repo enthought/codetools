@@ -102,11 +102,16 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
                 if c.allows(value, key):
                     if key in c:
                         added = []
-                        modified = [key]
+                        if c[key] != value: 
+                            modified = [key]
+                            c[key] = value
+                        else:
+                            modified = []
                     else:
                         added = [key]
                         modified = []
-                    c[key] = value
+                        c[key] = value
+                        
                     set = True
                     break
                 elif key in c:
@@ -149,7 +154,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
 
 
     #### Trait Event Handlers ##################################################
-
+    
     @on_trait_change('subcontexts:items_modified')
     def subcontexts_items_modified(self, event):
         """ Pass events up.
