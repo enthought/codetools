@@ -75,9 +75,17 @@ class FormulaExecutingContext(DataContext):
     # Public interface
 
     def __init__(self, **kwtraits):
+        if 'external_block' in kwtraits:
+            self.external_block = kwtraits.pop('external_block')
+            
         super(FormulaExecutingContext, self).__init__(**kwtraits)
         self._regenerate_expression_block()
-        self._external_code_changed(self.external_code)
+        
+        if self.external_block is None:
+            self._external_code_changed(self.external_code)
+        else:
+            self.external_block = Block([self.external_block, Block(self.external_code)])
+            
         self._regenerate_composite_block()
 
 
@@ -131,13 +139,20 @@ class FormulaExecutingContext(DataContext):
             except:
                 new_datacontext[key] = self.data_context[key]
             
+        # turn off auto-firing of events during construction, then turn it back on
+        # after everything is set up
+        
         new = FormulaExecutingContext(data_context=new_datacontext,
                                       external_block=self.external_block,
                                       execution_needed=self.execution_needed,
-                                      auto_execute=self.auto_execute,
+                                      auto_execute=False,
                                       _expressions=self._expressions)
+        
         new._regenerate_expression_block()
         new._regenerate_composite_block()
+                
+        new.auto_execute = self.auto_execute
+        
         return new
     
                                
