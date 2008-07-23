@@ -110,6 +110,10 @@ class FormulaExecutingContext(DataContext):
             block = self._composite_block.restrict(inputs=inputs, outputs=outputs)
         else:
             block = self._composite_block
+            
+        old_defer_events = self.data_context.defer_events
+
+        
         if self.swallow_exceptions:
             try:
                 self.data_context.defer_events = True
@@ -118,14 +122,14 @@ class FormulaExecutingContext(DataContext):
             except:
                 pass
             finally:
-                self.data_context.defer_events = False
+                self.data_context.defer_events = old_defer_events
         else:
             try:
                 self.data_context.defer_events = True
                 block.execute(self.data_context, self._globals_context, 
                               continue_on_errors=self.continue_on_errors)
             finally:
-                self.data_context.defer_events = False
+                self.data_context.defer_events = old_defer_events
             
         execution_needed=False
         return
