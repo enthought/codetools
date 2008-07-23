@@ -104,11 +104,20 @@ class FormulaExecutingContext(DataContext):
             block = self._composite_block
         if self.swallow_exceptions:
             try:
-                self._composite_block.execute(self.data_context, self._globals_context, continue_on_errors=self.continue_on_errors)
+                self.data_context.defer_events = True
+                block.execute(self.data_context, self._globals_context, 
+                              continue_on_errors=self.continue_on_errors)
             except:
                 pass
+            finally:
+                self.data_context.defer_events = False
         else:
-            self._composite_block.execute(self.data_context, self._globals_context, continue_on_errors=self.continue_on_errors)
+            try:
+                self.data_context.defer_events = True
+                block.execute(self.data_context, self._globals_context, 
+                              continue_on_errors=self.continue_on_errors)
+            finally:
+                self.data_context.defer_events = False
             
         execution_needed=False
         return
