@@ -119,17 +119,19 @@ class FormulaExecutingContext(DataContext):
                 self.data_context.defer_events = True
                 block.execute(self.data_context, self._globals_context, 
                               continue_on_errors=self.continue_on_errors)
+                self.data_context.defer_events = old_defer_events                
             except:
-                pass
-            finally:
                 self.data_context.defer_events = old_defer_events
+                
         else:
             try:
                 self.data_context.defer_events = True
                 block.execute(self.data_context, self._globals_context, 
                               continue_on_errors=self.continue_on_errors)
-            finally:
-                self.data_context.defer_events = old_defer_events
+                self.data_context.defer_events = old_defer_events                
+            except Exception, ex:
+                self.data_context.defer_events = old_defer_events                
+                raise ex
             
         execution_needed=False
         return
