@@ -101,9 +101,13 @@ class FormulaExecutingContext(DataContext):
             self.execute_block()
         return
     
-    def execute_block(self, inputs=(), outputs=()):
+    def execute_block(self, inputs=(), outputs=()):        
         if self.data_context is None:
             return
+        
+        self._executing = True
+        self.data_context.defer_events=True
+        
         if self._composite_block is None:
             self._regenerate_composite_block()
         if inputs !=() or outputs != ():
@@ -132,6 +136,9 @@ class FormulaExecutingContext(DataContext):
             except Exception, ex:
                 self.data_context.defer_events = old_defer_events                
                 raise ex
+
+        self._executing = False
+        self.data_context.defer_events=False
             
         execution_needed=False
         return
@@ -196,12 +203,7 @@ class FormulaExecutingContext(DataContext):
             inputs=set(self._composite_block.inputs).intersection(set(event.added + event.removed + event.modified))
             if len(inputs) == 0:
                 return
-            restricted_block = self._composite_block.restrict(inputs=inputs)
-            self.data_context.defer_events=True
-            self.executing = True
             self.execute_block_if_auto(inputs=inputs)
-            self.data_context.defer_events=False
-            self._executing=False
         return
         
     def __composite_block_default(self):

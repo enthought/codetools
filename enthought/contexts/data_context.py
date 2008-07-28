@@ -268,8 +268,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
 
     def __str__(self):
         # Maybe a good default string
-        return '%s(name=%r, subcontext=%s)' % (type(self).__name__, self.name,
-            self.subcontext)
+        return '%s(name=%r)' % (type(self).__name__, self.name)
 
     def __repr__(self):
         # Maybe a good default representation
