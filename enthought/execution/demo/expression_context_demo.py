@@ -3,9 +3,9 @@ from enthought.traits.api import Code, HasTraits, Instance, Str, Button
 from enthought.traits.ui.api import View, Group, Item
 from enthought.traits.ui.wx.constants import WindowColor
 
-from enthought.enable2.component_editor import ComponentEditor
-from enthought.chaco2.api import PlotComponent, VPlotContainer
-from enthought.chaco2.plot import Plot
+from enthought.enable.component_editor import ComponentEditor
+from enthought.chaco.api import PlotComponent, VPlotContainer
+from enthought.chaco.plot import Plot
 
 from enthought.execution.api import ExpressionContext
 from enthought.contexts.data_context import DataContext
