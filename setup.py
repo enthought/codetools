@@ -3,7 +3,7 @@ from setuptools import setup, Extension, find_packages
 from setuptools.command.develop import develop
 from distutils.command.build import build as distbuild
 from distutils import log
-from pkg_resources import require, DistributionNotFound
+from pkg_resources import DistributionNotFound, parse_version, require, VersionConflict
 
 from setup_data import INFO
 from make_docs import HtmlBuild 
