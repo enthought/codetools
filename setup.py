@@ -133,7 +133,7 @@ class my_build(distbuild):
 setup(
     author = 'Enthought, Inc.',
     author_email = 'info@enthought.com',
-    classifiers = """\
+    classifiers = [c.strip() for c in """\
         Development Status :: 4 - Beta
         Intended Audience :: Developers
         Intended Audience :: Science/Research
@@ -147,7 +147,7 @@ setup(
         Topic :: Scientific/Engineering
         Topic :: Software Development
         Topic :: Software Development :: Libraries
-        """.splitlines(),
+        """.splitlines()],
     cmdclass = {
         'develop': my_develop,
         'build': my_build
@@ -155,13 +155,13 @@ setup(
     dependency_links = [
         'http://code.enthought.com/enstaller/eggs/source',
         ],
-    description = DOCLINES[0],
+    description = DOCLINES[1],
     include_package_data = True,
     install_requires = [
         TRAITS,
         ],
     license = 'BSD',
-    long_description = '\n'.join(DOCLINES[2:]),
+    long_description = '\n'.join(DOCLINES[3:]),
     maintainer = 'ETS Developers',
     maintainer_email = 'enthought-dev@enthought.com',
     name = 'CodeTools',
