@@ -7,14 +7,14 @@
 """
 Code Analysis and Execution Tools
 
-The CodeTools project includes packages that simplify meta-programming and 
-help the programmer separate data from code in Python. This library contains 
-classes that allow defining simple snippets, or "blocks", of Python code, 
-analyze variable dependencies in the code block, and use these dependencies to 
+The CodeTools project includes packages that simplify meta-programming and
+help the programmer separate data from code in Python. This library contains
+classes that allow defining simple snippets, or "blocks", of Python code,
+analyze variable dependencies in the code block, and use these dependencies to
 construct or restrict an execution graph. These (restricted) code blocks can
 then be executed in any namespace. However, this project also provides a
-Traits-event-enhanced namespace, called a "context", which can be used in 
-place of a vanilla namespace to allow actions to be performed whenever 
+Traits-event-enhanced namespace, called a "context", which can be used in
+place of a vanilla namespace to allow actions to be performed whenever
 variables are assigned or retrieved from the namespace. This project is used
 as the foundation for the BlockCanvas project.
 """
@@ -35,23 +35,6 @@ import zipfile
 
 # Pull the description values for the setup keywords from our file docstring.
 DOCLINES = __doc__.split("\n")
-
-
-# Function to convert simple ETS project names and versions to a requirements
-# spec that works for both development builds and stable builds.  Allows
-# a caller to specify a max version, which is intended to work along with
-# Enthought's standard versioning scheme -- see the following write up:
-#    https://svn.enthought.com/enthought/wiki/EnthoughtVersionNumbers
-def etsdep(p, min, max=None, literal=False):
-    require = '%s >=%s.dev' % (p, min)
-    if max is not None:
-        if literal is False:
-            require = '%s, <%s.a' % (require, max)
-        else:
-            require = '%s, <%s' % (require, max)
-    return require
-
-TRAITS = etsdep('Traits', '3.0.0b1')
 
 
 # Functions to generate docs from source during project builds.
@@ -166,9 +149,7 @@ setup(
         ],
     description = DOCLINES[1],
     include_package_data = True,
-    install_requires = [
-        TRAITS,
-        ],
+    install_requires = INFO['install_requires'],
     license = 'BSD',
     long_description = '\n'.join(DOCLINES[3:]),
     maintainer = 'ETS Developers',
