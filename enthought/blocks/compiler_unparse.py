@@ -95,11 +95,13 @@ class UnparseCompilerAst:
         self.__binary_op(t, '+')
 
     def _And(self, t):
+        self._write(" (")
         for i, node in enumerate(t.nodes):
             self._dispatch(node)
             if i != len(t.nodes)-1:
-                self._write(" and ")
-                
+                self._write(") and (")
+        self._write(")")
+               
     def _AssAttr(self, t):
         """ Handle assigning an attribute of an object
         """
@@ -358,14 +360,17 @@ class UnparseCompilerAst:
         self._write("None")
         
     def _Not(self, t):
-        self._write('not ')
+        self._write('not (')
         self._dispatch(t.expr)
+        self._write(')')
         
     def _Or(self, t):
+        self._write(" (")
         for i, node in enumerate(t.nodes):
             self._dispatch(node)
             if i != len(t.nodes)-1:
-                self._write(" or ")
+                self._write(") or (")
+        self._write(")")
                 
     def _Pass(self, t):
         self._write("pass\n")
