@@ -20,10 +20,11 @@ class IExecutable(Interface):
         globals : dict, optional
             The global namespace for the code.
         inputs : list of str, optional
+            Names of input variables. These are used to restrict the execution
+            to portions of the code that are affected by these inputs.
         outputs : list of str, optional
-            Names which may be used to restrict the execution to portions of the
-            code. Ideally, only code that is affected by the inputs variables
-            and affects the outputs variables will be executed.
+            Names of output variables. These are used to restrict the execution
+            to portions of the code that affect the outputs.
         """
 
 

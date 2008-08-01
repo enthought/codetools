@@ -31,9 +31,9 @@ class TraitslikeContextWrapper(HasTraits):
 
         Parameters
         ----------
-        *args : strs
+        ``*args`` : strs
             These attributes will be created as Any traits.
-        **kwds : str -> Trait
+        ``**kwds`` : str -> Trait
             These attributes will be created as the specified Traits.
 
         Example

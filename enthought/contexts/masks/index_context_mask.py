@@ -13,13 +13,17 @@ from context_mask import ContextMask
 #------------------------------------------------------------------------------
 
 class IndexContextMask(ContextMask):
-    """ Class that is used for implementing with-statement
+    """ Class that is used for implementing ``with``-statement
 
         The context to be used with the mask should be:
-        (a-i) a GeoContext, as, that is the only context which can currently
-              have a notion of index.
-        (a-ii) any other context which has a get_index() method.
-        (b) a context that has a key 'index' in its dictionary.
+            
+        - One of:
+            
+          * A GeoContext, as that is the only context which can currently
+            have a notion of index.
+          * Any other context which has a get_index() method.
+          
+        - A context that has a key 'index' in its dictionary.
 
     """
 

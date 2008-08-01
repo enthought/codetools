@@ -112,14 +112,14 @@ class UUID(object):
         hyphens, and a URN prefix are all optional.  For example, these
         expressions all yield the same UUID:
 
-        UUID('{12345678-1234-5678-1234-567812345678}')
-        UUID('12345678123456781234567812345678')
-        UUID('urn:uuid:12345678-1234-5678-1234-567812345678')
-        UUID(bytes='\x12\x34\x56\x78'*4)
-        UUID(bytes_le='\x78\x56\x34\x12\x34\x12\x78\x56' +
-                      '\x12\x34\x56\x78\x12\x34\x56\x78')
-        UUID(fields=(0x12345678, 0x1234, 0x5678, 0x12, 0x34, 0x567812345678))
-        UUID(int=0x12345678123456781234567812345678)
+        - UUID('{12345678-1234-5678-1234-567812345678}')
+        - UUID('12345678123456781234567812345678')
+        - UUID('urn:uuid:12345678-1234-5678-1234-567812345678')
+        - UUID(bytes='\x12\x34\x56\x78'\*4)
+        - UUID(bytes_le='\x78\x56\x34\x12\x34\x12\x78\x56' +
+          '\x12\x34\x56\x78\x12\x34\x56\x78')
+        - UUID(fields=(0x12345678, 0x1234, 0x5678, 0x12, 0x34, 0x567812345678))
+        - UUID(int=0x12345678123456781234567812345678)
 
         Exactly one of 'hex', 'bytes', 'bytes_le', 'fields', or 'int' must
         be given.  The 'version' argument is optional; if given, the resulting

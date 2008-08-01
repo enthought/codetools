@@ -51,12 +51,13 @@ def adapt_keys(context):
 class AbstractContextTestCase(BasicTestMappingProtocol):
     """ Defines the set of tests to run on any GeoContext or Adapter.
 
-        Note: This does not derive from test case so that it doesn't get picked
-              up and run by the unittest harness...  You must mixin
-              unittest.TestCase in your derived class.
-        fixme: There has to be a smarter way of doing this...
+        NOTE: This does not derive from test case so that it doesn't get picked
+        up and run by the unittest harness. You must mixin unittest.TestCase 
+        in your derived class.
     """
+    #         fixme: There has to be a smarter way of doing this...
 
+    
     ############################################################################
     # unittest.TestCase interface
     ############################################################################

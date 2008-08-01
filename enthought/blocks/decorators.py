@@ -70,14 +70,14 @@ def findsource_ipython(f, name):
 
 def func2str(func,backframes=1):
     """Decorator to turn a code-block inside of a function to
-    a string.
+    a string::
+    
+        @func2str
+        def code():
+            c = a + b
+            d = a - b
 
-    @func2str
-    def code():
-        c = a + b
-        d = a - b
-
-    This will return a string of code: 'a = 3\nb = 4\nc = a + b\n'
+    This returns a string of code: ``a = 3\\nb = 4\\nc = a + b\\n``
     """
     callframe = sys._getframe(backframes)
     lineno = callframe.f_lineno
@@ -92,28 +92,28 @@ def func2str(func,backframes=1):
     
 def func2co(func):
     """Decorator to turn a code-block defined as a function into
-    a code-object.
+    a code-object::
 
-    @func2co
-    def code():
-        c = a + b
-        d = a - b
+        @func2co
+        def code():
+            c = a + b
+            d = a - b
 
-    This will return code as a compiled 'anonymous' code object
+    This returns code as a compiled 'anonymous' code object.
     """
     s = func2str(func, backframes=2)
     return compile(s, 'anonymous', 'exec')
 
 def func2block(func):
     """Decorator to turn a code-block defined as a function into
-    a code-object.
+    a code-object::
 
-    @func2block
-    def code():
-        d = a + b
-        c = a - b
+        @func2block
+        def code():
+            d = a + b
+            c = a - b
 
-    This will return the code piece as a Block.
+    This returns the code piece as a Block.
     """
     s = func2str(func, backframes=2)
     return Block(s)

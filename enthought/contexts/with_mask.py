@@ -49,7 +49,7 @@ The with statement translates to:
 Examples:
 ---------
 1. A template for ensuring that a lock, acquired at the start of a block, is
-    released when the block is left:
+   released when the block is left::
 
     @contextmanager
     def locked(lock):
@@ -59,14 +59,14 @@ Examples:
         finally:
             lock.release()
 
-   Used as follows:
+   Used as follows::
 
     with locked(myLock):
         # Code here executes with myLock held.  The lock is
         # guaranteed to be released when the block is left (even
         # if via return or by an uncaught exception).
 
-2. Example 1 rewritten without a generator:
+2. Example 1 rewritten without a generator::
 
     class locked:
        def __init__(self, lock):
@@ -76,13 +76,13 @@ Examples:
        def __exit__(self, type, value, tb):
            self.lock.release()
 
-    (This example is easily modified to implement the other
-    relatively stateless examples; it shows that it is easy to avoid
-    the need for a generator if no special state needs to be
-    preserved.)
+   (This example is easily modified to implement the other
+   relatively stateless examples; it shows that it is easy to avoid
+   the need for a generator if no special state needs to be
+   preserved.)
 
-Our problem:
-------------
+Our problem
+-----------
 
 The idea here is we are in the block execution environment when the code with
 'with' gets executed. We need the adapter to cling onto the context thats the
@@ -90,12 +90,17 @@ local environment; and cling off outside the 'with' block/control.
 
 1. We need to check if any change to the 'context' variable in the data context
    will change the context itself.
-   -- Checked, It does.
-2. Check how the with statement works without a block and context.
-    -- Checked, works well.
-3. Check how the with statement works during block execution.
-    -- Checked, Python crashes on version 2.5.0. However, after upgrading Python
-       to 2.5.1., it works well.
+   
+   - Checked, It does.
+   
+2. Check how the ``with`` statement works without a block and context.
+
+    - Checked, works well.
+    
+3. Check how the ``with`` statement works during block execution.
+
+    - Checked, Python crashes on version 2.5.0. However, after upgrading Python
+      to 2.5.1., it works well.
 
 """
 

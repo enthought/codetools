@@ -60,7 +60,8 @@ class UnitManipulationAdapter(HasTraits):
     setitem_units = Any(dict())
 
     # A type to converter mapping. The key is a data type and the value is
-    # a function to convert that data type to new units:
+    # a function to convert that data type to new units::
+    #
     #     (data_type, func(value, new_units))
     converters = Dict()
 

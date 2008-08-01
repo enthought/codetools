@@ -22,11 +22,11 @@ del __module
     ###########################################################################
 
     def import_from(self, nodelist):
-        r'''Translate 'from ... import *' statements into 'import ...'.
+        r'''Translate 'from ... import \*' statements into 'import ...'.
 
-            We avoid 'from ... import *' because they only seem to work on
+            We avoid 'from ... import \*' because they only seem to work on
             built-in dicts, whereas we run code over user dicts. Our solution
-            is to translate them into normal import statements:
+            is to translate them into normal import statements::
 
                 from foo import *
                 ~>
@@ -38,7 +38,7 @@ del __module
             in the namespace.
 
             This implementation assumes that the compiler equates nested 'Stmt'
-            nodes with flat ones, e.g.
+            nodes with flat ones, e.g.:
 
             >>> from compiler.ast import Assign, AssName, Const, Stmt
             >>> from enthought.blocks.compiler_.api\
