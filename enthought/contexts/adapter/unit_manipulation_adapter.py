@@ -35,12 +35,10 @@ class UnitManipulationAdapter(HasTraits):
         can pass in a dictionary of converters functions to be used for
         unit conversion.
 
-        fixme: I can imagine places where we don't want name lookup to silently
-               pass.  A flag like 'fail_on_name_not_found' or something like
-               that might be useful.
-
     """
-
+        #fixme: I can imagine places where we don't want name lookup to silently
+        #       pass.  A flag like 'fail_on_name_not_found' or something like
+        #       that might be useful.
     implements(IAdapter)
 
     ############################################################################
