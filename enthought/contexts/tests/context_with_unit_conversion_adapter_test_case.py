@@ -1,6 +1,10 @@
 # Standard Library Imports
+import sys
 import unittest
 import timeit
+
+# Third Party Libary imports
+import nose
 
 # Numeric Libary imports
 from numpy import all
@@ -142,11 +146,10 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
         ### Parameters ########################################################
 
         # Slowdown we will allow compared to standard python evaluation
-        # FIXME:
-        #   This value is effectively skipping the speed test.
-        #   When you run coverage, the relative speeds change so much
-        #   that this becomes unreliable.
-        allowed_slowdown = 100.0  # was 2.5
+        if 'coverage' in sys.modules:
+            raise nose.SkipTest("Test can not be run with coverage.")
+        
+        allowed_slowdown = 2.5
 
         # Number of timer iterations.
         N = 1000
