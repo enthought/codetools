@@ -17,6 +17,12 @@ Traits-event-enhanced namespace, called a "context", which can be used in
 place of a vanilla namespace to allow actions to be performed whenever
 variables are assigned or retrieved from the namespace. This project is used
 as the foundation for the BlockCanvas project.
+
+Prerequisites
+-------------
+If you want to build CodeTools from source, you must first install 
+`setuptools <http://pypi.python.org/pypi/setuptools/0.6c8>`_.
+
 """
 
 
