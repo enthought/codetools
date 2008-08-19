@@ -115,7 +115,7 @@ class MultiContextTestCase(AbstractContextTestCase):
 
     @performance
     def test_eval_is_not_slow(self):
-        """ eval() with DataContext is the speed of a dict. (slowdown < 1.2)
+        """ eval() with DataContext is the speed of a dict. (slowdown < 1.3)
 
             This is test using a vp array with 20 values in it to try and get
             a reasonable use case.
@@ -127,7 +127,7 @@ class MultiContextTestCase(AbstractContextTestCase):
         if 'coverage' in sys.modules:
             raise nose.SkipTest("Test can not be run with coverage.")
         
-        allowed_slowdown = 1.2
+        allowed_slowdown = 1.3
 
         # Number of timer iterations.
         N = 10000
