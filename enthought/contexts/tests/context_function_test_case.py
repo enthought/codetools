@@ -44,6 +44,10 @@ def math_func(x):
     a = 2
     return a*math.sin(x) + math.cos(x)
 
+def accumulator(value):
+    total += value
+    return total
+
 class ContextFunctionTestCase(unittest.TestCase):
     
     def test_basic_functionality(self):
@@ -124,3 +128,12 @@ class ContextFunctionTestCase(unittest.TestCase):
         numpy_func = context_function(math_func, numpy_math_factory)
         assert numpy.allclose(numpy_func(numpy.array([0.0, 0.25, 0.5])*numpy.pi),
                                numpy.array([1.0, 2.1213203435596424, 2.0]))
+    
+    def test_accumulator(self):
+        accumulator_dict = {'total': 0}
+        def accumulator_factory():
+            return accumulator_dict
+        new_accumulator = context_function(accumulator, accumulator_factory)
+        for i in range(10):
+            assert new_accumulator(i) == sum(range(i+1))
+        assert accumulator_dict['total'] == 45

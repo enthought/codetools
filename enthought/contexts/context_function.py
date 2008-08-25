@@ -68,7 +68,6 @@ def args_to_locals(co):
     nglobals = len(co.co_names)
     co_code = compile_bytecode(patch_load_and_store(parse_bytecode(co.co_code),
                                    co.co_argcount, nglobals))
-    print co.co_names, co.co_varnames
     return new.code(0, co.co_nlocals+len(co.co_varnames), co.co_stacksize, co.co_flags & ~15,
         co_code, co.co_consts, co.co_names+co.co_varnames, (),
         co.co_filename, co.co_name, co.co_firstlineno, co.co_lnotab)
@@ -128,12 +127,22 @@ def context_function(f, context_factory):
         >>> def recursive_numpy_math(f):
         ...      return context_function(f, recursive_numpy_math_context)
         
+        Poor-man's closure:
+        
+        >>> def accumulator(value):
+        ...     total += value
+        >>> accumulation_dict = {'total': 0}
+        >>> def accumulator_factory():
+        ...     return accumulator_dict
+        >>> accumulator = context_function(accumulator, accumulator_factory)
+        >>> for i in range(10):
+        ...     accumulator(i)
+        >>> accumulation_dict['total']
+        45
     """
     
     # values that we may as well pre-calculate
-    print dis.dis(f)
     code = args_to_locals(f.func_code)
-    print dis.dis(code)
     
     def new_f(*args, **kwargs):
         loc = context_factory()
@@ -170,7 +179,6 @@ def context_function(f, context_factory):
                 else:
                     # incorrect kwargs
                     raise TypeError
-        print named_args, loc
         return eval(code, f.func_globals, loc)
     
     # XXX should probably try to make "new_f" look as much like "f" as possible
