@@ -6,6 +6,7 @@ from i_context import (IContext, IListenableContext, IRestrictedContext,
     IPersistableContext, ICheckpointable)
 from multi_context import MultiContext
 from traitslike_context_wrapper import TraitslikeContextWrapper
+from context_function import local_context, context_function
 
 # fix me: should these be here?
 from adapter.i_adapter import IAdapter
@@ -15,3 +16,5 @@ from adapter.unit_conversion_adapter import UnitConversionAdapter
 from adapter.unit_corrector_adapter import UnitCorrectorAdapter
 from adapter.unit_manipulation_adapter import UnitManipulationAdapter
 from adapter.name_adapter import NameAdapter
+#from adapter.pattern_adapter import PatternAdapter
+#from adapter.quantity_adapter import QuantityApplyAdapter
