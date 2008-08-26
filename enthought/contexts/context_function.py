@@ -39,25 +39,33 @@ def compile_bytecode(ops):
                                         if arg != None else '')
                     for op, arg in ops)
 
-def patch_load_and_store(ops, argcount, nglobals):
+def patch_load_and_store(ops, argcount, nglobals, ncellandfreevars):
     """ Generator which replaces *_FAST and *_GLOBAL ops with *_NAME ops
     """
     for op, arg in ops:
         if op  == 'LOAD_FAST':
             op = 'LOAD_NAME'
-            arg += nglobals
+            arg += nglobals + ncellandfreevars
         elif op == 'STORE_FAST':
             op = 'STORE_NAME'
-            arg += nglobals
+            arg += nglobals + ncellandfreevars
         elif op == 'DELETE_FAST':
             op = 'DELETE_NAME'
-            arg += nglobals
+            arg += nglobals + ncellandfreevars
         elif op  == 'LOAD_GLOBAL':
             op = 'LOAD_NAME'
         elif op == 'STORE_GLOBAL':
             op = 'STORE_NAME'
         elif op == 'DELETE_GLOBAL':
             op = 'DELETE_NAME'
+        elif op  == 'LOAD_DEREF':
+            op = 'LOAD_NAME'
+            arg += nglobals
+        elif op == 'STORE_DEREF':
+            op = 'STORE_NAME'
+            arg += nglobals
+        elif op == "LOAD_CLOSURE":
+            raise ContextFunctionError, "can't create context_function for function containing closure"
         elif op in dis.hasname:
             arg += argcount
         yield op, arg
@@ -66,10 +74,15 @@ def args_to_locals(co):
     """ Turn arguments of a function into local variables in a code object
     """
     nglobals = len(co.co_names)
+    nfreevars = len(co.co_freevars)
+    ncellvars = len(co.co_cellvars)
     co_code = compile_bytecode(patch_load_and_store(parse_bytecode(co.co_code),
-                                   co.co_argcount, nglobals))
-    return new.code(0, co.co_nlocals+len(co.co_varnames), co.co_stacksize, co.co_flags & ~15,
-        co_code, co.co_consts, co.co_names+co.co_varnames, (),
+                                   co.co_argcount, nglobals,
+                                   nfreevars+ncellvars))
+    return new.code(0, co.co_nlocals+len(co.co_varnames)+nfreevars+ncellvars,
+        co.co_stacksize, co.co_flags & ~15,
+        co_code, co.co_consts, co.co_names + co.co_cellvars + co.co_freevars
+        + co.co_varnames, (),
         co.co_filename, co.co_name, co.co_firstlineno, co.co_lnotab)
 
 def context_function(f, context_factory):
@@ -87,7 +100,8 @@ def context_function(f, context_factory):
       * introspection of function operation
     
     This decorator works by re-writing the function's bytecode, so it will
-    not work for functions coming from C extension modules.
+    not work for functions coming from C extension modules.  It also cannot
+    currently work with functions that contain closures.
     
     Parameters
         f : function
@@ -139,15 +153,37 @@ def context_function(f, context_factory):
         ...     accumulator(i)
         >>> accumulation_dict['total']
         45
+        
+        Closure raises an exception:
+        
+        >>> def f(x):
+        ...     a = 1
+        ...     def g(y):
+        ...         return y+a
+        ...     return x+g(x)
+        >>> context_function(f, dict)
+        ContextFunctionError: can't create context_function for function containing closure
+        
     """
     
     # values that we may as well pre-calculate
     code = args_to_locals(f.func_code)
+    if f.func_closure:
+        free_var_dict = dict(zip(f.func_code.co_freevars[-len(f.func_closure):],
+                             (cell.cell_contents for cell in f.func_closure)))
+    else:
+        free_var_dict = {}
     
     def new_f(*args, **kwargs):
         loc = context_factory()
+        for key, value in free_var_dict.items():
+            loc[key] = value
         arg_len = f.func_code.co_argcount
         named_args = f.func_code.co_varnames[:arg_len]
+        if f.func_defaults:
+            defaults = dict(zip(named_args[-len(f.func_defaults):], f.func_defaults))
+        else:
+            defaults = {}
         if arg_len < len(args):
             if f.func_code.co_flags & 4:
                 loc.update(dict(zip(named_args, args[:arg_len])))
@@ -164,11 +200,14 @@ def context_function(f, context_factory):
             for arg in named_args[len(args):]:
                 if arg in kwargs:
                     loc[arg] = kwargs[arg]
+                elif arg in defaults:
+                    loc[arg] = defaults[arg]
                 else:
                     # not enough args
                     raise TypeError
             for arg in named_args[len(args):]:
-                del kwargs[arg]
+                if arg in kwargs:
+                    del kwargs[arg]
             if kwargs:
                 if f.func_code.co_flags & 8:
                     if f.func_code.co_flags & 4:
@@ -185,6 +224,9 @@ def context_function(f, context_factory):
     # XXX we don't currently do this
     return new_f
 
+class ContextFunctionError(ValueError):
+    pass
+    
 
 #class ContextFunctionAdapter(HasTraits):
 #    implements(IAdapter)

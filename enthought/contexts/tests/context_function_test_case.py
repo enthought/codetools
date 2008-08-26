@@ -1,13 +1,22 @@
 import unittest
 import math
+import dis, inspect, pprint
 
 import numpy
 
-from enthought.contexts.context_function import context_function
+from enthought.contexts.context_function import context_function, \
+        ContextFunctionError
 
 c = 5.0
 
 def basic(a, b):
+    if a < 0:
+        return b
+    else:
+        d = a*b+c
+    return d
+
+def default_args(a, b=3):
     if a < 0:
         return b
     else:
@@ -48,6 +57,14 @@ def accumulator(value):
     total += value
     return total
 
+def nested_functions(b):
+    d = 3; e = 0; g = 5
+    def f(a, b=b):
+        def g(x):
+            return x+2
+        return a*b + c*d + g(e)
+    return f
+
 class ContextFunctionTestCase(unittest.TestCase):
     
     def test_basic_functionality(self):
@@ -58,6 +75,12 @@ class ContextFunctionTestCase(unittest.TestCase):
         c = 10.0
         self.assertEqual(basic(1, 2), context_basic(1, 2))
         self.assertEqual(basic(-1, 2), context_basic(-1, 2))
+    
+    def test_default_args(self):
+        c = 5.0
+        context_default = context_function(default_args, dict)
+        self.assertEqual(default_args(1, 2), context_default(1, 2))
+        self.assertEqual(default_args(1), context_default(1))
     
     def test_star_args(self):
         c = 5.0
@@ -128,6 +151,14 @@ class ContextFunctionTestCase(unittest.TestCase):
         numpy_func = context_function(math_func, numpy_math_factory)
         assert numpy.allclose(numpy_func(numpy.array([0.0, 0.25, 0.5])*numpy.pi),
                                numpy.array([1.0, 2.1213203435596424, 2.0]))
+    
+    def test_nested_functions(self):
+        c = 5.0
+        f = nested_functions(10)
+        context_f = context_function(f, dict)
+        self.assertEqual(context_f(3),f(3))
+        self.assertRaises(ContextFunctionError, context_function,
+                          nested_functions, dict)
     
     def test_accumulator(self):
         accumulator_dict = {'total': 0}
