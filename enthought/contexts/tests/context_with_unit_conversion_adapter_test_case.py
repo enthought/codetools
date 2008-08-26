@@ -146,11 +146,13 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
         ### Parameters ########################################################
 
         # Slowdown we will allow compared to standard python evaluation
-        if 'coverage' in sys.modules:
-            raise nose.SkipTest("Test can not be run with coverage.")
-        
         allowed_slowdown = 2.5
-
+        
+        if 'coverage' in sys.modules:
+            # coverage changes timings.  Set allowed_slowdown to a very
+            # large value, in order to get coverage
+            allowed_slowdown = 1000.0
+        
         # Number of timer iterations.
         N = 1000
 
