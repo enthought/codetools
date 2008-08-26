@@ -1,6 +1,7 @@
 """ Allows a function to execute as if locals are a context
 """
 import dis, struct, new
+from functools import wraps
 
 ##############################################################################
 # Implementation Notes
@@ -174,6 +175,7 @@ def context_function(f, context_factory):
     else:
         free_var_dict = {}
     
+    @wraps(f)
     def new_f(*args, **kwargs):
         loc = context_factory()
         for key, value in free_var_dict.items():
@@ -220,9 +222,16 @@ def context_function(f, context_factory):
                     raise TypeError
         return eval(code, f.func_globals, loc)
     
-    # XXX should probably try to make "new_f" look as much like "f" as possible
-    # XXX we don't currently do this
     return new_f
+
+def local_context(context_factory):
+    """ Decorator that specifies a context_factory to be used for this function
+    
+    This is a thin wrapper around a context_function call.
+    """
+    def decorator(f):
+        return context_function(f, context_factory)
+    return decorator
 
 class ContextFunctionError(ValueError):
     pass

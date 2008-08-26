@@ -5,16 +5,21 @@ import dis, inspect, pprint
 import numpy
 
 from enthought.contexts.context_function import context_function, \
-        ContextFunctionError
+        ContextFunctionError, local_context
 
 c = 5.0
 
 def basic(a, b):
+    """This is a basic function that tests branching, local vars, global
+    vars and basic function members."""
     if a < 0:
         return b
     else:
         d = a*b+c
     return d
+
+basic.test_attr = "Hello World"
+
 
 def default_args(a, b=3):
     if a < 0:
@@ -66,6 +71,14 @@ def nested_functions(b):
     return f
 
 class ContextFunctionTestCase(unittest.TestCase):
+    
+    def test_func_attributes(self):
+        c = 5.0
+        context_basic = context_function(basic, dict)
+        self.assertEqual(basic.__name__, context_basic.__name__)
+        self.assertEqual(basic.__module__, context_basic.__module__)
+        self.assertEqual(basic.__doc__, context_basic.__doc__)
+        self.assertEqual(basic.__dict__, context_basic.__dict__)
     
     def test_basic_functionality(self):
         c = 5.0
@@ -168,3 +181,28 @@ class ContextFunctionTestCase(unittest.TestCase):
         for i in range(10):
             assert new_accumulator(i) == sum(range(i+1))
         assert accumulator_dict['total'] == 45
+
+
+class ContextDecoratorTestCase(unittest.TestCase):
+    """ Test the local_context decorator.
+    
+    We assume that if the basic functionality works, and context_function
+    passes all tests, then local_context should be fine.
+    """
+    
+    def test_basic_functionality(self):
+        c = 5.0
+        
+        @local_context(dict)
+        def context_basic(a, b):
+            if a < 0:
+                return b
+            else:
+                d = a*b+c
+            return d
+        
+        self.assertEqual(basic(1, 2), context_basic(1, 2))
+        self.assertEqual(basic(-1, 2), context_basic(-1, 2))
+        c = 10.0
+        self.assertEqual(basic(1, 2), context_basic(1, 2))
+        self.assertEqual(basic(-1, 2), context_basic(-1, 2))
