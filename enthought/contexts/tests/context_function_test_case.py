@@ -70,6 +70,15 @@ def nested_functions(b):
         return a*b + c*d + g(e)
     return f
 
+def internal_import(a):
+    import math
+    return math.sin(a)
+
+def internal_from(a):
+    from math import sin
+    return sin(a)
+
+
 class ContextFunctionTestCase(unittest.TestCase):
     
     def test_func_attributes(self):
@@ -181,6 +190,14 @@ class ContextFunctionTestCase(unittest.TestCase):
         for i in range(10):
             assert new_accumulator(i) == sum(range(i+1))
         assert accumulator_dict['total'] == 45
+
+    def test_internal_import(self):
+        internal_import_context = context_function(internal_import, dict)
+        self.assertEqual(internal_import_context(0), internal_import(0))
+
+    def test_internal_from(self):
+        internal_from_context = context_function(internal_from, dict)
+        self.assertEqual(internal_from_context(0), internal_from(0))
 
 
 class ContextDecoratorTestCase(unittest.TestCase):

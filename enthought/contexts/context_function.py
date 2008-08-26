@@ -127,21 +127,6 @@ def context_function(f, context_factory):
         >>> f(numpy.array([0, 0.5, 1])*numpy.pi)
         array([1.0, 2.1213203435596424, 2])
         
-        Recursively apply context_function to a context: this example will
-        recursively apply the numpy_math_context from the previous example.
-        
-        >>> from enthought.contexts.adapter.context_function_adapter import ContextFunctionAdapter
-        >>> from enthought.contexts.api import AdaptedDataContext
-        >>> def recursive_context_factory(context_factory):
-        ...     def new_context_factory():
-        ...         context = AdaptedDataContext(subcontext=context_factory())
-        ...         context.push_adapter(ContextFunctionAdapter(context_factory=new_context_factory))
-        ...         return context
-        ...     return new_context_factory
-        >>> recursive_numpy_math_context = recursive_context_factory(numpy_math_context)
-        >>> def recursive_numpy_math(f):
-        ...      return context_function(f, recursive_numpy_math_context)
-        
         Poor-man's closure:
         
         >>> def accumulator(value):
