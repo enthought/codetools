@@ -124,11 +124,13 @@ class MultiContextTestCase(AbstractContextTestCase):
         ### Parameters #########################################################
 
         # Slowdown we will allow compared to standard python evaluation
-        if 'coverage' in sys.modules:
-            raise nose.SkipTest("Test can not be run with coverage.")
+        allowed_slowdown = 1.5
         
-        allowed_slowdown = 1.3
-
+        if 'coverage' in sys.modules:
+            # coverage changes timings, instead of skipping the test
+            # completely, the allowed_slowdown is set to a very large value.
+            allowed_slowdown = 1000.0
+        
         # Number of timer iterations.
         N = 10000
 
