@@ -5,10 +5,28 @@
 Welcome to CodeTools's documentation!
 =====================================
 
+The CodeTools packages provide a series of modules for analysis and control of
+code execution.  The key components are Blocks, sections of code to execute,
+and Contexts, dictionary-like objects which are used as namespaces for Block
+execution.  CodeTools is designed to perform such tasks as:
+
+    - executing code in a controlled environment
+    - performing dependency analysis on code so that expensive recalculations
+      can be avoided
+    - having Traits-aware code listen for changes inside the namespace of
+      executing code
+    - automatically converting or adapting variables on access from, or
+      assignment to, a namespace
+
+CodeTools depends upon Traits, but has no major dependencies beyond that.
+
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
+   
+   tutorial.rst
 
 Indices and tables
 ==================
