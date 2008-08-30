@@ -5,6 +5,12 @@
 CodeTools Tutorial
 ******************
 
+.. epigraph::
+
+    Namespaces are one honking great idea -- let's do more of those!
+    
+    -- Tim Peters, *The Zen of Python* (:pep:`20`)
+
 This tutorial introduces the key concepts behind the CodeTools modules, as
 well as highlighting some of their potential applications.  This tutorial
 assumes some familiarity with Traits, and will use Chaco to illustrate some
@@ -153,10 +159,10 @@ output, we can restrict on the outputs:
     doesn't (yet) answer the question "If I have these inputs, what outputs
     can I calculate?"
 
+.. _rocket-restriction-example:
 
-
-An Extended Example
--------------------
+Example: Rocket Science
+-----------------------
 
 At this point, an extended example is probably worthwhile.  Consider the
 following code which calculates quantities involved in the motion of a rocket
@@ -182,9 +188,9 @@ this::
         """Return an array of trapezoid sums of y"""
         dx = x[1:] - x[:-1]
         if array(y).shape == ():
-        	y_avg = y*ones(len(dx))
+            y_avg = y*ones(len(dx))
         else:
-        	y_avg = (y[1:]+y[:-1])/2.0
+            y_avg = (y[1:]+y[:-1])/2.0
         integral = [0]
         for i in xrange(len(dx)):
           integral.append(integral[-1] + y_avg[i]*dx[i])
@@ -198,7 +204,7 @@ potentially expensive.  If we set up a Block to hold this computation::
     >>> rocket_science = """
     ...    ...
     ... """
-    >>> rocket_block = 	Block(rocket_science)
+    >>> rocket_block =     Block(rocket_science)
     >>> rocket_block.inputs
     set(['fuel_volume', 'nozzle_area', 'fuel_density', 'nozzle_pressure', 'mass_rocket',
     'exhaust_velocity', 'fuel_burn_rate', 't'])
@@ -365,13 +371,13 @@ something like the following::
         
         @on_trait_change('data.items_modified')
         def data_items_modified(self, event):
-	        print "Event: items_modified"
-	        for added in event.added:
-	            print "  Added:", added, "=", repr(self.data[added])
-	        for modified in event.modified:
-	            print "  Modified:", modified, "=", repr(self.data[modified])
-	        for removed in event.removed:
-	            print "  Removed:", removed
+            print "Event: items_modified"
+            for added in event.added:
+                print "  Added:", added, "=", repr(self.data[added])
+            for modified in event.modified:
+                print "  Modified:", modified, "=", repr(self.data[modified])
+            for removed in event.removed:
+                print "  Removed:", removed
 
 This class keeps a reference to a DataContext, and listens for any
 items_modified events that it generates.  When one of these is generated, the
@@ -417,5 +423,278 @@ DataContext which is being listened to::
 The final piece in the pattern is to automate the execution of the block
 in the listener.  When the listener detects a change in the input values for
 a block, it can restrict the block to the changed inputs and then execute
-the restricted block in the context.
+the restricted block in the context, automatically closing the loop between
+changes in inputs and the resulting changes in outputs.  Since the code is
+being restricted, only the absolute minimum of calculation is performed.  The
+following example shows how to implement such an execution manager::
+
+    from enthought.traits.api import HasTraits, Instance
+    from enthought.blocks.api import Block
+    from enthought.contexts.api import DataContext
+    
+    class ExecutionManager(HasTraits):
+        # the data context we are listening to
+        data = Instance(DataContext)
+        
+        # the block we are executing
+        block = Instance(Block)
+        
+        @on_trait_change('data.items_modified')
+        def data_items_modified(self, event):
+            changed = set(event.added + event.modified + event.deleted) 
+            inputs = changed & self.block.inputs
+            outputs = changed & self.block.outputs
+            for output in outputs:
+                print "%s: %s" % (repr(output), repr(self.data[output]))
+            self.execute(inputs)
+        
+        def execute(self, inputs):
+            # only execute if we have all inputs
+            if self.block.inputs.issubset(set(self.data.keys())):
+                self.block.restrict(inputs=inputs).execute(self.data)
+
+The Block-Context-Execution Manager Pattern
+===========================================
+
+The last example of the previous section is an example of a pattern that has
+been found to work very well at Enthought for the rapid development of
+scientific applications.  In principle it consists of 3 components:
+
+    * the Block: an object which executes code in a namespace and knows its
+      inputs and outputs.
+    * the Context: a namespace that generates events when modified.
+    * the Execution Manager: an object that listens for changes in the Context
+      and when a Block's inputs change, tells the Block to execute
+
+This is not an unfamiliar model: it's how most spreadsheet applications work.
+You have the spreadsheet application itself (the Execution Manager), the
+values contained in the cells (the Context), and the the functions and scripts
+which perform the computations (the Block).
+
+While the example from the previous section might seem like an awful lot of
+work to replace what, as far as basic computation is concerned, could be
+implemented with a fairly simple Traits object like::
+
+    class DoItAll(HasTraits):
+        # inputs
+        distance = Float
+        time = Float
+        mass = Float
+        
+        # outputs
+        velocity = Float
+        momentum = Float
+    
+        def calculate(self):
+            self.velocity = self.distance/self.time
+            self.momentum = self.mass*self.velocity
+
+the Block-Context-Execution Manager pattern gives us the following
+advantages:
+
+    * ability to restrict computations to the bare minimum required,
+    * immediate feedback on computations while they occur,
+    * automated recalculation in response to changes,
+    * and perhaps most importantly, almost complete separation between the
+      application code (the execution manager and UI components), the
+      computation code, and the data.
+
+Actually, by using Traits properties you can get the first 3 of these --
+although the code will key more and more complex as the computations get
+longer.
+
+The last point, however, is very powerful and is something that you cannot get
+with an all-in one approach.  It means that computational code can be
+written almost completely independently of application and UI code.  With
+appropriate ``try ... except ...`` blocks, the inevitable errors in the
+calculation blocks (particularly if user-supplied) or problems with the data
+can be contained.  The Context is well-suited to being the Model in
+a Model-View-Controller UI pattern, particularly since it is Traited.
+
+And it encourages code re-use.  In fact, a well-written execution manager has
+the potential to be a complete application framework which can be repurposed
+to different domains by simply replacing the blocks that it executes.
+Similarly well-written Blocks will most likely have clean libraries associated
+with them and can be re-used with different types of variables (at Enthought
+it is common to use the same Block code with scalars in the UI and with arrays
+to produce plots).
+
+It is worth noting that the roles do not have to be kept completely separate.
+There are situations where bundling together the Execution Manager with the
+Block (to make a smart block that re-executes whenever it needs to) or a
+DataContext (to make a smart data set) makes sense.  The ExecutingContext
+class in enthought.execution.api is precisely such an example: it combines a
+DataContext and a listener to automatically execute.
+
+TraitslikeContextWrapper
+========================
+
+As noted, DataContexts are often put into the role of Model in a MVC UI.
+However, the DataContext namespace doesn't have Traits information associated
+with it, which can be an obstacle to its use in a Traits UI.  For fairly
+homogeneous namespaces, or those where it is hard to know what variables
+will be present, one approach is to extract and wrap the individual items in
+the DataContext namespace and use them directly in the UI (often in a
+TableEditor).
+
+However, sometimes we want the DataContext itself to appear like a regular
+traits object.  This approach involves listening to the events generated by
+the DataContext and using them to keep local copies of the DataContext's items
+synchronised with it.  This pattern is sufficiently common and useful that the
+TraitslikeContextWrapper class is available to simplify this procedure.
+
+To use the TraitslikeContextWrapper you need to use the :meth:`add_traits`
+method to tell it which names in the Context should appear as traits::
+
+    >>> from enthought.traits.api import Int
+    >>> from enthought.traits.ui.api import View, Item
+    >>> from enthought.traits.ui.menu import OKbutton, CancelButton
+    >>> from enthought.contexts.api import DataContext, TraitslikeContextWrapper
+    >>> d = DataContext(subcontext={'a': 1, 'b': 2, 'z': 20})
+    >>> tcw = TraitslikeContextWrapper(_context=d)
+    >>> tcw.add_traits('a', 'b', c=Int)
+    >>> view = View(Item(name='a'), Item(name='b'), Item(name='c'),
+    ...     buttons = [OKButton, CancelButton])
+    >>> tcw.configure_traits(view=view)
+
+.. image:: tcw_1.png
+
+As can be seen from the window, the TraitslikeContextWrapper makes the wrapped
+object act just like a regular Traits object.
+
+Example: Simple Block Context Application
+-----------------------------------------
+
+Putting this together with the Block-Context-Execution Manager pattern, we can
+easily create simple TraitsUI applications around a code block.  The following
+is a simple but general application that can be found in the CodeTools
+examples::
+
+	"""Simple Block Context Application
 	
+	This application demonstrates the use of the Block-Context-Execution Manager
+	pattern, together with using a TraitslikeContextWrapper to make items inside a
+	data context appear like traits so that they can be used in a TraitsUI app.
+	"""
+	from enthought.traits.api import HasTraits, Instance, Property, Float, \
+	    on_trait_change, cached_property
+	from enthought.traits.ui.api import View, Group, Item
+	
+	from enthought.contexts.api import DataContext, TraitslikeContextWrapper
+	from enthought.contexts.items_modified_event import ItemsModified
+	from enthought.blocks.api import Block
+	
+	code = """# my calculations
+	velocity = distance/time
+	momentum = mass*velocity
+	"""
+	
+	class SimpleBlockContextApp(HasTraits):
+	    # the data context we are listening to
+	    data = Instance(DataContext)
+	    
+	    # the block we are executing
+	    block = Instance(Block)
+	    
+	    # a wrapper around the data to interface with the UI
+	    tcw = Property(Instance(TraitslikeContextWrapper), depends_on=["block", "data"])
+	    
+	    # a view for the wrapper
+	    tcw_view = Property(Instance(View), depends_on="block")
+	    
+	    @on_trait_change('data.items_modified')
+	    def data_items_modified(self, event):
+	        """Execute the block if the inputs in the data change"""
+	        if isinstance(event, ItemsModified):
+	            changed = set(event.added + event.modified + event.removed) 
+	            inputs = changed & self.block.inputs
+	            if inputs:
+	                self.execute(inputs)
+	    
+	    @cached_property
+	    def _get_tcw_view(self):
+	        """Getter for tcw_view: returns View of block inputs and outputs"""
+	        inputs = tuple(Item(name=input)
+	                       for input in sorted(self.block.inputs))
+	        outputs = tuple(Item(name=output, style="readonly")
+	                        for output in sorted(self.block.outputs))
+	        return View(Group(*(inputs+outputs)),
+	                    kind="live")
+	    
+	    @cached_property
+	    def _get_tcw(self):
+	        """Getter for tcw: returns traits-like wrapper for data context"""
+	        in_vars = dict((input, Float) for input in self.block.inputs)
+	        out_vars = tuple(self.block.outputs)
+	        tcw = TraitslikeContextWrapper(_context=self.data)
+	        tcw.add_traits(*out_vars, **in_vars)
+	        return tcw
+	    
+	    def execute(self, inputs):
+	        """Restrict the code block to inputs and execute"""
+	        # only execute if we have all inputs
+	        if self.block.inputs.issubset(set(self.data.keys())):
+	            try:
+	                self.block.restrict(inputs=inputs).execute(self.data)
+	            except:
+	                # ignore exceptions in the block
+	                pass
+	
+	if __name__ == "__main__":
+	    block = Block(code)
+	    data = DataContext(subcontext=dict(distance=10.0, time=2.5, mass=3.0))
+	    execution_manager = SimpleBlockContextApp(block=block, data=data)
+	    execution_manager.tcw.configure_traits(view=execution_manager.tcw_view)
+
+The interface looks like this:
+
+.. image:: tcw_2.png
+
+Notice that the SimpleBlockContextApp has no explicit knowledge of either the
+contents of the Block or the DataContext other than expecting floats for the
+input variable values.  If the code variable were replaced with any other
+(reasonable -- see below) code block, the code would work just as well.
+
+MultiContexts
+=============
+
+There is one notable issue with the above application: the UI assumes that
+every input is a float, and that every output should be displayed.  If you
+were to try to use a slightly modified version of the code block from
+:ref:`rocket-restriction-example` section::
+
+    from numpy import array, ones
+    
+    def simple_integral(y, x):
+        """Return an array of trapezoid sums of y"""
+        dx = x[1:] - x[:-1]
+        if array(y).shape == ():
+            y_avg = y*ones(len(dx))
+        else:
+            y_avg = (y[1:]+y[:-1])/2.0
+        integral = [0]
+        for i in xrange(len(dx)):
+          integral.append(integral[-1] + y_avg[i]*dx[i])
+        return array(integral)
+
+    thrust = fuel_density*fuel_burn_rate*exhaust_velocity + nozzle_pressure*nozzle_area
+    mass = mass_rocket + fuel_density*(fuel_volume - simple_integral(fuel_burn_rate,t))
+    acceleration = thrust/mass
+    velocity = simple_integral(acceleration, t)
+    momentum = mass*velocity
+    displacement = simple_integral(velocity, t)
+    kinetic_energy = 0.5*mass*velocity**2
+    work = simple_integral(thrust, displacement)
+
+with the app from the previous section example, then you would notice that the
+function simple_integral appears in the list of outputs.  The reason the this
+function appears as an output is because as far as a namespace is concerned,
+defining a function is the same as assigning to a variable.   Also note that
+the imports don't appear -- imported names are available in the
+``fromimports`` trait of a Block and don't appear as outputs.
+
+So one solution to this problem is to always import functions, but it doesn't
+solve the more general problem of which outputs should be displayed.
+
+There are several approaches to solving this problem, but perhaps the most
+elegant is to have the DataContext itself keep track.
