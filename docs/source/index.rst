@@ -18,8 +18,11 @@ execution.  CodeTools is designed to perform such tasks as:
     - automatically converting or adapting variables on access from, or
       assignment to, a namespace
 
-CodeTools depends upon Traits, but has no major dependencies beyond that.
+CodeTools depends upon Traits with an optional dependency on SciMath and
+numpy for unit support, but has no major dependencies beyond that.
 
+CodeTools is under active development, so the implementation and API are
+somewhat fluid.
 
 Contents:
 
