@@ -716,6 +716,7 @@ DataContext, but allowing any variable to be set otherwise.
 Let's say that we want to have a context avaialable which only contains
 variables whose values are floats.  That would be done like this::
 
+    >>> from enthought.contexts.api import MultiContext
     >>> class FloatContext(DataContext):
     ...     def allows(key, value):
     ...         return isinstance(value, float)
@@ -769,8 +770,17 @@ variables whose values are floats.  That would be done like this::
 	    >>> default_context['b']
 	    'foo'
 	
+	The key thing to note is that the multicontext removes keys from contexts
+	that don't match the occur before it gets a matching context, but does not
+	remove the key from later contexts.
+	
 	If this sort of behaviour is not what you want, then you can easily subclass
 	MultiContext to provide the semantics that your application requires.
+
+Using a MultiContext in the Block-Context-Execution Manager pattern allows us
+to have the Execution Manager looking only at the inputs, and allows us to
+separate out the UI from the Execution Manager.
+
 
 Adapted Data Contexts
 =====================
