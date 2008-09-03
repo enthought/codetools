@@ -568,81 +568,81 @@ easily create simple TraitsUI applications around a code block.  The following
 is a simple but general application that can be found in the CodeTools
 examples::
 
-	"""Simple Block Context Application
-	
-	This application demonstrates the use of the Block-Context-Execution Manager
-	pattern, together with using a TraitslikeContextWrapper to make items inside a
-	data context appear like traits so that they can be used in a TraitsUI app.
-	"""
-	from enthought.traits.api import HasTraits, Instance, Property, Float, \
-	    on_trait_change, cached_property
-	from enthought.traits.ui.api import View, Group, Item
-	
-	from enthought.contexts.api import DataContext, TraitslikeContextWrapper
-	from enthought.contexts.items_modified_event import ItemsModified
-	from enthought.blocks.api import Block
-	
-	code = """# my calculations
-	velocity = distance/time
-	momentum = mass*velocity
-	"""
-	
-	class SimpleBlockContextApp(HasTraits):
-	    # the data context we are listening to
-	    data = Instance(DataContext)
-	    
-	    # the block we are executing
-	    block = Instance(Block)
-	    
-	    # a wrapper around the data to interface with the UI
-	    tcw = Property(Instance(TraitslikeContextWrapper), depends_on=["block", "data"])
-	    
-	    # a view for the wrapper
-	    tcw_view = Property(Instance(View), depends_on="block")
-	    
-	    @on_trait_change('data.items_modified')
-	    def data_items_modified(self, event):
-	        """Execute the block if the inputs in the data change"""
-	        if isinstance(event, ItemsModified):
-	            changed = set(event.added + event.modified + event.removed) 
-	            inputs = changed & self.block.inputs
-	            if inputs:
-	                self.execute(inputs)
-	    
-	    @cached_property
-	    def _get_tcw_view(self):
-	        """Getter for tcw_view: returns View of block inputs and outputs"""
-	        inputs = tuple(Item(name=input)
-	                       for input in sorted(self.block.inputs))
-	        outputs = tuple(Item(name=output, style="readonly")
-	                        for output in sorted(self.block.outputs))
-	        return View(Group(*(inputs+outputs)),
-	                    kind="live")
-	    
-	    @cached_property
-	    def _get_tcw(self):
-	        """Getter for tcw: returns traits-like wrapper for data context"""
-	        in_vars = dict((input, Float) for input in self.block.inputs)
-	        out_vars = tuple(self.block.outputs)
-	        tcw = TraitslikeContextWrapper(_context=self.data)
-	        tcw.add_traits(*out_vars, **in_vars)
-	        return tcw
-	    
-	    def execute(self, inputs):
-	        """Restrict the code block to inputs and execute"""
-	        # only execute if we have all inputs
-	        if self.block.inputs.issubset(set(self.data.keys())):
-	            try:
-	                self.block.restrict(inputs=inputs).execute(self.data)
-	            except:
-	                # ignore exceptions in the block
-	                pass
-	
-	if __name__ == "__main__":
-	    block = Block(code)
-	    data = DataContext(subcontext=dict(distance=10.0, time=2.5, mass=3.0))
-	    execution_manager = SimpleBlockContextApp(block=block, data=data)
-	    execution_manager.tcw.configure_traits(view=execution_manager.tcw_view)
+    """Simple Block Context Application
+    
+    This application demonstrates the use of the Block-Context-Execution Manager
+    pattern, together with using a TraitslikeContextWrapper to make items inside a
+    data context appear like traits so that they can be used in a TraitsUI app.
+    """
+    from enthought.traits.api import HasTraits, Instance, Property, Float, \
+        on_trait_change, cached_property
+    from enthought.traits.ui.api import View, Group, Item
+    
+    from enthought.contexts.api import DataContext, TraitslikeContextWrapper
+    from enthought.contexts.items_modified_event import ItemsModified
+    from enthought.blocks.api import Block
+    
+    code = """# my calculations
+    velocity = distance/time
+    momentum = mass*velocity
+    """
+    
+    class SimpleBlockContextApp(HasTraits):
+        # the data context we are listening to
+        data = Instance(DataContext)
+        
+        # the block we are executing
+        block = Instance(Block)
+        
+        # a wrapper around the data to interface with the UI
+        tcw = Property(Instance(TraitslikeContextWrapper), depends_on=["block", "data"])
+        
+        # a view for the wrapper
+        tcw_view = Property(Instance(View), depends_on="block")
+        
+        @on_trait_change('data.items_modified')
+        def data_items_modified(self, event):
+            """Execute the block if the inputs in the data change"""
+            if isinstance(event, ItemsModified):
+                changed = set(event.added + event.modified + event.removed) 
+                inputs = changed & self.block.inputs
+                if inputs:
+                    self.execute(inputs)
+        
+        @cached_property
+        def _get_tcw_view(self):
+            """Getter for tcw_view: returns View of block inputs and outputs"""
+            inputs = tuple(Item(name=input)
+                           for input in sorted(self.block.inputs))
+            outputs = tuple(Item(name=output, style="readonly")
+                            for output in sorted(self.block.outputs))
+            return View(Group(*(inputs+outputs)),
+                        kind="live")
+        
+        @cached_property
+        def _get_tcw(self):
+            """Getter for tcw: returns traits-like wrapper for data context"""
+            in_vars = dict((input, Float) for input in self.block.inputs)
+            out_vars = tuple(self.block.outputs)
+            tcw = TraitslikeContextWrapper(_context=self.data)
+            tcw.add_traits(*out_vars, **in_vars)
+            return tcw
+        
+        def execute(self, inputs):
+            """Restrict the code block to inputs and execute"""
+            # only execute if we have all inputs
+            if self.block.inputs.issubset(set(self.data.keys())):
+                try:
+                    self.block.restrict(inputs=inputs).execute(self.data)
+                except:
+                    # ignore exceptions in the block
+                    pass
+    
+    if __name__ == "__main__":
+        block = Block(code)
+        data = DataContext(subcontext=dict(distance=10.0, time=2.5, mass=3.0))
+        execution_manager = SimpleBlockContextApp(block=block, data=data)
+        execution_manager.tcw.configure_traits(view=execution_manager.tcw_view)
 
 The interface looks like this:
 
@@ -740,42 +740,42 @@ variables whose values are floats.  That would be done like this::
     [('c', 'Hello')]
 
 .. note::
-	There are some wrinkles to the way that the MultiContext handles setting an
-	item when multiple Contexts will accept it::
-	
-	    >>> multi_context['c'] = 10.0
-	    >>> multi_context['c']
-	    10.0
-	    >>> float_context['c']
-	    10.0
-	    >>> default_context['c']
-	    'Hello'
-	
-	as well as some wrinkles in how it handles matching keys in contexts that
-	won't accept an item::
-	
-	    >>> multi_context['a'] = "Goodbye"
-	    >>> multi_context['a']
-	    "Goodbye"
-	    >>> default_context['a']
-	    "Goodbye"
-	    >>> "a" in float_context
-	    False
-	    >>> default_context['b'] = "foo"
-	    >>> multi_context['b'] = "bar"
-	    >>> multi_context['b']
-	    'bar'
-	    >>> 'b' in default_context
-	    True
-	    >>> default_context['b']
-	    'foo'
-	
-	The key thing to note is that the multicontext removes keys from contexts
-	that don't match the occur before it gets a matching context, but does not
-	remove the key from later contexts.
-	
-	If this sort of behaviour is not what you want, then you can easily subclass
-	MultiContext to provide the semantics that your application requires.
+    There are some wrinkles to the way that the MultiContext handles setting an
+    item when multiple Contexts will accept it::
+    
+        >>> multi_context['c'] = 10.0
+        >>> multi_context['c']
+        10.0
+        >>> float_context['c']
+        10.0
+        >>> default_context['c']
+        'Hello'
+    
+    as well as some wrinkles in how it handles matching keys in contexts that
+    won't accept an item::
+    
+        >>> multi_context['a'] = "Goodbye"
+        >>> multi_context['a']
+        "Goodbye"
+        >>> default_context['a']
+        "Goodbye"
+        >>> "a" in float_context
+        False
+        >>> default_context['b'] = "foo"
+        >>> multi_context['b'] = "bar"
+        >>> multi_context['b']
+        'bar'
+        >>> 'b' in default_context
+        True
+        >>> default_context['b']
+        'foo'
+    
+    The key thing to note is that the multicontext removes keys from contexts
+    that don't match the occur before it gets a matching context, but does not
+    remove the key from later contexts.
+    
+    If this sort of behaviour is not what you want, then you can easily subclass
+    MultiContext to provide the semantics that your application requires.
 
 Using a MultiContext in the Block-Context-Execution Manager pattern allows us
 to have the Execution Manager looking only at the inputs, and allows us to
@@ -785,8 +785,106 @@ separate out the UI from the Execution Manager.
 Adapted Data Contexts
 =====================
 
+Often the data inside a context needs to be transformed in some way before it
+is used:
 
+  * possibly in different ways by different parts on an application
+  * with different transformations on different variables
+  * with multiple different transformations applied sequentially
+
+and the same sequence of transformations may need to be reversed when setting
+a value in to the context.  These transformations may even need to be changed
+depending on situation or user request.
+
+The AdaptedDataContext provides a framework for applying transformations to
+data as it comes in and out of a context.  The AdaptedDataContext provides a
+list of adapters in its adapters trait, as well as push and pop methods for
+manipulating them.  On getitem, setitem and delitem operations, the
+AdapterManagerMixin goes through each of the adapters and first calls the
+adapt_name method to perform any manipulations of the name, and then calls
+adapt_getitem or adapt_setitem for getitem and setitem operations
+respectively.  Once all the adapters have had a chance to perform
+transformations, the operation is applied to the underlying context.
+
+To create an adapter all you need to do is to implement the IAdapter interface
+by providing at least one of the adapt_name, adapt_getitem, or adapt_setitem
+methods.
+
+::
+
+    from numpy import ndarray
+    from numpy.fft import fft, ifft
+    from enthought.traits.api import HasTraits
+    from enthought.contexts.api import IAdapter
+    
+    class FFTAdapter(HasTraits):
+        implements(IAdapter)
+        
+        def adapt_getitem(self, context, key, value):
+            """Take Fourier transform of 1D numpy arrays in the context."""
+            if isinstance(value, ndarray) and len(value.shape) == 1:
+                return key, fft(value)
+        
+        def adapt_setitem(self, context, key, value):
+            """Take inverse Fourier transform of 1D numpy arrays when setting into
+            the context."""
+            if isinstance(value, ndarray) and len(value.shape) == 1:
+                return key, ifft(value)
+
+The enthought.contexts package contains a number of adapters to perform
+operations like masking, unit conversion, and name translation.
 
 Context Functions
 =================
 
+It should be clear by this point that the ability to use a general Context
+as the namespace when executing code permits some complex behaviours to be
+implemented simply.  There are circumstances where it would be useful to
+replace the namespace of a function with a Context.  The context_function
+module provides some tools for doing this.
+
+This example shows how to set up a simple listening data context that displays
+changes within a function's local namespace as it executes::
+
+	from enthought.traits.api import HasTraits, on_trait_change
+	from enthought.contexts.api import DataContext, context_function
+	
+	class ListeningDataContext(DataContext):
+	    """ A simple subclass of DataContext which listens for items_modified
+	    events and pretty-prints them."""
+	    
+	    @on_trait_change('items_modified')
+	    def print_event(self, event):
+	        print "Event: items_modified"
+	        for added in event.added:
+	            print "  Added:", added, "=", repr(self[added])
+	        for modified in event.modified:
+	            print "  Modified:", modified, "=", repr(self[modified])
+	        for removed in event.removed:
+	            print "  Removed:", removed
+	
+	def f(x, t=3):
+	    """ A function which will fire add, modify and delete events. """
+	    y = x+2
+	    y += 1
+	    z = '12'
+	    del z
+	    return y
+	
+	f = context_function(f, ListeningDataContext)
+
+The functionality is also available as a function decorator::
+
+	@local_context(ListeningDataContext)
+	def f(x, t=3):
+	    """ A function which will fire add, modify and delete events. """
+	    y = x+2
+	    y += 1
+	    z = '12'
+	    del z
+	    return y
+
+The context_function and local_context functions both take an argument which
+is a context factory: each invocation of the function will result in a call
+to the context factory.  In most cases it should return a freshly created
+context.

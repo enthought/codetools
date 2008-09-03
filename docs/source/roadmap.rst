@@ -99,3 +99,7 @@ interface for bytecode manipulation.  Currently the only place where we do
 this sort of manipulation is in the context_function module, and there the
 bytecode substitution is fairly simple.
 
+For example, there may be a more efficient way to provide the functionality
+of enthought.blocks.rename by manipulating code objects and bytecode rather
+than AST.
+

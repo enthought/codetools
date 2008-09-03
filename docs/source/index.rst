@@ -29,8 +29,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
-   roadmap.rst
    tutorial.rst
+   roadmap.rst
 
 Indices and tables
 ==================
