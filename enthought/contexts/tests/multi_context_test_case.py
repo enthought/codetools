@@ -2,13 +2,11 @@
 from cStringIO import StringIO
 import os
 import sys
-import timeit
 import unittest
 
 import nose
 
 # Enthought library imports
-from enthought.testing.api import performance
 from enthought.traits.api import Any
 
 # Geo library imports
@@ -112,59 +110,6 @@ class MultiContextTestCase(AbstractContextTestCase):
         # Remove a context
         m.subcontexts.pop(0)
         self.assertTrue(len(m.keys()) == 3)
-
-    @performance
-    def test_eval_is_not_slow(self):
-        """ eval() with DataContext is the speed of a dict. (slowdown < 1.3)
-
-            This is test using a vp array with 20 values in it to try and get
-            a reasonable use case.
-        """
-
-        ### Parameters #########################################################
-
-        # Slowdown we will allow compared to standard python evaluation
-        allowed_slowdown = 1.5
-        
-        if 'coverage' in sys.modules:
-            # coverage changes timings, instead of skipping the test
-            # completely, the allowed_slowdown is set to a very large value.
-            allowed_slowdown = 1000.0
-        
-        # Number of timer iterations.
-        N = 10000
-
-        ### Standard execution #################################################
-        setup = "from numpy import arange\n" \
-                "vp=arange(20.)\n"
-        expr = 'vp+vp+vp+vp+vp+vp'
-        std = timeit.Timer(expr, setup)
-        std_res = std.timeit(N)
-
-        ### Eval execution #####################################################
-        # Note: This is not used, but it is here for reference
-        #
-        # eval is actually slower (by an order or so of magnitude for single
-        # numbers) than a simple expression.  But for our array, it should be
-        # about the same speed.
-        compiled_setup = "compiled_expr = compile(%r,'expr','eval')\n" % expr
-        eval_setup = setup + compiled_setup
-        eval_expr = "eval(compiled_expr)"
-        eval_timer = timeit.Timer(eval_expr, eval_setup)
-        eval_res = eval_timer.timeit(N)
-
-        ### DataContext execution ##############################################
-        this_setup = "from enthought.contexts.api import MultiContext\n" \
-                     "context=MultiContext()\n" \
-                     "context['vp'] = vp\n"
-        context_setup = setup + this_setup + compiled_setup
-        context_expr = "eval(compiled_expr, globals(), context)"
-        context_timer = timeit.Timer(context_expr, context_setup)
-        context_res = eval_timer.timeit(N)
-
-        slowdown = context_res/std_res
-        msg = 'actual slowdown: %f' % slowdown
-        assert slowdown < allowed_slowdown, msg
 
 
 def test_persistence():

@@ -1,7 +1,6 @@
 # Standard Library Imports
 import sys
 import unittest
-import timeit
 
 # Third Party Libary imports
 import nose
@@ -10,7 +9,6 @@ import nose
 from numpy import all
 
 # Enthought Library imports
-from enthought.testing.api import performance
 from enthought.units.length import meters, feet
 from enthought.units.time import second
 
@@ -73,6 +71,7 @@ class ContextWithUnitConversionAdapterLogTestCase(DataContextTestCase):
         result = eval(expr, globals(), context)
         self.failUnlessEqual(result, context[key_name]+context[key_name])
 
+
 class UnitConversionContextAdapterTestCase(unittest.TestCase):
     """ Other tests for UnitConversionContextAdapater
     """
@@ -133,64 +132,6 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
 
         return
 
-    @performance
-    def test_exec_is_not_slow(self):
-        """ Compare exec with Adapter to the speed of a dict. (slowdown < 3.0)
-
-            This test compares the costs of unit converting 1000 data points
-            using pure python and then using our adapater code.  A factor of
-            3.0 is pretty lousy I'd say, so we don't want to do this much.
-            At the edge of function boundaries is OK.
-        """
-
-        ### Parameters ########################################################
-
-        # Slowdown we will allow compared to standard python evaluation
-        allowed_slowdown = 3.0
-        
-        if 'coverage' in sys.modules:
-            # coverage changes timings.  Set allowed_slowdown to a very
-            # large value, in order to get coverage
-            allowed_slowdown = 1000.0
-        
-        # Number of timer iterations.
-        N = 1000
-
-        ### Standard execution ################################################
-        setup = "from numpy import arange\n" \
-                "from enthought.units.length import meters, feet\n" \
-                "from enthought import units\n" \
-                "depth_meters = arange(1000)\n"
-        code = "depth_feet = units.convert(depth_meters, meters, feet)\n" \
-               "depth2_feet = depth_feet + depth_feet\n" \
-               "depth2_meters = units.convert(depth2_feet, feet, meters)\n"
-        std = timeit.Timer(code, setup)
-        std_res = std.timeit(N)
-
-        ### Adapter execution #################################################
-        # Adapter is set up to convert depth meters->feet and
-        # depth2 feet->meters
-        setup = "from numpy import arange\n" \
-                "from enthought.units.length import meters, feet\n" \
-                "from enthought.contexts.api import DataContext, AdaptedDataContext\n" \
-                "from enthought.numerical_modeling.units.api import UnitArray\n" \
-                "from enthought.contexts.api import UnitConversionAdapter\n" \
-                "data_context = DataContext()\n" \
-                "context = AdaptedDataContext(context=data_context)\n" \
-                "adapter = UnitConversionAdapter(getitem_units={'depth':feet, 'depth2':meters})\n" \
-                "context.push_adapter(adapter)\n" \
-                "context['depth'] = UnitArray(arange(1000),units=meters)\n" \
-                "compiled = compile('depth2 = depth + depth','foo','exec')\n"
-
-        code = "exec compiled in globals(), context\n"
-        adp = timeit.Timer(code, setup)
-        adp_res = adp.timeit(N)
-
-
-        slowdown = adp_res/std_res
-        msg = 'actual slowdown, time: %f' % slowdown, adp_res/N
-        print "[actual slowdown=%3.2f]  " % slowdown,
-        assert slowdown < allowed_slowdown, msg
 
 if __name__ == '__main__':
     import sys
