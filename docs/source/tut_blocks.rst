@@ -14,15 +14,15 @@ containing some Python code::
     ... """)
 
 The code in the Block can be executed by using its :meth:`execute` method in
-much the same way that the ``exec`` statement works::
+much the same way that the :func:`exec` statement works::
 
     >>> global_namespace = {}
     >>> local_namespace = {'distance': 10.0, 'time': 2.5, 'mass': 3.0}
     >>> b.execute(local_namespace, global_namespace)
 
-After this code, the variables ``local_namespace`` and
-``global_namespace`` hold the same contents as if the Block's code had
-been executed by the ``exec`` statement.  In particular::
+After this code, the variables *local_namespace* and
+*global_namespace* hold the same contents as if the Block's code had
+been executed by the :func:`exec` statement.  In particular::
 
     >>> local_namespace
     {'distance': 10.0, 'mass': 3.0, 'time': 2.5, 'velocity': 4.0, 'momentum': 12.0}
@@ -43,16 +43,16 @@ conditionally be output.
 Restricting Execution
 ---------------------
 
-Where the Block object comes into is that it is aware of which variables are
+Where the Block object is unique is that it is aware of which variables are
 dependent on which other variables within its code.  This allows you to
-restrict the code which is executed by specifying which input and output
+restrict the code that is executed by specifying which input and output
 variables you are concerned with.  This is achieved through the
 :meth:`restrict` method of the Block object, which expects one or both of
 the following arguments:
 
-inputs
+*inputs*
     a list or tuple of input variables
-outputs
+*outputs*
     a list or tuple of output variables
 
 For example::
@@ -60,15 +60,15 @@ For example::
     >>> restricted_block = b.restrict(inputs=('mass',))
 
 This restricted block consists of every line that depends on the variable
-``mass`` in the original code block.  In this case this is the single line::
+*mass* in the original code block.  In this case, this is the single line::
 
     momentum = mass*velocity
 
-Internally the Block object maintains a representation of the code block as
+Internally, the Block object maintains a representation of the code block as
 an abstract syntax tree from the Python standard library `compiler
 package <http://docs.python.org/lib/compiler.html>`_.  This representation
-is not particularly human-friendly, but the ``unparse`` function allows the
-reconstruction of Python source::
+is not particularly human-friendly, but the :func:`unparse` function allows us to 
+reconstruct the Python source::
 
     >>> restricted_block.ast
     Assign([AssName('momentum', 'OP_ASSIGN')], Mul((Name('mass'), Name('velocity'))))
@@ -77,16 +77,16 @@ reconstruction of Python source::
     'momentum = mass*velocity'
 
 This allows us to perform the minimum amount of re-calculation in response to
-changes in the inputs.  For example, if we change ``mass`` in the local
+changes in the inputs.  For example, if we change *mass* in the local
 name space, then we only need to execute the restricted block which depends
-upon ``mass`` as input::
+upon *mass* as input::
 
     >>> local_namespace['mass'] = 4.0
     >>> restricted_block.execute(local_namespace, global_namespace)
     >>> local_namespace
     {'distance': 10.0, 'mass': 3.0, 'time': 2.5, 'velocity': 4.0, 'momentum': 16.0}
 
-On the other hand, if we are only interested in calculating a particular
+On the other hand, if we are interested in calculating only a particular
 output, we can restrict on the outputs:
 
     >>> velocity_comp = b.restrict(outpts=('velocity',))
@@ -96,11 +96,10 @@ output, we can restrict on the outputs:
     set(['distance', 'time'])
 
 .. note::
-    An important conceptual point about block restriction, is that it is
-    designed to answer the questions "What do I need to compute if this
-    changed?" or "What do I need to compute to calculate this output?"  It
-    doesn't (yet) answer the question "If I have these inputs, what outputs
-    can I calculate?"
+    Block restriction is designed to answer the questions "What do I need to 
+    compute when this changes?" or "What do I need to compute to calculate this
+    output?"  It doesn't (yet) answer the question "If I have these inputs, wha
+    outputs can I calculate?"
 
 .. _rocket-restriction-example:
 
@@ -114,15 +113,22 @@ as it loses reaction mass::
     from helper import simple_integral
     
     thrust = fuel_density*fuel_burn_rate*exhaust_velocity + nozzle_pressure*nozzle_area
+    
     mass = mass_rocket + fuel_density*(fuel_volume - simple_integral(fuel_burn_rate,t))
+    
     acceleration = thrust/mass
+    
     velocity = simple_integral(acceleration, t)
+    
     momentum = mass*velocity
+    
     displacement = simple_integral(velocity, t)
+    
     kinetic_energy = 0.5*mass*velocity**2
+    
     work = simple_integral(thrust, displacement)
 
-where the simple_integral function in the helper module looks something like
+The :func:`simple_integral` function in the helper module looks something like
 this::
 
     from numpy import array, ones
@@ -139,10 +145,10 @@ this::
           integral.append(integral[-1] + y_avg[i]*dx[i])
         return array(integral)
 
-Inputs to these computations are expected to be either scalars or 1D numpy
-arrays which hold the values of quantities as they vary over time.  Some of
-these computations, particularly the simple_integral computations, are
-potentially expensive.  If we set up a Block to hold this computation::
+Inputs to these computations are expected to be either scalars or 1-D Numpy
+arrays that hold the values of quantities as they vary over time. Some of
+these computations, particularly the :func:`simple_integral` computations, are
+potentially expensive.  We can set up a Block to hold this computation::
 
     >>> rocket_science = """
     ...    ...
@@ -151,11 +157,12 @@ potentially expensive.  If we set up a Block to hold this computation::
     >>> rocket_block.inputs
     set(['fuel_volume', 'nozzle_area', 'fuel_density', 'nozzle_pressure', 'mass_rocket',
     'exhaust_velocity', 'fuel_burn_rate', 't'])
+    >>> 
     >>> rocket_block.outputs
     set(['acceleration', 'work', 'mass', 'displacement', 'thrust', 'velocity',
     'kinetic_energy', 'momentum'])
 
-We could use this code by setting up a dictionary of local values for the
+We can use this code by setting up a dictionary of local values for the
 inputs and then inspecting it::
 
     >>> from numpy import linspace
@@ -175,17 +182,21 @@ inputs and then inspecting it::
        316.81536979   384.10272129   452.82774018   523.05320489   594.84609779
        668.27798918   743.42546606   820.37061225   899.2015473    980.01303322
       1062.90715923  1147.9941173   1235.39308291  1325.23321898  1417.65482395]
+    >>> 
     >>> from enthought.chaco.shell import *
     >>> plot(local_namespace[t], local_namespace["displacement"], "b-")
     >>> show()
 
 .. image:: chaco_plot_1.png
 
+Restricting on Inputs
+~~~~~~~~~~~~~~~~~~~~~
+
 If we want to change the inputs into this calculation, say to increase the
 nozzle area of the rocket to 0.8 m**2 and decrease the nozzle pressure to 4800
-Pa, then we don't want to have to recalculate everything, only the quantities
-which depend upon ``nozzle_pressure`` and ``nozzle_area``.  We can do this as
-follows::
+Pa, then we don't want to have to recalculate everything. We want to calculate
+only the quantities which depend upon *nozzle_pressure* and *nozzle_area*.
+We can do this as follows::
 
     >>> restricted_block = rocket_block.restrict(inputs=("nozzle_area", "nozzle_pressure"))
     >>> local_namespace["nozzle_area"] = 0.7
@@ -219,8 +230,11 @@ The structure of the new block can be observed from its traits::
     momentum = mass*velocity
     work = simple_integral(thrust, displacement)
 
-In the plot above, we only really needed to know the value of ``displacement``
-- so to simplify the calculation of that value for the plot, we could have
+Restricting on Outputs
+~~~~~~~~~~~~~~~~~~~~~~
+
+In the plot above, we only really needed to know the value of *displacement*
+--- so to simplify the calculation of that value for the plot, we could have
 restricted on the output::
 
     >>> restricted_block = rocket_block.restrict(outputs=("displacement",))
@@ -240,8 +254,11 @@ actually going on::
     velocity = simple_integral(acceleration, t)
     displacement = simple_integral(velocity, t)
 
+Restricting on Both
+~~~~~~~~~~~~~~~~~~~
+
 If we wanted to go even further, and just update the plot depending on changes
-to just one of the inputs (say, ``mass_rocket``), we could do the following::
+to just one of the inputs (say, *mass_rocket*), we could do the following::
 
     >>> restricted_block = rocket_block.restrict(inputs=("mass_rocket",),
     ...     outputs=("displacement",))
@@ -251,7 +268,8 @@ to just one of the inputs (say, ``mass_rocket``), we could do the following::
     velocity = simple_integral(acceleration, t)
     displacement = simple_integral(velocity, t)
 
-To really see the full power of the Block object, and to incorporate it
-into programs, we really need the other half of the system: the DataContext.
+To really see the full power of the Block class, and to incorporate it
+into programs, we really need the other half of the system: the DataContext 
+class.
 
 

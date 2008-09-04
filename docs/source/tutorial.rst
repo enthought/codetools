@@ -17,9 +17,6 @@ assumes some familiarity with Traits, and uses Chaco to illustrate some
 potential uses.  Some familiarity with Numpy is also potentially useful for
 the more involved examples. 
 
-Introduction
-============
-
 The two building-blocks of the CodeTools system are the Block class and the
 DataContext class (and its various subclasses).
 
@@ -53,6 +50,8 @@ datatype separation.
 Put together, these concepts allow the creation of applications where the
 science code and the underlying application code are kept almost completely
 separate.
+
+.. rubric:: Tutorial Sections
 
 .. toctree::
    :maxdepth: 2

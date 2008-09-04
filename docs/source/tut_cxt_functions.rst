@@ -1,10 +1,10 @@
 Context Functions
 =================
 
-It should be clear by this point that the ability to use a general Context
-as the namespace when executing code permits some complex behaviours to be
-implemented simply.  There are circumstances where it would be useful to
-replace the namespace of a function with a Context.  The context_function
+It should be clear by this point that the ability to use a general context
+as the namespace when executing code permits some complex behaviors to be
+implemented simply. There are circumstances where it would be useful to
+replace the namespace of a function with a context.  The :mod:`context_function`
 module provides some tools for doing this.
 
 This example shows how to set up a simple listening data context that displays
@@ -28,7 +28,7 @@ changes within a function's local namespace as it executes::
 	            print "  Removed:", removed
 	
 	def f(x, t=3):
-	    """ A function which will fire add, modify and delete events. """
+	    """ A function which fires add, modify and delete events. """
 	    y = x+2
 	    y += 1
 	    z = '12'
@@ -48,7 +48,7 @@ The functionality is also available as a function decorator::
 	    del z
 	    return y
 
-The context_function and local_context functions both take an argument which
-is a context factory: each invocation of the function will result in a call
-to the context factory.  In most cases it should return a freshly created
+The :func:`context_function` and :func:`local_context` functions both take an
+argument which is a context factory: each invocation of the function results in
+a call to the context factory. In most cases it returns a freshly created
 context.

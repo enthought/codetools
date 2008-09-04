@@ -2,14 +2,14 @@
 DataContexts
 ============
 
-The DataContext is a Traits object that provides a dictionary-like interface,
-and wraps another dictionary-like object (including other DataContexts, if
-desired).  When the DataContext is modified, the wrapper layer generates
-``items_modified`` events that other Traits objects can listen for and react
-to.  In addition, there is a suite of subclasses of DataContext which perform
-different sorts of manipulations to items in the wrapped object.
+The DataContext class is a HasTraits subclass that provides a dictionary-like
+interface, and wraps another dictionary-like object (including other 
+DataContexts, if desired). When the DataContext is modified, the wrapper layer 
+generates *items_modified* events that other Traits objects can listen for and
+react to. In addition, there is a suite of subclasses of DataContext which 
+perform different sorts of manipulations to items in the wrapped object.
 
-At it's most basic level, the DataContext looks like a dictionary::
+At its most basic level, a DataContext object looks like a dictionary::
 
     >>> from enthought.contexts.api import DataContext
     >>> d = DataContext()
@@ -18,14 +18,15 @@ At it's most basic level, the DataContext looks like a dictionary::
     >>> d.items()
     [('a', 1), ('b', 2)]
 
-Internally, the DataContext has a ``subcontext`` trait which holds the wrapped
-dictionary-like object::
+Internally, the DataContext has a :attr:`subcontext` trait attribute which
+holds the wrapped dictionary-like object::
 
     >>> d.subcontext
     {'a': 1, 'b': 2}
 
 In the above case, the subcontext is a regular dictionary, but we can pass in
-any dictionary-like object into the constructor::
+any dictionary-like object into the constructor, including another DataContext
+object::
 
     >>> data = {'c': 3, 'd': 4}
     >>> d1 = DataContext(subcontext=data)
@@ -35,9 +36,9 @@ any dictionary-like object into the constructor::
     >>> d2.subcontext.subcontext
     {'a': 1, 'b': 2}
 
-Whenever a DataContext is modified, it generates a Traits event with
-signature ``'items_modified'``.  The object returned to listeners for this
-event is an ItemsModifiedEvent object, which has three traits:
+Whenever a DataContext object is modified, it generates a Traits event named
+``items_modified``.  The object returned to listeners for this
+event is an :class:`ItemsModifiedEvent` object, which has three trait attributes:
 
 :attr:`added`
     a list of keys which have been added to the DataContext
@@ -66,10 +67,10 @@ something like the following::
             for removed in event.removed:
                 print "  Removed:", removed
 
-This class keeps a reference to a DataContext, and listens for any
-items_modified events that it generates.  When one of these is generated, the
-data_items_modified method gets the event and prints the details.  This code
-shows the DataContextListener in action::
+This class keeps a reference to a DataContext object, and listens for any
+:attr:`items_modified` events that it generates. When one occurs, the
+:meth:`data_items_modified` method gets the event and prints the details. The
+following code shows the DataContextListener in action::
 
     >>> d = DataContext()
     >>> l = DataContextListener(data=d)
@@ -83,11 +84,11 @@ shows the DataContextListener in action::
     Event: items_modified
       Removed: a
 
-Where this event generation becomes powerful is when a DataContext is used as
-a namespace of a Block.  By listening to events, we can have code which reacts
-to changes in a Block's namespace as they occur.  Consider the simple example
-from the :ref:`codetools-tutorial-blocks` section used in conjunction with a
-DataContext which is being listened to::
+Where this event generation becomes powerful is when a DataContext object is
+used as a namespace of a Block. By listening to events, we can have code which
+reacts to changes in a Block's namespace as they occur. Consider the simple
+example from the :ref:`codetools-tutorial-blocks` section used in conjunction
+with a DataContext which is being listened to::
 
     >>> block = Block("""# my calculations
     ... velocity = distance/time
@@ -108,10 +109,10 @@ DataContext which is being listened to::
       Modified: momentum = 16.0
 
 The final piece in the pattern is to automate the execution of the block
-in the listener.  When the listener detects a change in the input values for
+in the listener. When the listener detects a change in the input values for
 a block, it can restrict the block to the changed inputs and then execute
 the restricted block in the context, automatically closing the loop between
-changes in inputs and the resulting changes in outputs.  Since the code is
+changes in inputs and the resulting changes in outputs. Because the code is
 being restricted, only the absolute minimum of calculation is performed.  The
 following example shows how to implement such an execution manager::
 

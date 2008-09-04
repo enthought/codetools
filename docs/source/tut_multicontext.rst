@@ -1,10 +1,12 @@
 MultiContexts
 =============
 
-There is one notable issue with the above application: the UI assumes that
-every input is a float, and that every output should be displayed.  If you
-were to try to use a slightly modified version of the code block from
-:ref:`rocket-restriction-example` section::
+There is one notable issue with the application shown in
+:ref:`traitslikecontextwrapper`: the UI assumes that every input is a float, and
+that every output should be displayed. 
+
+Suppose we try to use a slightly modified version of the code block from
+:ref:`rocket-restriction-example` section with that application::
 
     from numpy import array, ones
     
@@ -29,36 +31,36 @@ were to try to use a slightly modified version of the code block from
     kinetic_energy = 0.5*mass*velocity**2
     work = simple_integral(thrust, displacement)
 
-with the app from the previous section example, then you would notice that the
-function simple_integral appears in the list of outputs.  The reason the this
-function appears as an output is because as far as a namespace is concerned,
-defining a function is the same as assigning to a variable.   Also note that
-the imports don't appear -- imported names are available in the
-``fromimports`` trait of a Block and don't appear as outputs.
+We would discover that the function :func:`simple_integral` appears in the list
+of outputs. The reason that this function appears as an output is that, as far
+as a namespace is concerned, defining a function is the same as assigning to a
+variable. Also note that the imports *don't* appear --- imported names are
+available in the :attr:`fromimports` trait attribute of a Block and don't appear
+as outputs.
 
 So one solution to this problem is to always import functions.  However there
-is a second problem: the variable ``t`` needs to be an array not a float, and
+is a second problem: the variable *t* needs to be an array, not a float, and
 we probably shouldn't have the user interacting with it directly anyway.
 So we need to solve the more general problem of which outputs should be
 displayed.
 
 There are several approaches to solving this problem, but perhaps the most
 elegant is to have the DataContext itself keep track.  One way to achieve
-this is through the use of a MultiContext, which is a Context which contains
-a number of sub-contexts together with rules to decide which of these it
-should use for a particular variable.  To an external viewer, the MultiContext
-appears just like a DataContext, but objects can kep references to particular
-sub-contexts which supply the information that they require.
+this is through the use of a MultiContext, which is a context that contains
+a number of subcontexts, together with rules to decide which of these it
+should use for a particular variable. To an external viewer, the MultiContext
+appears just like a DataContext, but objects can keep references to particular
+subcontexts that supply the information that they require.
 
 The subcontexts need to be able to tell the MultiContext which items they can
-accept, and which they do not wish to store.  To do this they implement the
+accept, and which they do not wish to store. To do this they implement the
 IRestrictedContext interface, which simply means that they have to provide
-an :meth:`allows` method which should accept a key and value as input and
-return True if the Context wants the item.  Regular DataContext objects
-implement the IRestrictedContext, deferring to their subcontext if it is a
-DataContext, but allowing any variable to be set otherwise.
+an :meth:`allows` method which should take a key and value as input and
+return True if the Context accepts the item. Regular DataContext objects
+implement the IRestrictedContext interface, deferring to their subcontext if it
+is a DataContext, but allowing any variable to be set otherwise.
 
-Let's say that we want to have a context avaialable which only contains
+Let's say that we want to have a context available which contains only
 variables whose values are floats.  That would be done like this::
 
     >>> from enthought.contexts.api import MultiContext
@@ -70,7 +72,7 @@ variables whose values are floats.  That would be done like this::
     ...         return key[0] == "b"
     >>> float_context = FloatContext()
     >>> b_context = BContext()
-    >>> default_context = DataContext() # subcontext is a dict, so allow() is always True
+    >>> default_context = DataContext() # subcontext is a dict, so allows() is always True
     >>> multi_context = MultiContext(float_context, b_context, default_context)
     >>> multi_context['a'] = 34.0
     >>> multi_context['b'] = 34
@@ -86,7 +88,7 @@ variables whose values are floats.  That would be done like this::
 
 .. note::
     There are some wrinkles to the way that the MultiContext handles setting an
-    item when multiple Contexts will accept it::
+    item when multiple subcontexts will accept it::
     
         >>> multi_context['c'] = 10.0
         >>> multi_context['c']
@@ -96,8 +98,8 @@ variables whose values are floats.  That would be done like this::
         >>> default_context['c']
         'Hello'
     
-    as well as some wrinkles in how it handles matching keys in contexts that
-    won't accept an item::
+    There are also some wrinkles in how it handles matching keys in contexts
+    that won't accept an item::
     
         >>> multi_context['a'] = "Goodbye"
         >>> multi_context['a']
@@ -115,11 +117,12 @@ variables whose values are floats.  That would be done like this::
         >>> default_context['b']
         'foo'
     
-    The key thing to note is that the multicontext removes keys from contexts
-    that don't match the occur before it gets a matching context, but does not
-    remove the key from later contexts.
+    Note that if a context rejects an item, the MultiContext removes the key
+    for that item from the rejecting context. If a context accepts an item,
+    and the same key exists in later contexts (in the context list), the items
+    with that key in the later contexts are untouched.
     
-    If this sort of behaviour is not what you want, then you can easily subclass
+    If this sort of behavior is not what you want, then you can easily subclass
     MultiContext to provide the semantics that your application requires.
 
 Using a MultiContext in the Block-Context-Execution Manager pattern allows us
