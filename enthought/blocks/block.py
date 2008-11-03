@@ -190,6 +190,8 @@ class Block(HasTraits):
 
     def __getstate__(self):
 
+        state['_Block_version'] = 1
+
         # Evaluate attributes with non-deterministic default values to force
         # their initialization (see #1023)
         self.uuid
@@ -200,6 +202,17 @@ class Block(HasTraits):
         return state
 
     def __setstate__(self, state):
+
+        version = state.pop('_Block_version', 0)
+        
+        if version < 1:
+            if state.has_key('inputs'):
+                 state['_inputs'] = state.pop('inputs') 
+            if state.has_key('outputs'):
+                 state['_outputs'] = state.pop('outputs') 
+            if state.has_key('conditional_outputs'):
+                 state['_conditional_outputs'] = state.pop('conditional_outputs') 
+
         super(Block, self).__setstate__(state)
 
         # reset the dynamic trait change handlers
