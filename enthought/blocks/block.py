@@ -190,8 +190,6 @@ class Block(HasTraits):
 
     def __getstate__(self):
 
-        state['_Block_version'] = 1
-
         # Evaluate attributes with non-deterministic default values to force
         # their initialization (see #1023)
         self.uuid
@@ -199,6 +197,9 @@ class Block(HasTraits):
         # get the state but remove the code object cache
         state = super(Block, self).__getstate__()
         if state.has_key('_Block__code'): del state['_Block__code']
+
+        state['_Block_version'] = 1
+
         return state
 
     def __setstate__(self, state):
