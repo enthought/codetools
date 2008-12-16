@@ -18,6 +18,12 @@ TRAITS = etsdep('Traits', '3.0.4')
 
 # A dictionary of the setup data information.
 INFO = {
+    'extras_require' : {
+        # All non-ets dependencies should be in this extra to ensure users can
+        # decide whether to require them or not.
+        'nonets': [
+            ],
+        },
     'install_requires' : [
         TRAITS,
         ],
