@@ -41,7 +41,7 @@ def compile_bytecode(ops):
                     for op, arg in ops)
 
 def patch_load_and_store(ops, argcount, nglobals, ncellandfreevars):
-    """ Generator which replaces *_FAST and *_GLOBAL ops with *_NAME ops
+    """ Generator which replaces \*_FAST and \*_GLOBAL ops with \*_NAME ops.
     """
     for op, arg in ops:
         if op  == 'LOAD_FAST':
