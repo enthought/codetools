@@ -13,7 +13,7 @@ def etsdep(p, min, max=None, literal=False):
     return require
 
 # Delcare our ETS project dependencies.
-TRAITS = etsdep('Traits', '3.1.0')
+TRAITS = etsdep('Traits', '3.1.1')
 
 
 # A dictionary of the setup data information.
@@ -28,6 +28,6 @@ INFO = {
         TRAITS,
         ],
     'name': 'CodeTools',
-    'version': '3.0.2',
+    'version': '3.0.3',
     }
 
