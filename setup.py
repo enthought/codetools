@@ -80,8 +80,8 @@ setup(
         """.splitlines() if len(c.strip()) > 0],
     cmdclass = {
         'develop': MyDevelop,
-        'build': MyBuild
-    },
+        'build': MyBuild,
+        },
     description = DOCLINES[1],
     include_package_data = True,
     install_requires = INFO['install_requires'],
