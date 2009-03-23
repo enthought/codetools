@@ -83,6 +83,7 @@ setup(
         'build': MyBuild,
         },
     description = DOCLINES[1],
+    extras_require = INFO['extras_require'],
     include_package_data = True,
     install_requires = INFO['install_requires'],
     license = 'BSD',
