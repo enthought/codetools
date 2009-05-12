@@ -7,7 +7,8 @@ from cStringIO import StringIO
 from traceback import format_exc
 
 from enthought.traits.api import (Any, Bool, Default, Dict, Either, HasTraits,
-                                  Instance, List, Property, Str, Trait)
+                                  Instance, List, Property, Str, Trait,
+                                  cached_property, Event)
 from enthought.traits.api import push_exception_handler, pop_exception_handler, on_trait_change
 
 from enthought.util.dict import map_keys, map_values
@@ -96,10 +97,8 @@ class Block(HasTraits):
     __dep_graph = Either(Dict, None)
     __dep_graph_is_valid = Bool(False)
 
-    # Compiled code for our AST. The '_code' property uses '__code' as a cache,
-    # and '__code = None' invalidates the cache.
-    _code = Property
-    __code = Any
+    _code = Property(depends_on='_code_invalidated, ast')
+    _code_invalidated = Event()
 
 
     # Flag to break call cycles when we update 'ast' and 'sub_blocks'
@@ -152,10 +151,10 @@ class Block(HasTraits):
             # push an exception handler onto the stack to ensure that the calling function gets the error
             #push_exception_handler(handler = lambda o,t,ov,nv: None, reraise_exceptions=True)
             self._updating_structure = True
-            
-            self.ast = x            
+
+            self.ast = x
             self._tidy_ast()
-            
+
             self._updating_structure = False
             #pop_exception_handler()
         elif is_sequence(x):
@@ -174,7 +173,7 @@ class Block(HasTraits):
 
         # prepare the inputs and outputs
         self._clear_cache_inputs_and_outputs()
-        
+
         # We really want to keep the filename for "pristine" blocks, and
         # _structure_changed nukes it most times
         self.filename = saved_filename
@@ -193,10 +192,9 @@ class Block(HasTraits):
         # Evaluate attributes with non-deterministic default values to force
         # their initialization (see #1023)
         self.uuid
-        
+
         # get the state but remove the code object cache
         state = super(Block, self).__getstate__()
-        if state.has_key('_Block__code'): del state['_Block__code']
 
         state['_Block_version'] = 1
 
@@ -205,14 +203,14 @@ class Block(HasTraits):
     def __setstate__(self, state):
 
         version = state.pop('_Block_version', 0)
-        
+
         if version < 1:
             if state.has_key('inputs'):
-                 state['_inputs'] = state.pop('inputs') 
+                 state['_inputs'] = state.pop('inputs')
             if state.has_key('outputs'):
-                 state['_outputs'] = state.pop('outputs') 
+                 state['_outputs'] = state.pop('outputs')
             if state.has_key('conditional_outputs'):
-                 state['_conditional_outputs'] = state.pop('conditional_outputs') 
+                 state['_conditional_outputs'] = state.pop('conditional_outputs')
 
         super(Block, self).__setstate__(state)
 
@@ -222,15 +220,12 @@ class Block(HasTraits):
         self.on_trait_change(self._structure_changed, 'sub_blocks_items')
         self.on_trait_change(self._structure_changed, 'ast')
 
-        # regenerate the code object cache
-        self._code
-
     def __repr__(self):
         return '%s(uuid=%s)' % (self.__class__.__name__, self.uuid)
 
     def __str__(self):
         return repr(self) # TODO Unparse ast (2.5) (cf. #1167)
-    
+
     def _print_debug_graph(self, graph):
         """ Only to be used for debugging- prints each node of the graph
             with its immediate dependents following
@@ -248,7 +243,7 @@ class Block(HasTraits):
     ###########################################################################
     # Block public interface
     ###########################################################################
-    
+
     def remove_sub_block(self, uuid):
         if self.sub_blocks is None:
             raise KeyError()
@@ -256,14 +251,14 @@ class Block(HasTraits):
             if sb.uuid == uuid:
                 self.sub_blocks.remove(sb)
                 break
-            
+
     def is_empty(self):
         """ Return true if 'block' has an empty AST.
         """
 
         return isinstance(self.ast, Stmt) and len(self.ast.nodes) == 0
 
-            
+
     def execute(self, local_context, global_context = {}, continue_on_errors=False):
         """Execute the block in local_context, optionally specifying a global
         context.  If continue_on_errors is specified, continue executing code after
@@ -275,7 +270,7 @@ class Block(HasTraits):
         # user the option 'no_filenames_in_tracebacks' to gain speed but lose
         # readability of tracebacks.
 
-        
+
         if (len(self.sub_blocks) == 0 or self.no_filenames_in_tracebacks) and \
                not continue_on_errors:
             if self.filename:
@@ -301,12 +296,12 @@ class Block(HasTraits):
                 for block in self.sub_blocks:
                     block.execute(local_context, global_context)
         return
-    
+
     def invalidate_cache(self):
         """ Someone modified the block's internal ast. This method provides and
-            explicit means to invalidating the cached __code object
+            explicit means to invalidating the cached _code object
         """
-        self.__code = None
+        self._code_invalidated = True
 
     def restrict(self, inputs=(), outputs=()):
         ''' The minimal sub-block that computes 'outputs' from 'inputs'.
@@ -334,15 +329,15 @@ class Block(HasTraits):
             Assumes 'inputs' and 'outputs' are subsets of 'self.inputs' and
             'self.outputs', respectively.
         '''
-        
+
         inputs = set(inputs)
         outputs = set(outputs)
-        
+
         # Look for results in the cache
         cache_key = (frozenset(inputs), frozenset(outputs))
         if cache_key in self.__restrictions:
             return self.__restrictions[cache_key]
-        
+
         # Validate the method arguments.
         #
         # 'inputs' are allowed to be in the block inputs or outputs to allow
@@ -353,7 +348,7 @@ class Block(HasTraits):
             raise ValueError('Unknown inputs: %s' % (inputs - self.inputs - self.outputs - self.fromimports))
         if not outputs.issubset(self.all_outputs):
             raise ValueError('Unknown outputs: %s' %(outputs-self.all_outputs))
-        
+
         # Validate the block to make sure it is safe for restriction
         if self.validate_for_restriction() is not None:
             raise RuntimeError("Block failed to validate")
@@ -369,7 +364,7 @@ class Block(HasTraits):
             if isinstance(sub_block.ast, compiler.ast.Import) or \
                isinstance(sub_block.ast, compiler.ast.From):
                 import_sub_blocks.append(sub_block)
-                
+
         # We use the mock constructors `In` and `Out` to separate input and
         # output names in the dep graph in order to avoid cyclic graphs (in
         # case input and output names overlap)
@@ -392,14 +387,14 @@ class Block(HasTraits):
                 map_values(lambda l: map(wrap_names(In), l), self._dep_graph))
 
         pure_outputs = []
-        
+
         # Find the subgraph reachable from inputs, and then find its subgraph
         # reachable from outputs. (We could also flip the order.)
         if inputs:
             # look in the outputs for intermediate inputs
             intermediates = map(Out, self.outputs.intersection(inputs))
             inputs = inputs - self.outputs.intersection(inputs)
-                        
+
             # Find the intermediate's block node and replace it
             # with the intermediate value. This effectively cuts
             # the block's children off the tree. This means for
@@ -419,11 +414,11 @@ class Block(HasTraits):
 #                if not g.has_key(pruned_block):
 #                    intermediates.remove(intermediate)
 #                    continue
-                
+
                 # if intermediate is not removed, the resulting graph will
                 # be cyclic
                 g.pop(intermediate)
-                                    
+
                 pure_output = True
                 for v in g.values():
                     if pruned_block in v:
@@ -435,7 +430,7 @@ class Block(HasTraits):
                     # they will not be reachable
                     g[intermediate] = [Block("%s = %s" % \
                                         (intermediate[0], intermediate[0]))]
-                                        
+
             inputs = map(In, inputs) + intermediates
 
             # if no inputs were valid, do not alter the graph
@@ -445,18 +440,18 @@ class Block(HasTraits):
             outputs = map(Out, outputs)
             g = graph.reachable_graph(g, set(outputs).intersection(g.keys()))
 
-        # Create a new block from the remaining sub-blocks (ordered imports 
-        # first, then input to output, ignoring the variables at the ends) 
+        # Create a new block from the remaining sub-blocks (ordered imports
+        # first, then input to output, ignoring the variables at the ends)
         # and give it our filename
         remaining_sub_blocks = [node for node in reversed(graph.topological_sort(g))
                        if isinstance(node, Block)]
-        
+
         # trim out redundant imports which can occur if a restricted output is
         # one of the imports:
         for sub_block in remaining_sub_blocks:
             if sub_block in import_sub_blocks:
                 remaining_sub_blocks.remove(sub_block)
-        
+
         b = Block(import_sub_blocks + remaining_sub_blocks)
         b.filename = self.filename
 
@@ -469,7 +464,7 @@ class Block(HasTraits):
         """Return a function which takes the list of input variables
         as arguments and returns the given output_list.
 
-        These lists determine the calling order for the function. 
+        These lists determine the calling order for the function.
         """
         if isinstance(outputs, basestring):
             outputs = [outputs]
@@ -496,9 +491,9 @@ class Block(HasTraits):
         callstr = '(%s)'% ','.join(inputs)
         retstr = ','.join(outputs)
         simplefunc.__doc__ = "%s = <name>%s" % (retstr, callstr)
-        simplefunc._block = block        
+        simplefunc._block = block
         return simplefunc
-        
+
     def validate_for_restriction(self):
         # Check to ensure that there is not sub_block that has the same
         # variable as an input and an output. Return the offending
@@ -523,18 +518,18 @@ class Block(HasTraits):
     #
     # We compute '_dep_graph' and '_code' only when necessary and avoid
     # redundant computation.
-    
+
     def _tidy_ast(self):
         if isinstance(self.ast, Module):
             self.ast = self.ast.node
         if isinstance(self.ast, Stmt) and len(self.ast.nodes) == 1:
             [self.ast] = self.ast.nodes
-            
+
     def _structure_changed(self, name, new):
         if not self._updating_structure:
             try:
                 self._updating_structure = True
-                
+
                 if name == 'ast':
                     # Policy: Keep our AST composable and tidy
                     self._tidy_ast()
@@ -550,22 +545,21 @@ class Block(HasTraits):
                 elif name in ('sub_blocks', 'sub_blocks_items'):
 
                     self.ast = Stmt([ b.ast for b in self.sub_blocks ])
-                    
+
                 else:
                     assert False
 
                 # Invalidate caches
                 self.__dep_graph_is_valid = False
-                self.__code = None
                 self.__restrictions.clear()
                 self._stored_string = ''
 
                 # update inputs and outputs
                 self._clear_cache_inputs_and_outputs()
-                
+
             finally:
                 self._updating_structure = False
-    
+
     def _clear_cache_inputs_and_outputs(self):
         self._inputs = None
         self._outputs = None
@@ -577,7 +571,7 @@ class Block(HasTraits):
     def _set_inputs_and_outputs(self):
         if self.ast is None:
             return
-        
+
         v = compiler.walk(self.ast, NameFinder())
         self._inputs = set(v.free)
         self._outputs = set(v.locals)
@@ -588,32 +582,32 @@ class Block(HasTraits):
         self._fromimports = set(v.fromimports)
         self._outputs -= self.fromimports
         self._imports_ast = v.imports
-    
+
     def _get_inputs(self):
         if self._inputs is None:
             self._set_inputs_and_outputs()
         return self._inputs
-    
+
     def _get_outputs(self):
         if self._outputs is None:
             self._set_inputs_and_outputs()
         return self._outputs
-    
+
     def _get_conditional_outputs(self):
         if self._conditional_outputs is None:
             self._set_inputs_and_outputs()
         return self._conditional_outputs
-    
+
     def _get_const_assign(self):
         if self._const_assign is None:
             self._set_inputs_and_outputs()
         return self._const_assign
-    
+
     def _get_fromimports(self):
         if self._fromimports is None:
             self._set_inputs_and_outputs()
         return self._fromimports
-    
+
     def _get_imports_ast(self):
         if self._imports_ast is None:
             self._set_inputs_and_outputs()
@@ -624,49 +618,38 @@ class Block(HasTraits):
             return self._stored_string
         else:
             return unparse(self.ast)
-        
+
+    @cached_property
     def _get__code(self):
+        # Policy: our AST is either a Module or something that fits in a
+        # Stmt. (Note that a Stmt fits into a Stmt.)
+        ast = self.ast
+        if not isinstance(ast, Module):
+            ast = Module(None, Stmt([ast]))
 
-        # Cache code objects
-        if self.__code is None:
-
-            # Policy: our AST is either a Module or something that fits in a
-            # Stmt. (Note that a Stmt fits into a Stmt.)
-            ast = self.ast
-            if not isinstance(ast, Module):
-                ast = Module(None, Stmt([ast]))
-
-            # Make a useful filename to display in tracebacks
-            if not self.no_filenames_in_tracebacks:
-                if self.filename is not None:
-                    filename = self.filename
-                else:
-                    filename = '<%r>' % self
+        # Make a useful filename to display in tracebacks
+        if not self.no_filenames_in_tracebacks:
+            if self.filename is not None:
+                filename = self.filename
             else:
-                filename = '(Block with filename suppressed)'
+                filename = '<%r>' % self
+        else:
+            filename = '(Block with filename suppressed)'
 
-            self.__code = compile_ast(ast, filename, 'exec')
-
-        return self.__code
+        return compile_ast(ast, filename, 'exec')
 
     def _get__dep_graph(self):
 
         # Cache dep graphs
         if not self.__dep_graph_is_valid:
-        
+
             inputs, outputs, conditional_outputs, self.__dep_graph = \
                 Block._compute_dependencies(self.sub_blocks)
-
-            #if inputs != self.inputs:
-            #    import pdb; pdb.set_trace()
-            #assert inputs == self.inputs
-            #assert outputs == self.outputs
-            #assert conditional_outputs == self.conditional_outputs
 
             self.__dep_graph_is_valid = True
 
         return self.__dep_graph
-    
+
     ###########################################################################
     # Block class interface
     ###########################################################################
@@ -790,7 +773,7 @@ class Block(HasTraits):
                         process_i = False
                         break
                     suffix = suffix[suffix.find('.')+1:]
-                    
+
                 if process_i:
                     if i in env:
                         dep_graph.link(b, env[i])
@@ -881,9 +864,6 @@ class Expression(HasTraits):
     ###########################################################################
     # Expression protected interface
     ###########################################################################
-
-    def _get__code(self):
-        return compile_ast(self._ast, '<expr>', 'eval')
 
     ###########################################################################
     # Expression class interface
