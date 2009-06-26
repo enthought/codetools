@@ -346,6 +346,34 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
                'with m: \n'\
                '    vp = 1.0'
         self._check_round_trip(code) 
+    
+    def test_list_comp1(self):
+        code = '[x for x in [1, 2, 3] if x != 2]'
+        self._check_round_trip(code)
+    
+    def test_list_comp2(self):
+        code = "[(x, y) for x in [1, 2, 3] if x != 2 for y in ['a', 'b']]"
+        self._check_round_trip(code)
+    
+    def test_list_comp3(self):
+        code = "[(x, y) for x in [1, 2, 3] if x != 2 if x > 0 for y in ['a', 'b']]"
+        self._check_round_trip(code)
+    
+    def test_gen_expr1(self):
+        code = '(x for x in [1, 2, 3] if x != 2)'
+        self._check_round_trip(code)
+    
+    def test_gen_expr2(self):
+        code = "((x, y) for x in [1, 2, 3] if x != 2 for y in ['a', 'b'])"
+        self._check_round_trip(code)
+    
+    def test_gen_expr3(self):
+        code = "((x, y) for x in [1, 2, 3] if x != 2 if x > 0 for y in ['a', 'b'])"
+        self._check_round_trip(code)
+    
+    def test_gen_expr4(self):
+        code = 'all((x for x in [1, 2, 3] if x != 2))'
+        self._check_round_trip(code)
 
     ### private utility methods  #############################################
 

@@ -272,6 +272,30 @@ class UnparseCompilerAst:
         self._dispatch(t.code)
         self._leave()
         self._do_indent = True
+    
+    def _GenExpr(self, t):
+        self._dispatch(t.code)
+    
+    def _GenExprInner(self, t):
+        self._write("(")
+        self._dispatch(t.expr)
+        for qual in t.quals:
+            self._write(' ')
+            self._dispatch(qual)
+        self._write(")")
+    
+    def _GenExprFor(self, t):
+        self._write('for ')
+        self._dispatch(t.assign)
+        self._write(' in ')
+        self._dispatch(t.iter)
+        for ifs in t.ifs:
+            self._write(' ')
+            self._dispatch(ifs)
+    
+    def _GenExprIf(self, t):
+        self._write('if ')
+        self._dispatch(t.test)
 
     def _Getattr(self, t):
         """ Handle getting an attribute of an object
@@ -344,6 +368,27 @@ class UnparseCompilerAst:
             if i < len(t.nodes)-1:
                 self._write(", ")
         self._write("]")
+    
+    def _ListComp(self, t):
+        self._write("[")
+        self._dispatch(t.expr)
+        for qual in t.quals:
+            self._write(' ')
+            self._dispatch(qual)
+        self._write("]")
+    
+    def _ListCompFor(self, t):
+        self._write('for ')
+        self._dispatch(t.assign)
+        self._write(' in ')
+        self._dispatch(t.list)
+        for ifs in t.ifs:
+            self._write(' ')
+            self._dispatch(ifs)
+    
+    def _ListCompIf(self, t):
+        self._write('if ')
+        self._dispatch(t.test)
 
     def _Module(self, t):
         if t.doc is not None:
