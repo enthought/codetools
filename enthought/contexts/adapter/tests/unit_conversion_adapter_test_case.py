@@ -1,4 +1,5 @@
 # Standard Library Imports
+import sys
 import unittest
 
 # Numeric Libary imports
@@ -81,8 +82,11 @@ class UnitConversionAdapterTestCase(unittest.TestCase):
 # Test the doctests specified within the module.
 ################################################################################
 
-from enthought.contexts.adapter import unit_conversion_adapter
-module_test = doctest_for_module(unit_conversion_adapter)
+# When nosetests is running this test module, it is not necessary to run
+# doctests here also.  In fact, the code below causes nosetests to fail.
+if 'nose' not in sys.modules:
+    from enthought.contexts.adapter import unit_conversion_adapter
+    module_test = doctest_for_module(unit_conversion_adapter)
 
 
 if __name__ == '__main__':
