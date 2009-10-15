@@ -102,7 +102,12 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
                 if c.allows(value, key):
                     if key in c:
                         added = []
-                        if c[key] != value: 
+                        current_value = c[key]
+                        try:
+                            is_modified = bool(current_value != value)
+                        except Exception:
+                            is_modified = current_value is not value
+                        if is_modified:
                             modified = [key]
                             c[key] = value
                         else:
