@@ -274,6 +274,20 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         # Maybe a good default representation
         return '%s(name=%r)' % (type(self).__name__, self.name)
 
+    #### DictMixin interface ##################################################
+    
+    def __cmp__(self, other):
+        # Dont allow objects of different inherited classes to be equal.
+        # This WILL ALLOW different instances with different names but the
+        # same keys and values to be equal
+        #
+        # Subclasses may wish to override this to compare different attributes
+        #
+        
+        cls_cmp = cmp(self.__class__, other.__class__)
+        if cls_cmp != 0:
+            return cls_cmp
+        return DictMixin.__cmp__(self, other)
 
     #### IRestrictedContext interface ##########################################
 
