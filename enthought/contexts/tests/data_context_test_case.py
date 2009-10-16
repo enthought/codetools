@@ -109,3 +109,13 @@ def test_checkpoint_nested():
     assert copy['a'] is d['a']
     assert copy['b'] is d['b']
 
+def test_comparison():
+    class _TestContext(DataContext):
+        pass
+    a = DataContext(name='a')
+    b = DataContext(name='b')
+    c = _TestContext(name='c')
+    
+    assert a == b
+    assert a != c
+    
