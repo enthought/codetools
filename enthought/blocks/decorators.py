@@ -10,6 +10,7 @@ from block import Block
 def _detect_indentation_level(source):
     # Detect the indentation level
     done = False
+    col = 0
     for line in source:
         for col,char in enumerate(line):
             if char != ' ':
