@@ -47,7 +47,7 @@ class IndexContextMask(ContextMask):
 # Test
 if __name__ == '__main__':
     from enthought.contexts.geo_context import GeoContext
-    from enthought.numerical_modeling.units.api import UnitArray
+    from enthought.units.api import UnitArray
     from enthought.units.length import feet
 
     g = GeoContext(name='geo')

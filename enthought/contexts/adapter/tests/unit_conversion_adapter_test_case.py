@@ -10,7 +10,7 @@ from enthought.testing.api import doctest_for_module
 from enthought.units.length import meters, feet, inch
 
 # Geo Library imports
-from enthought.numerical_modeling.units.api import UnitArray
+from enthought.units.api import UnitArray
 from enthought.contexts.api import UnitConversionAdapter
 
 class UnitConversionAdapterTestCase(unittest.TestCase):

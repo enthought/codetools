@@ -9,7 +9,7 @@ import numpy
 
 #Enthought Library imports
 from enthought import units
-from enthought.numerical_modeling.units.api import UnitArray
+from enthought.units.api import UnitArray
 
 
 ################################################################################

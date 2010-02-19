@@ -7,7 +7,7 @@
     enforces this.
 
     >>> from enthought.units.length import meters, feet
-    >>> from enthought.numerical_modeling.units.api import UnitArray
+    >>> from enthought.units.api import UnitArray
     >>> from enthought.contexts.api import AdaptedDataContext, DataContext
     >>> from enthought.contexts.api import UnitConversionAdapter
     >>> old_log = UnitArray((1,2,3),units=meters)
@@ -39,18 +39,13 @@
     them make intelligent decisions about how to optimize their application.
 """
 
-# Numeric libary imports
-from numpy import ndarray
-
 # ETS library imports
-from enthought.numerical_modeling.units.api import UnitArray
+from enthought.units.api import UnitArray
 from enthought.traits.api import Dict
 
 # Local imports
 from unit_manipulation_adapter import UnitManipulationAdapter
-from unit_converter_functions import (array_to_unit_array_converter,
-                                      unit_array_units_converter,
-                                      unit_array_units_overwriter)
+from unit_converter_functions import unit_array_units_converter
 
 conversion_converters = {UnitArray: unit_array_units_converter}
 

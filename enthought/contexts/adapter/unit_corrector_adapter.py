@@ -1,5 +1,5 @@
 # ETS library imports
-from enthought.numerical_modeling.units.api import UnitArray
+from enthought.units.api import UnitArray
 from enthought.traits.api import Dict
 
 # Local imports

@@ -2,7 +2,7 @@
 from numpy import ndarray
 
 # ETS imports
-from enthought.numerical_modeling.units.api import UnitArray
+from enthought.units.api import UnitArray
 
 # Local imports
 from data_context import DataContext

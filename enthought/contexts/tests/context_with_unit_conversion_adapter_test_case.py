@@ -13,7 +13,7 @@ from enthought.units.length import meters, feet
 from enthought.units.time import second
 
 # ETS Library imports
-from enthought.numerical_modeling.units.api import UnitArray
+from enthought.units.api import UnitArray
 
 # Geo Library imports
 from enthought.contexts.api import DataContext, AdaptedDataContext

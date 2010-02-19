@@ -12,7 +12,7 @@ from enthought.contexts.data_context import DataContext
 from enthought.contexts.api import MaskingAdapter
 from enthought.contexts.adapter.unit_conversion_adapter import UnitConversionAdapter
 
-from enthought.numerical_modeling.units.api import UnitArray
+from enthought.units.api import UnitArray
 
 class AdaptedDataContextTestCase(unittest.TestCase):
 

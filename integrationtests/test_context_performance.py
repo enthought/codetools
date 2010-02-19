@@ -199,7 +199,7 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
         setup = "from numpy import arange\n" \
                 "from enthought.units.length import meters, feet\n" \
                 "from enthought.contexts.api import DataContext, AdaptedDataContext\n" \
-                "from enthought.numerical_modeling.units.api import UnitArray\n" \
+                "from enthought.units.api import UnitArray\n" \
                 "from enthought.contexts.api import UnitConversionAdapter\n" \
                 "data_context = DataContext()\n" \
                 "context = AdaptedDataContext(context=data_context)\n" \
@@ -221,5 +221,4 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    import sys
     unittest.main()
