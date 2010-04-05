@@ -4,9 +4,9 @@ licensed accordingly to the original license:
     Enthought: BSD-like
 
 
-Unless stated in this file, icons are work of enthought, and are released
+Unless stated in this file, icons are work of Enthought, and are released
 under BSD-like license.
-Files and orginal authors:
+Files and original authors:
 ----------------------------------------------------------------
 enthought/contexts/images:
                 array.png | Enthought

@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 #
-# Copyright (c) 2008-2009 by Enthought, Inc.
+# Copyright (c) 2008-2010 by Enthought, Inc.
 # All rights reserved.
-
 
 """
 Code Analysis and Execution Tools
@@ -20,7 +19,7 @@ as the foundation for the BlockCanvas project.
 
 Prerequisites
 -------------
-If you want to build CodeTools from source, you must first install 
+If you want to build CodeTools from source, you must first install
 `setuptools <http://pypi.python.org/pypi/setuptools/0.6c8>`_.
 
 """
