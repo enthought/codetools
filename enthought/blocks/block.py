@@ -1,15 +1,12 @@
 'Simple blocks of python code with dependency analysis.'
 
 import compiler
-from compiler.ast import Module, Node, Pass, Stmt, Function, Discard
-from copy import copy
-from cStringIO import StringIO
+from compiler.ast import Module, Node, Stmt
 from traceback import format_exc
 
-from enthought.traits.api import (Any, Bool, Default, Dict, Either, HasTraits,
-                                  Instance, List, Property, Str, Trait,
+from enthought.traits.api import (Bool, Dict, Either, HasTraits,
+                                  Instance, List, Property, Str,
                                   cached_property, Event)
-from enthought.traits.api import push_exception_handler, pop_exception_handler, on_trait_change
 
 from enthought.util.dict import map_keys, map_values
 import enthought.util.graph as graph
@@ -132,7 +129,7 @@ class Block(HasTraits):
                 file = open(file)
             elif not is_file_object(file):
                 raise ValueError("Expected 'file' to be a file or string, "
-                                 "got %r" % f)
+                                 "got %r" % file)
             x = file
 
         # 'x': file object -> string
@@ -385,8 +382,6 @@ class Block(HasTraits):
         # `g` isn't cyclic
         g = map_keys(wrap_names(Out),
                 map_values(lambda l: map(wrap_names(In), l), self._dep_graph))
-
-        pure_outputs = []
 
         # Find the subgraph reachable from inputs, and then find its subgraph
         # reachable from outputs. (We could also flip the order.)
