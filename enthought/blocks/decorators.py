@@ -1,9 +1,6 @@
 
-
-import pdb
-import sys, os
+import sys
 import linecache
-import re
 
 from block import Block
 
@@ -99,7 +96,6 @@ def func2str(func,backframes=1):
     This returns a string of code: ``a = 3\\nb = 4\\nc = a + b\\n``
     """
     callframe = sys._getframe(backframes)
-    lineno = callframe.f_lineno
     filename = callframe.f_code.co_filename
     if filename == '<stdin>':
         raise ValueError, "Decorator can't be used here."
