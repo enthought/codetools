@@ -59,6 +59,8 @@ something like the following::
         
         @on_trait_change('data.items_modified')
         def data_items_modified(self, event):
+            if not self.traits_inited():
+                return
             print "Event: items_modified"
             for added in event.added:
                 print "  Added:", added, "=", repr(self.data[added])
@@ -73,7 +75,7 @@ This class keeps a reference to a DataContext object, and listens for any
 following code shows the DataContextListener in action::
 
     >>> d = DataContext()
-    >>> l = DataContextListener(data=d)
+    >>> listener = DataContextListener(data=d)
     >>> d['a'] = 1
     Event: items_modified
       Added: a = 1
@@ -95,7 +97,7 @@ with a DataContext which is being listened to::
     ... momentum = mass*velocity
     ... """)
     >>> namespace = DataContext(subcontext={'distance': 10.0, 'time': 2.5, 'mass': 3.0})
-    >>> listener = DataContextListener(namespace)
+    >>> listener = DataContextListener(data=namespace)
     >>> block.execute(namespace)
     Event: items_modified
       Added: velocity = 4.0
@@ -116,11 +118,12 @@ changes in inputs and the resulting changes in outputs. Because the code is
 being restricted, only the absolute minimum of calculation is performed.  The
 following example shows how to implement such an execution manager::
 
-    from enthought.traits.api import HasTraits, Instance
+    from enthought.traits.api import HasTraits, Instance, on_trait_change
     from enthought.blocks.api import Block
     from enthought.contexts.api import DataContext
     
     class ExecutionManager(HasTraits):
+
         # the data context we are listening to
         data = Instance(DataContext)
         
@@ -129,7 +132,9 @@ following example shows how to implement such an execution manager::
         
         @on_trait_change('data.items_modified')
         def data_items_modified(self, event):
-            changed = set(event.added + event.modified + event.deleted) 
+            if not self.traits_inited():
+                return
+            changed = set(event.added + event.modified + event.removed) 
             inputs = changed & self.block.inputs
             outputs = changed & self.block.outputs
             for output in outputs:
@@ -137,8 +142,7 @@ following example shows how to implement such an execution manager::
             self.execute(inputs)
         
         def execute(self, inputs):
-            # only execute if we have all inputs
-            if self.block.inputs.issubset(set(self.data.keys())):
+            # Only execute if we have a non-empty set of inputs that are
+            # available in the data.
+            if len(inputs) > 0 and inputs.issubset(set(self.data.keys())):
                 self.block.restrict(inputs=inputs).execute(self.data)
-
-

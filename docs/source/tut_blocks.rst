@@ -76,7 +76,7 @@ reconstruct the Python source::
     >>> unparse(restricted_block.ast)
     'momentum = mass*velocity'
 
-This allows us to perform the minimum amount of re-calculation in response to
+This allows us to perform the minimum amount of recalculation in response to
 changes in the inputs.  For example, if we change *mass* in the local
 name space, then we only need to execute the restricted block which depends
 upon *mass* as input::
@@ -98,7 +98,7 @@ output, we can restrict on the outputs:
 .. note::
     Block restriction is designed to answer the questions "What do I need to 
     compute when this changes?" or "What do I need to compute to calculate this
-    output?"  It doesn't (yet) answer the question "If I have these inputs, wha
+    output?"  It doesn't (yet) answer the question "If I have these inputs, what
     outputs can I calculate?"
 
 .. _rocket-restriction-example:
@@ -153,7 +153,7 @@ potentially expensive.  We can set up a Block to hold this computation::
     >>> rocket_science = """
     ...    ...
     ... """
-    >>> rocket_block =     Block(rocket_science)
+    >>> rocket_block = Block(rocket_science)
     >>> rocket_block.inputs
     set(['fuel_volume', 'nozzle_area', 'fuel_density', 'nozzle_pressure', 'mass_rocket',
     'exhaust_velocity', 'fuel_burn_rate', 't'])
@@ -166,7 +166,7 @@ We can use this code by setting up a dictionary of local values for the
 inputs and then inspecting it::
 
     >>> from numpy import linspace
-    >>> local_namespace = {
+    >>> local_namespace = dict(
     ...     mass_rocket = 100.0,         # kg
     ...     fuel_density = 1000.0,       # kg/m**3
     ...     fuel_volume = 0.060,         # m**3
@@ -175,7 +175,7 @@ inputs and then inspecting it::
     ...     nozzle_pressure = 5000.0,    # Pa
     ...     nozzle_area = 0.7,           # m**2
     ...     t = linspace(0.0, 2.0, 2000) # calculate every millisecond
-    ... }
+    ... )
     >>> rocket_block.execute(local_namespace)
     >>> print local_namespace["velocity"][::100]  # values every 0.1 seconds
     [    0.            60.91584683   123.00759628   186.32154205   250.90676661
@@ -184,7 +184,7 @@ inputs and then inspecting it::
       1062.90715923  1147.9941173   1235.39308291  1325.23321898  1417.65482395]
     >>> 
     >>> from enthought.chaco.shell import *
-    >>> plot(local_namespace[t], local_namespace["displacement"], "b-")
+    >>> plot(local_namespace['t'], local_namespace["displacement"], "b-")
     >>> show()
 
 .. image:: chaco_plot_1.png
@@ -199,7 +199,7 @@ only the quantities which depend upon *nozzle_pressure* and *nozzle_area*.
 We can do this as follows::
 
     >>> restricted_block = rocket_block.restrict(inputs=("nozzle_area", "nozzle_pressure"))
-    >>> local_namespace["nozzle_area"] = 0.7
+    >>> local_namespace["nozzle_area"] = 0.8
     >>> local_namespace["nozzle_pressure"] = 4800
     >>> restricted_block.execute(local_namespace)
     >>> print local_namespace["velocity"][::100]

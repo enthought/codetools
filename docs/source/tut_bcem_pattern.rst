@@ -44,7 +44,7 @@ advantages:
   application code (the execution manager and UI components), the
   computation code, and the data
 
-Actually, by using Traits properties you can get the first 3 of these ---
+Actually, by using Traits properties you can get the first three of these ---
 although the code will become more and more complex as the computations get
 longer.
 
