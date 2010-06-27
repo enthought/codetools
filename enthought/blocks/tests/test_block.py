@@ -65,7 +65,7 @@ def test_restricted_empty_inputs():
     assert_raises(ValueError, b.restrict, inputs=())
 
 def test_restricted_empty_outputs():
-    """Check that restrict(inputs=()) raises a ValueError."""
+    """Check that restrict(outputs=()) raises a ValueError."""
     code = 'x = a + b\ny = b - c\nz = c**2'
     b = Block(code)
     assert_raises(ValueError, b.restrict, outputs=())
