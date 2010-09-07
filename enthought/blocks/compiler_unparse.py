@@ -235,6 +235,24 @@ class UnparseCompilerAst:
 
     def _Ellipsis(self, t):
         self._write("...")
+        
+    def _For(self, t):
+        self._fill("for ")
+        self._dispatch(t.assign)
+        self._write(" in ")
+        self._dispatch(t.list)
+        self._enter()
+        self._dispatch(t.body)
+        self._leave()
+        self._write("\n")
+
+        if t.else_ is not None:
+            self._write("else")
+            self._enter()
+            self._fill()
+            self._dispatch(t.else_)
+            self._leave()
+            self._write("\n")
 
     def _From(self, t):
         """ Handle "from xyz import foo, bar as baz".
