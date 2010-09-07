@@ -175,6 +175,9 @@ class UnparseCompilerAst:
             if i != len(t.nodes)-1:
                 self._write(" | ")
                 
+    def _Break(self, t):
+        self._write('break')
+                
     def _CallFunc(self, t):
         """ Function call.
         """
@@ -207,6 +210,9 @@ class UnparseCompilerAst:
         """ A constant value such as an integer value, 3, or a string, "hello".
         """
         self._dispatch(t.value)
+
+    def _Continue(self, t):
+        self._write('continue')
 
     def _Decorators(self, t):
         """ Handle function decorators (eg. @has_units)
@@ -343,7 +349,7 @@ class UnparseCompilerAst:
             self._write("\n")
 
         if t.else_ is not None:
-            self._write("else")
+            self._fill("else")
             self._enter()
             self._fill()
             self._dispatch(t.else_)
