@@ -56,7 +56,9 @@ class AdapterManagerMixin(HasTraits):
         # Call get_item for each adapter.  The output of each adapter becomes
         # the input for the next adapter.
         for adapter in self._adapters:
-            name, value = adapter.adapt_getitem(context, name, value)
+            # E.g: a simple NameAdapter need not declare its own adapt_getitem
+            if hasattr(adapter, "adapt_getitem"):
+                name, value = adapter.adapt_getitem(context, name, value)
 
         return name, value
 
@@ -67,6 +69,8 @@ class AdapterManagerMixin(HasTraits):
         # Call set_item for each adapter in reverse order.  The output of each
         # adapter becomes the input for the next adapter.
         for adapter in self._adapters[::-1]:
-            name, value = adapter.adapt_setitem(context, name, value)
+            # E.g: a simple NameAdapter need not declare its own adapt_setitem
+            if hasattr(adapter, "adapt_setitem"):
+                name, value = adapter.adapt_setitem(context, name, value)
 
         return name, value
