@@ -42,7 +42,7 @@ class AdapterManagerMixin(HasTraits):
     def _adapt_name(self, context, name):
         """ Apply adapters in order, calling their adapt_name method.
         """
-        # Call get_item for each adapter.  The output of each adapter becomes
+        # Call adapt_name for each adapter.  The output of each adapter becomes
         # the input for the next adapter.
         for adapter in self._adapters:
             if hasattr(adapter, "adapt_name"):
