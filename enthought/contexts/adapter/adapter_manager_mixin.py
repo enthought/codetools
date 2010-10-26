@@ -44,7 +44,7 @@ class AdapterManagerMixin(HasTraits):
         """
         # Call adapt_name for each adapter.  The output of each adapter becomes
         # the input for the next adapter.
-        for adapter in self._adapters:
+        for adapter in self._adapters[::-1]:
             if hasattr(adapter, "adapt_name"):
                 name = adapter.adapt_name(context, name)
 
