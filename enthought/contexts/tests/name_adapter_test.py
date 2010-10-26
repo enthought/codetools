@@ -1,10 +1,11 @@
 from numpy.testing import assert_equal, assert_
 
 from enthought.traits.api import Dict
-from enthought.contexts.api import DataContext, AdaptedDataContext, NameAdapter
+from enthought.contexts.api import (DataContext, AdaptedDataContext,
+                                    NameAdapter, IterableAdaptedDataContext)
 
 
-def test_name_adapter_get():
+def test_name_adapter_get_set():
 
     obj1 = object()
     obj2 = object()
@@ -15,10 +16,12 @@ def test_name_adapter_get():
     name_map1 = {
         'b1':'a1',
         'b2':'a2',
+        'b3':'a3'  # nonexistent
        }
     name_map2 = {
         'c1':'b1',
         'c2':'b2',
+        'c3':'b3', # eventually nonexistent
        }
 
     name_adapter1 = NameAdapter(map=name_map1)
@@ -48,6 +51,19 @@ def test_name_adapter_get():
     assert_equal( context['a1'], obj1)
     assert_equal( context['b1'], obj1)
     assert_equal( context['c1'], obj1)
+
+    # IterableAdaptedDataContext
+    context2 = IterableAdaptedDataContext(subcontext=subcx)
+    context2.push_adapter(name_adapter1)
+    context2.push_adapter(name_adapter2)
+
+    assert_equal(set(context2.keys()), set('a1 a2 b1 b2 c1 c2'.split()))
+    assert_equal(set([k for k in context2]), set(context2.keys()))
+    for key in context2:
+        assert_(key in context2)
+    assert_('b3' not in context2)
+    assert_('c3' not in context2)
+
 
 
 def test_stacked_hybrid_adapters():
@@ -118,4 +134,5 @@ def test_stacked_hybrid_adapters():
     assert_equal(context['boF'], BK)
     assert_equal(context['boC'], BK)
     assert_equal(context['boK'], BK)
+
 

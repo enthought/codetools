@@ -4,6 +4,7 @@ from function_filter_context import FunctionFilterContext
 from geo_context import GeoContext
 from i_context import (IContext, IListenableContext, IRestrictedContext,
     IPersistableContext, ICheckpointable)
+from iterable_adapted_data_context import IterableAdaptedDataContext
 from multi_context import MultiContext
 from traitslike_context_wrapper import TraitslikeContextWrapper
 from context_function import local_context, context_function

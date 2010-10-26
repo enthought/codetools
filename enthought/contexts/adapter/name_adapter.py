@@ -33,3 +33,9 @@ class NameAdapter(HasTraits):
             return self.map[name]
         else:
             return name
+
+    def adapt_keys(self):
+        """ Returns a list containing any keys (names) defined by this
+            adapter.
+        """
+        return self.map.keys()

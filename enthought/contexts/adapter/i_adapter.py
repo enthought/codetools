@@ -19,6 +19,16 @@ class IAdapter(Interface):
         """
         raise NotImplementedError
 
+    def adapt_keys(self, context, name):
+        """ Returns an iterable containing any keys (names) defined by this
+            adapter. Should return all names which could successfully be passed
+            to adapt_name.
+
+            Note: This method is optional, useful only if adapt_name is
+            implemented.
+        """
+        raise NotImplementedError
+
     def adapt_getitem(self, context, name, value):
         """ Apply the adapter to values accessed through __getitem__ of a
             context.
