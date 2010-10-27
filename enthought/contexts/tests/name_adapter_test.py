@@ -2,7 +2,8 @@ from numpy.testing import assert_equal, assert_
 
 from enthought.traits.api import Dict
 from enthought.contexts.api import (DataContext, AdaptedDataContext,
-                                    NameAdapter, IterableAdaptedDataContext)
+                                    NameAdapter, IterableAdaptedDataContext,
+                                    UnitConversionAdapter)
 
 
 def test_name_adapter_get_set():
@@ -26,11 +27,14 @@ def test_name_adapter_get_set():
 
     name_adapter1 = NameAdapter(map=name_map1)
     name_adapter2 = NameAdapter(map=name_map2)
+    # unit adapter won't do anything, just ensure doesn't block flow or choke.
+    unit_adapter = UnitConversionAdapter()
     context = AdaptedDataContext(subcontext=subcx)
 
     # Note that the adapters are pushed with those closest to the context first.
     # b->a, then c->b. (FIFO, not LIFO)
     context.push_adapter(name_adapter1)
+    context.push_adapter(unit_adapter)
     context.push_adapter(name_adapter2)
 
     # getitem
@@ -55,6 +59,7 @@ def test_name_adapter_get_set():
     # IterableAdaptedDataContext
     context2 = IterableAdaptedDataContext(subcontext=subcx)
     context2.push_adapter(name_adapter1)
+    context2.push_adapter(unit_adapter)
     context2.push_adapter(name_adapter2)
 
     assert_equal(set(context2.keys()), set('a1 a2 b1 b2 c1 c2'.split()))
@@ -127,6 +132,8 @@ def test_stacked_hybrid_adapters():
     assert_equal(context['boC'], BC)
 
     # two adapters: to Kelvin (no matter which name is used to retrieve).
+    # unit adapter won't do anything, just ensure doesn't block flow or choke.
+    context.push_adapter(UnitConversionAdapter())
     context.push_adapter(AdaptCtoK())
     assert_equal(context['frF'], FK)
     assert_equal(context['frC'], FK)
