@@ -3,6 +3,7 @@
 from nose.tools import assert_equal, assert_raises
 
 from enthought.blocks.api import Block
+from enthought.contexts.api import DataContext
 
 
 def test_basic_01():
@@ -50,7 +51,7 @@ def test_restrict_outputs():
     """Test a basic use of the restrict(outputs=(...)) method."""
     code = 'x = a + b\ny = b - c\nz = c**2'
     b = Block(code)
-    
+
     br = b.restrict(outputs=('z',))
     names = dict(c=5)
     br.execute(names)
@@ -69,3 +70,32 @@ def test_restricted_empty_outputs():
     code = 'x = a + b\ny = b - c\nz = c**2'
     b = Block(code)
     assert_raises(ValueError, b.restrict, outputs=())
+
+def test_impure_execute():
+    code="""
+import os  # module and function names are discarded by default.
+def ff():
+    global y  # will not be retained but will be available in the code block.
+    y = a + x
+    b.append(4)
+x = a
+b.append(3)
+ff()
+z = y
+_x = x  # names beginning with underscore are discarded by default
+a = 99
+"""
+    context = DataContext(subcontext=dict(a=1,b=[2]))
+    block = Block(code)
+    # by default, clean shadow after execution:
+    shadow = block.execute_impure(context)
+    assert_equal(set(context.keys()), set(['a', 'b']))  # names unchanged
+    assert_equal(context['b'], [2,3,4])  # mutable object was changed in context
+    assert_equal(set(shadow.keys()), set(['x', 'z', 'a']))
+    assert_equal(context['a'], 1)  # original mutable object does not change,
+    assert_equal(shadow['a'], 99)  #  but the new object is in the shadow dict.
+    # do not clean shadow after execution:
+    shadow = block.execute_impure(context, clean_shadow=False)
+    assert_equal(set(shadow.keys()), set(['x', 'z', 'a', '_x', 'os', 'ff']))
+
+
