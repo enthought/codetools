@@ -48,14 +48,25 @@ def _extract_indented_part(source, col):
     return src, "".join(doc_lines)
 
 def _remove_head(source, name):
-    # Remove any code definition, and space lines
-    #  at the beginning
+    # source is a list of source lines, beginning either immediately after the
+    # decoration line, or immediately after the decorated 'def' line. This
+    # variability is due to an inconsistency (at least in python 2.6.5) in the
+    # frame attribute f_lineno (used in function findsource_file), which is
+    # supposed to be the 1-based line number of the next line to be executed
+    # in the frame where the decoration occurs. However, when called from
+    # within the func2str decorator, f_lineno actually is sometimes the line
+    # number of the decorator, and sometimes the line number of the decorated
+    # 'def' line. (Specifically, the latter occurs when the decorated function
+    # has no keyword arguments.)
+    #
+    # Therefore we need to be prepared to remove blank and comment lines which
+    # may precede the def line, as well as the def line itself, if present in
+    # the list 'source', before extracting and processing the body of the
+    # decorated function.
     for i, line in enumerate(source):
-        if line.isspace():
-            continue
-        if line.startswith('def %s' % name):
-            continue
-        break
+        tokens = line.replace('(', ' (', 1).split()
+        if tokens and tokens[0][0] != '#' and tokens[0:2] != ['def', name]:
+            break
     if len(source) > 0:
         source = source[i:]
     return source
@@ -72,6 +83,7 @@ def strip_whitespace(source, name, spaces_for_tab):
     return src
 
 def findsource_file(f, name):
+    # See function _remove_head for comment about f_lineno, and adjustment.
     lines = linecache.getlines(f.f_code.co_filename)
     wsource = lines[f.f_lineno:]
     return strip_whitespace(wsource, name, 8)
@@ -87,7 +99,7 @@ def findsource_ipython(f, name):
 def func2str(func,backframes=1):
     """Decorator to turn a code-block inside of a function to
     a string::
-    
+
         @func2str
         def code():
             c = a + b
@@ -104,7 +116,7 @@ def func2str(func,backframes=1):
     else:
         s = findsource_file(callframe, func.func_name)
     return s
-    
+
 def func2co(func):
     """Decorator to turn a code-block defined as a function into
     a code-object::
@@ -132,5 +144,5 @@ def func2block(func):
     """
     s = func2str(func, backframes=2)
     return Block(s)
-    
-    
+
+
