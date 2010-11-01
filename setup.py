@@ -45,27 +45,6 @@ INFO = setup_data['INFO']
 DOCLINES = __doc__.split("\n")
 
 
-class MyDevelop(develop):
-    def run(self):
-        develop.run(self)
-        try:
-            self.run_command('build_docs')
-        except:
-            log.warn("Couldn't build documentation:\n%s" %
-                     traceback.format_exception(*sys.exc_info()))
-
-
-class MyBuild(distbuild):
-    def run(self):
-        distbuild.run(self)
-        try:
-            self.run_command('build_docs')
-        except:
-            log.warn("Couldn't build documentation:\n%s" %
-                     traceback.format_exception(*sys.exc_info()))
-
-
-
 # Make the actual setup call.
 setup(
     author = 'Enthought, Inc.',
@@ -87,10 +66,6 @@ setup(
         Topic :: Software Development
         Topic :: Software Development :: Libraries
         """.splitlines() if len(c.strip()) > 0],
-    cmdclass = {
-        'develop': MyDevelop,
-        'build': MyBuild,
-        },
     description = DOCLINES[1],
     extras_require = INFO['extras_require'],
     include_package_data = True,
@@ -105,7 +80,6 @@ setup(
         ],
     packages = find_packages(),
     platforms = ["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
-    setup_requires = 'setupdocs>=1.0',
     tests_require = [
         'nose >= 0.10.3',
         ],
