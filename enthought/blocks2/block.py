@@ -20,10 +20,9 @@ from enthought.util.dict import map_keys, map_values
 import enthought.util.graph as graph
 from enthought.util.sequence import is_sequence
 
-from enthought.blocks.analysis import NameFinder
-from enthought.blocks.compiler_.api \
-    import compile_ast, parse
-from enthought.blocks.parser_ import BlockTransformer
+from analysis import NameFinder
+
+from block_transformer import BlockTransformer
 from enthought.blocks.compiler_unparse import unparse
 from enthought.blocks.util.uuid import UUID, uuid4
 
@@ -168,8 +167,9 @@ class Block(HasTraits):
 
         # 'x' -> 'self.ast_tree' or 'self.sub_blocks'
         if isinstance(x, basestring):
+            self.ast_tree = ast.parse(x, mode='exec')
             # (BlockTransformer handles things like 'import *')
-            self.ast_tree = parse(x, mode='exec', transformer=BlockTransformer())
+            self.ast_tree = BlockTransformer().visit(self.ast_tree)
             self._stored_string = x
         elif isinstance(x, AST):
             # push an exception handler onto the stack to ensure that the calling function gets the error
@@ -681,16 +681,17 @@ class Block(HasTraits):
         if self.ast_tree is None:
             return
 
-        v = ast.walk(self.ast_tree, NameFinder())
-        self._inputs = set(v.free)
-        self._outputs = set(v.locals)
-        self._conditional_outputs = set(v.conditional_locals)
-        temp = [unparse(x).strip() for x in v.constlist]
+        nf = NameFinder()
+        nf.visit(self.ast_tree)
+        self._inputs = set(nf.free)
+        self._outputs = set(nf.locals)
+        self._conditional_outputs = set(nf.conditional_locals)
+        temp = [unparse(x).strip() for x in nf.constlist]
         temp2 = [x.split('=')[0].strip() for x in temp]
         self._const_assign = (set(temp2), temp)
-        self._fromimports = set(v.fromimports)
+        self._fromimports = set(nf.fromimports)
         self._outputs -= self.fromimports
-        self._imports_ast = v.imports
+        self._imports_ast = nf.imports
 
     def _get_inputs(self):
         if self._inputs is None:
@@ -980,10 +981,11 @@ class Expression(HasTraits):
 
     @classmethod
     def from_string(cls, s):
-        ast = parse(s, mode='eval', transformer=BlockTransformer())
-        assert isinstance(ast, compiler.ast.Expression)
-        v = compiler.walk(ast, NameFinder())
-        return Expression(ast, v.free, v.locals)
+        ast_tree = ast.parse(s, mode='eval')
+        ast_tree = BlockTransformer().visit(ast_tree)
+        assert isinstance(ast_tree, compiler.ast.Expression)
+        v = compiler.walk(ast_tree, NameFinder())
+        return Expression(ast_tree, v.free, v.locals)
 
 ################################################################################
 # Util
