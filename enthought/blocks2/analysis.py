@@ -1,5 +1,6 @@
 import ast
-from ast import Assign, Dict, Expression, List, Name, AST, Tuple
+from ast import Assign, Dict, Expression, List, Name, AST, Tuple, Num, Str, Expr
+from ast import stmt, expr
 from ast import NodeVisitor
 
 from copy import copy, deepcopy
@@ -58,10 +59,12 @@ def extract_const_assigns(node):
     node = t.transform(node)
     return node, t.const_for
 
-def is_const(node):
-    """ Whether an AST represents a constant expression.
+def is_independent(node):
+    """ Whether an AST represents a independent expression.
 
-        I'm not sure what "constant" means yet, but here are some examples:
+        "Independent" means that this AST has a dependency graph that 
+        does not depend on any other dependency graph or on the context 
+        in which it executes. Here are some examples:
 
             >>> from compiler import parse
             >>> all(is_const(parse(s, mode='eval')) for s in (
@@ -99,10 +102,11 @@ def is_const(node):
             False
     """
     return (
-        isinstance(node, Const) or
-        isinstance(node, Name) and node.name in ['None', 'True', 'False'] or
-        isinstance(node, (List, Tuple, Dict)) and all(map(is_const, node)) or
-        isinstance(node, Expression) and is_const(node.node)
+        isinstance(node, Num) or isinstance(node, Str) or 
+        isinstance(node, Name) and node.id in ['None', 'True', 'False'] or
+        isinstance(node, (List, Tuple, Dict)) and all(map(is_independent, node)) or
+        isinstance(node, expr) and all([is_independent(child) for child in node.iter_child_nodes()]) or 
+        isinstance(node, Expr) and is_independent(node.value)
     )
 
 def dependency_graph(asts, to_ast=lambda x: x):
@@ -204,12 +208,12 @@ def dependency_graph(asts, to_ast=lambda x: x):
 ###############################################################################
 
 def walk(x, visitor, walker=None, verbose=None):
-    "Wrap compiler.walk to handle 'None' and sequences."
+    "Wrap ast.walk to handle 'None' and sequences."
 
     # (Nodes are iterable and strings cause infinite regress)
     if x is None:
         return visitor
-    elif isinstance(x, Node):
+    elif isinstance(x, AST):
         return ast.walk(x, visitor, walker, verbose)
     elif is_sequence(x) and not isinstance(x, basestring):
         for n in x:
@@ -219,7 +223,7 @@ def walk(x, visitor, walker=None, verbose=None):
         raise ValueError(x)
 
 class NameFinder (NodeVisitor):
-    'Find and classify variable names'
+    """Find and classify variable names"""
 
     def __init__(self, free=(), locals=(), conditional_locals=(), globals=()):
         self.free = set(free)
@@ -233,6 +237,22 @@ class NameFinder (NodeVisitor):
         # Consider built-in names as global to anything
         import __builtin__
         self.globals |= set(dir(__builtin__))
+
+
+    def visit(self, x):
+        """Wrap NodeVisitor.visit() to handle 'None' and sequences."""
+
+        # (Nodes are iterable and strings cause infinite regress)
+        if x is None:
+            pass
+        elif isinstance(x, AST):
+            super(NameFinder, self).visit(x) 
+        elif is_sequence(x) and not isinstance(x, basestring):
+            for n in x:
+                super(NameFinder, self).visit(n) 
+        else:
+            raise ValueError(x)
+
 
     ###########################################################################
     # NameFinder interface
@@ -286,7 +306,7 @@ class NameFinder (NodeVisitor):
     ### Variable occurrances ##################################################
 
     def visit_Name(self, node):
-        self._see_unbound([node.name])
+        self._see_unbound([node.id])
 
     ### Binding occurrances ###################################################
 
@@ -557,16 +577,16 @@ class NameFinder (NodeVisitor):
 
         # Save Nodes corresponding to constant assignment
         #  For later processing in blocks.
-        print node.value.n
-        if node.expr.__repr__().startswith('Const'):
+        if is_independent(node):
             self.constlist.append(node)
     
-        # Walk 'expr' before 'nodes' so that lhs bindings don't capture rhs
+        # Walk 'value' before 'targets' so that lhs bindings don't capture rhs
         # free vars
-        walk([node.expr] + node.nodes, self)
+        self.visit([node.value] + node.targets)
+#        self.visit(node.value)
+#        for target in node.targets:
+#            self.visit(target)
         
-    # (Defined above)
-    #def visitFor(self, node)
 
     ### Nested blocks #########################################################
     

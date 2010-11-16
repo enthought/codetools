@@ -177,7 +177,6 @@ class Block(HasTraits):
             self._updating_structure = True
 
             self.ast_tree = x
-            self._tidy_ast_tree()
 
             self._updating_structure = False
             #pop_exception_handler()
@@ -191,7 +190,6 @@ class Block(HasTraits):
                 else:
                     sub_blocks += block.sub_blocks
             self.sub_blocks = sub_blocks
-            self._tidy_ast_tree()
         else:
             raise ValueError('Expecting file, string, AST, or sequence. Got %r' % x)
 
@@ -628,11 +626,13 @@ class Block(HasTraits):
     # We compute '_dep_graph' and '_code' only when necessary and avoid
     # redundant computation.
 
-    def _tidy_ast_tree(self):
-        if isinstance(self.ast_tree, Module):
-            self.ast_tree = self.ast_tree.node
-        if isinstance(self.ast_tree, stmt) and len(self.ast_tree.nodes) == 1:
-            [self.ast_tree] = self.ast_tree.nodes
+    # I don't think this is needed anymore since new AST uses Module([body])
+    # not Module(Stmt([body])) like the old AST.
+#    def _tidy_ast_tree(self):
+#        if isinstance(self.ast_tree, Module):
+#            self.ast_tree = self.ast_tree.body
+#        if isinstance(self.ast_tree, stmt) and len(self.ast_tree._fields) == 1:
+#            self.ast_tree = [node for node in self.ast_tree.iter_child_nodes()]
 
     def _structure_changed(self, name, new):
         if not self._updating_structure:
@@ -640,11 +640,9 @@ class Block(HasTraits):
                 self._updating_structure = True
 
                 if name == 'ast_tree':
-                    # Policy: Keep our AST composable and tidy
-                    self._tidy_ast_tree()
-
                     # Compute our new sub-blocks and give them our filename
-                    self.sub_blocks = Block._decompose(self.ast)
+                    sub_blocks = Block._decompose(self.ast_tree)
+                    self.sub_blocks = sub_blocks
                     if self.sub_blocks is not None:
                         for b in self.sub_blocks:
                             b.filename = self.filename
@@ -652,8 +650,7 @@ class Block(HasTraits):
                         self.filename = None
 
                 elif name in ('sub_blocks', 'sub_blocks_items'):
-
-                    self.ast_tree = stmt([ b.ast_tree for b in self.sub_blocks ])
+                    self.ast_tree = Module([ b.ast_tree for b in self.sub_blocks ])
 
                 else:
                     assert False
@@ -792,15 +789,15 @@ class Block(HasTraits):
 
         # TODO Look within 'for', 'if', 'try', etc. (#1165)
         if isinstance(ast_tree, Module):
-            result = cls._decompose(ast_tree.node)
+            result = [cls._decompose(node) for node in ast_tree.body]
         elif isinstance(ast_tree, stmt):
-            if len(ast_tree.nodes) == 0:
+            if len(ast_tree._fields) == 0:
                 result = [Block(ast_tree)]
-            elif len(ast.nodes) == 1:
+            elif len(ast_tree._fields) == 1:
                 # Treat 'Stmt([node])' the same as 'node'
-                result = cls._decompose(ast_tree.nodes[0])
+                result = cls._decompose(getattr(ast_tree, ast_tree._fields[0]))
             else:
-                result = map(Block, ast_tree.nodes)
+                result = Block(ast_tree) 
         else:
             result = [Block(ast_tree)]
 
