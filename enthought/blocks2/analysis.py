@@ -557,6 +557,7 @@ class NameFinder (NodeVisitor):
 
         # Save Nodes corresponding to constant assignment
         #  For later processing in blocks.
+        print node.value.n
         if node.expr.__repr__().startswith('Const'):
             self.constlist.append(node)
     
