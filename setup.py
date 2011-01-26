@@ -61,7 +61,6 @@ setup(
         Topic :: Software Development :: Libraries
         """.splitlines() if len(c.strip()) > 0],
     description = DOCLINES[1],
-    extras_require = INFO['extras_require'],
     include_package_data = True,
     package_data = {'enthought': ['contexts/images/*.png']},
     install_requires = INFO['install_requires'],
