@@ -1,0 +1,167 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Context Functions &mdash; CodeTools v3.2.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '3.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/et.ico"/>
+    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="up" title="CodeTools Tutorial" href="tutorial.html" />
+    <link rel="next" title="CodeTools Roadmap" href="roadmap.html" />
+    <link rel="prev" title="Adapted Data Contexts" href="tut_adapted.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="roadmap.html" title="CodeTools Roadmap"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tut_adapted.html" title="Adapted Data Contexts"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" accesskey="U">CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="context-functions">
+<h1>Context Functions<a class="headerlink" href="#context-functions" title="Permalink to this headline">¶</a></h1>
+<p>It should be clear by this point that the ability to use a general context
+as the namespace when executing code permits some complex behaviors to be
+implemented simply. There are circumstances where it would be useful to
+replace the namespace of a function with a context.  The <tt class="xref py py-mod docutils literal"><span class="pre">context_function</span></tt>
+module provides some tools for doing this.</p>
+<p>This example shows how to set up a simple listening data context that displays
+changes within a function&#8217;s local namespace as it executes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.traits.api</span> <span class="kn">import</span> <span class="n">HasTraits</span><span class="p">,</span> <span class="n">on_trait_change</span>
+<span class="kn">from</span> <span class="nn">enthought.contexts.api</span> <span class="kn">import</span> <span class="n">DataContext</span><span class="p">,</span> <span class="n">context_function</span>
+
+<span class="k">class</span> <span class="nc">ListeningDataContext</span><span class="p">(</span><span class="n">DataContext</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A simple subclass of DataContext which listens for items_modified</span>
+<span class="sd">    events and pretty-prints them.&quot;&quot;&quot;</span>
+
+    <span class="nd">@on_trait_change</span><span class="p">(</span><span class="s">&#39;items_modified&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">print_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;Event: items_modified&quot;</span>
+        <span class="k">for</span> <span class="n">added</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">added</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;  Added:&quot;</span><span class="p">,</span> <span class="n">added</span><span class="p">,</span> <span class="s">&quot;=&quot;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">added</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">modified</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">modified</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;  Modified:&quot;</span><span class="p">,</span> <span class="n">modified</span><span class="p">,</span> <span class="s">&quot;=&quot;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">modified</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">removed</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;  Removed:&quot;</span><span class="p">,</span> <span class="n">removed</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A function which fires add, modify and delete events. &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">+</span><span class="mi">2</span>
+    <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="s">&#39;12&#39;</span>
+    <span class="k">del</span> <span class="n">z</span>
+    <span class="k">return</span> <span class="n">y</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">context_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ListeningDataContext</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The functionality is also available as a function decorator:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@local_context</span><span class="p">(</span><span class="n">ListeningDataContext</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A function which will fire add, modify and delete events. &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">+</span><span class="mi">2</span>
+    <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="s">&#39;12&#39;</span>
+    <span class="k">del</span> <span class="n">z</span>
+    <span class="k">return</span> <span class="n">y</span>
+</pre></div>
+</div>
+<p>The <tt class="xref py py-func docutils literal"><span class="pre">context_function()</span></tt> and <tt class="xref py py-func docutils literal"><span class="pre">local_context()</span></tt> functions both take an
+argument which is a context factory: each invocation of the function results in
+a call to the context factory. In most cases it returns a freshly created
+context.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/e-logo-rev.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tut_adapted.html"
+                        title="previous chapter">Adapted Data Contexts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="roadmap.html"
+                        title="next chapter">CodeTools Roadmap</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tut_cxt_functions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="roadmap.html" title="CodeTools Roadmap"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tut_adapted.html" title="Adapted Data Contexts"
+             >previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" >CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008, Enthought.
+      Last updated on Jan 27, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>

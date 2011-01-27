@@ -1,0 +1,211 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CodeTools Roadmap &mdash; CodeTools v3.2.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '3.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/et.ico"/>
+    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="prev" title="Context Functions" href="tut_cxt_functions.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tut_cxt_functions.html" title="Context Functions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="codetools-roadmap">
+<span id="roadmap"></span><h1>CodeTools Roadmap<a class="headerlink" href="#codetools-roadmap" title="Permalink to this headline">¶</a></h1>
+<p>This document exists as a place to keep track of proposed enhancements to
+CodeTools and indicate where development effort could profitably be spent.</p>
+<div class="section" id="things-that-won-t-change">
+<h2>Things That Won&#8217;t Change<a class="headerlink" href="#things-that-won-t-change" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>There will be a Block class:<ul>
+<li>that accepts code and ASTs and other Blocks for initialization.</li>
+<li>that has an <tt class="xref py py-meth docutils literal"><span class="pre">execute()</span></tt> method with similar semantics to an <tt class="xref py py-func docutils literal"><span class="pre">exec()</span></tt>
+statement</li>
+<li>that has <tt class="xref py py-attr docutils literal"><span class="pre">inputs</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">outputs</span></tt> and <tt class="xref py py-attr docutils literal"><span class="pre">fromimport</span></tt> attributes,
+as well as some sort of conditional output attribute</li>
+</ul>
+</li>
+<li>There will be a DataContext class very similar to the current one.  I
+don&#8217;t think that there will be much change needed in this other than
+changes/improvements based on changes to the traits API</li>
+<li>The MultiContext, AdaptedDataContext, TraitslikeContextWrapper objects
+should be fairly stable.</li>
+</ul>
+</div>
+<div class="section" id="blocks">
+<h2>Blocks<a class="headerlink" href="#blocks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="language-support">
+<h3>Language Support<a class="headerlink" href="#language-support" title="Permalink to this headline">¶</a></h3>
+<p>The biggest deficiency with blocks right now is that they don&#8217;t fully support
+all Python language features, such as:</p>
+<ul class="simple">
+<li>list comprehensions</li>
+<li>generator expressions</li>
+</ul>
+<p>A near term goal should be that code should be able to make a round-trip
+through a block without changing the outcome of executing it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">exec</span> <span class="n">code</span>
+<span class="n">Block</span><span class="p">(</span><span class="n">code</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="k">exec</span> <span class="n">unparse</span><span class="p">(</span><span class="n">Block</span><span class="p">(</span><span class="n">code</span><span class="p">)</span><span class="o">.</span><span class="n">ast</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>should (in the absence of other manipulations) do the same thing, and
+<tt class="docutils literal"><span class="pre">unparse(Block(code).ast)</span></tt> should produce code that is as close as practical
+to the original code block.</p>
+</div>
+<div class="section" id="speed">
+<h3>Speed<a class="headerlink" href="#speed" title="Permalink to this headline">¶</a></h3>
+<p>Currently whenever a Block is created it immediately parses the code to an
+AST.  This is not a particularly fast operation, and can cause slowdowns if
+a large number of Blocks are created in quick succession.  Deferring this
+AST generation using Traits properties would alleviate this somewhat, but
+would require a refactor of the Block object.</p>
+<p>It may be worthwhile doing some serious profiling of the parser and compiler
+to see if there are places where speed can be improved.</p>
+</div>
+<div class="section" id="new-functionality">
+<h3>New Functionality<a class="headerlink" href="#new-functionality" title="Permalink to this headline">¶</a></h3>
+<p>There are almost certainly new pieces of functionality that may be worth
+adding:</p>
+<ul class="simple">
+<li>improved branching analysis tools &#8212; what variables depend on what other
+variables</li>
+<li>common AST manipulation routines in the spirit of enthought.blocks.rename</li>
+</ul>
+</div>
+</div>
+<div class="section" id="contexts">
+<h2>Contexts<a class="headerlink" href="#contexts" title="Permalink to this headline">¶</a></h2>
+<p>The main area that has room for development in the context packages is adding
+to the provided collections of filters and adapters.</p>
+</div>
+<div class="section" id="execution">
+<h2>Execution<a class="headerlink" href="#execution" title="Permalink to this headline">¶</a></h2>
+<p>There should be a robust and general ExecutionManager class that listens to
+a Context and then executes a Block in that (or a related) Context.  This
+would essentially split this functionality out from the ExecutingContext
+class.</p>
+</div>
+<div class="section" id="new-modules">
+<h2>New Modules<a class="headerlink" href="#new-modules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bytecodetools">
+<h3>ByteCodeTools<a class="headerlink" href="#bytecodetools" title="Permalink to this headline">¶</a></h3>
+<p>There may be a place for a library that provides a rich and consistent
+interface for bytecode manipulation.  Currently the only place where we do
+this sort of manipulation is in the <tt class="xref py py-mod docutils literal"><span class="pre">context_function</span></tt> module, and there the
+bytecode substitution is fairly simple.</p>
+<p>For example, there may be a more efficient way to provide the functionality of
+<tt class="xref py py-mod docutils literal"><span class="pre">enthought.blocks.rename</span></tt> by manipulating code objects and bytecode rather
+than AST.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/e-logo-rev.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CodeTools Roadmap</a><ul>
+<li><a class="reference internal" href="#things-that-won-t-change">Things That Won&#8217;t Change</a></li>
+<li><a class="reference internal" href="#blocks">Blocks</a><ul>
+<li><a class="reference internal" href="#language-support">Language Support</a></li>
+<li><a class="reference internal" href="#speed">Speed</a></li>
+<li><a class="reference internal" href="#new-functionality">New Functionality</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contexts">Contexts</a></li>
+<li><a class="reference internal" href="#execution">Execution</a></li>
+<li><a class="reference internal" href="#new-modules">New Modules</a><ul>
+<li><a class="reference internal" href="#bytecodetools">ByteCodeTools</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tut_cxt_functions.html"
+                        title="previous chapter">Context Functions</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/roadmap.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tut_cxt_functions.html" title="Context Functions"
+             >previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008, Enthought.
+      Last updated on Jan 27, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>

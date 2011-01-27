@@ -1,0 +1,182 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The Block-Context-Execution Manager Pattern &mdash; CodeTools v3.2.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '3.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/et.ico"/>
+    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="up" title="CodeTools Tutorial" href="tutorial.html" />
+    <link rel="next" title="TraitslikeContextWrapper" href="tut_tcw.html" />
+    <link rel="prev" title="DataContexts" href="tut_datacontexts.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tut_tcw.html" title="TraitslikeContextWrapper"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tut_datacontexts.html" title="DataContexts"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" accesskey="U">CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="the-block-context-execution-manager-pattern">
+<h1>The Block-Context-Execution Manager Pattern<a class="headerlink" href="#the-block-context-execution-manager-pattern" title="Permalink to this headline">¶</a></h1>
+<p>The last example of the previous section is an instance of a pattern that has
+been found to work very well at Enthought for the rapid development of
+scientific applications. In principle it consists of 3 components:</p>
+<ul class="simple">
+<li><strong>Block:</strong> an object that executes code in a namespace and knows its
+inputs and outputs.</li>
+<li><strong>Context:</strong> a namespace that generates events when modified.</li>
+<li><strong>Execution Manager:</strong> an object that listens for changes in the Context,
+and when a Block&#8217;s inputs change, tells the Block to execute.</li>
+</ul>
+<p>This is not an unfamiliar model: it&#8217;s how most spreadsheet applications work.
+You have the spreadsheet application itself (the Execution Manager), the
+values contained in the cells (the Context), and the the functions and scripts
+which perform the computations (the Block).</p>
+<p>The example from the previous section might seem like an awful lot of
+work to replace what, as far as basic computation is concerned, could be
+implemented with a fairly simple HasTraits class like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">DoItAll</span><span class="p">(</span><span class="n">HasTraits</span><span class="p">):</span>
+    <span class="c"># inputs</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">Float</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">Float</span>
+    <span class="n">mass</span> <span class="o">=</span> <span class="n">Float</span>
+
+    <span class="c"># outputs</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="n">Float</span>
+    <span class="n">momentum</span> <span class="o">=</span> <span class="n">Float</span>
+
+    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span>
+</pre></div>
+</div>
+<p>However, the Block-Context-Execution Manager pattern gives us the following
+advantages:</p>
+<ul class="simple">
+<li>ability to restrict computations to the bare minimum required</li>
+<li>immediate feedback on computations while they occur</li>
+<li>automated recalculation in response to changes</li>
+<li>(perhaps most importantly) almost complete separation between the
+application code (the execution manager and UI components), the
+computation code, and the data</li>
+</ul>
+<p>Actually, by using Traits properties you can get the first three of these &#8212;
+although the code will become more and more complex as the computations get
+longer.</p>
+<p>The last point, however, is very powerful and is something that you cannot get
+with an all-in-one approach.  It means that computational code can be
+written almost completely independently of application and UI code.  With
+appropriate <tt class="docutils literal"><span class="pre">try</span> <span class="pre">...</span> <span class="pre">except</span> <span class="pre">...</span></tt> blocks, the inevitable errors in the
+calculation blocks (particularly if user-supplied) or problems with the data
+can be contained. The Context is well-suited to being the Model in
+a Model-View-Controller UI pattern, particularly since it uses Traits.</p>
+<p>And it encourages code re-use.  In fact, a well-written execution manager has
+the potential to be a complete application framework which can be repurposed
+to different domains by simply replacing the blocks that it executes.
+Similarly, well-written Blocks will most likely have clean libraries associated
+with them and can be re-used with different types of variables. (At Enthought
+it is common to use the same Block code with scalars in the UI and with arrays
+to produce plots.)</p>
+<p>It is worth noting that the roles do not have to be kept completely separate.
+There are situations where bundling together the Execution Manager with the
+Block (to make a smart block that re-executes whenever it needs to) or a
+DataContext (to make a smart data set) makes sense.  The ExecutingContext
+class in <tt class="xref py py-mod docutils literal"><span class="pre">enthought.execution.api</span></tt> is precisely such an example: it
+combines a DataContext and a listener to automatically execute.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/e-logo-rev.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tut_datacontexts.html"
+                        title="previous chapter">DataContexts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tut_tcw.html"
+                        title="next chapter">TraitslikeContextWrapper</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tut_bcem_pattern.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tut_tcw.html" title="TraitslikeContextWrapper"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tut_datacontexts.html" title="DataContexts"
+             >previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" >CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008, Enthought.
+      Last updated on Jan 27, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>

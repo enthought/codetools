@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MultiContexts &mdash; CodeTools v3.2.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '3.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/et.ico"/>
+    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="up" title="CodeTools Tutorial" href="tutorial.html" />
+    <link rel="next" title="Adapted Data Contexts" href="tut_adapted.html" />
+    <link rel="prev" title="TraitslikeContextWrapper" href="tut_tcw.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tut_adapted.html" title="Adapted Data Contexts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tut_tcw.html" title="TraitslikeContextWrapper"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" accesskey="U">CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="multicontexts">
+<h1>MultiContexts<a class="headerlink" href="#multicontexts" title="Permalink to this headline">¶</a></h1>
+<p>There is one notable issue with the application shown in
+<a class="reference internal" href="tut_tcw.html#traitslikecontextwrapper"><em>TraitslikeContextWrapper</em></a>: the UI assumes that every input is a float, and
+that every output should be displayed.</p>
+<p>Suppose we try to use a slightly modified version of the code block from
+<a class="reference internal" href="tut_blocks.html#rocket-restriction-example"><em>Example: Rocket Science</em></a> section with that application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span>
+
+<span class="k">def</span> <span class="nf">simple_integral</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an array of trapezoid sums of y&quot;&quot;&quot;</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+        <span class="n">y_avg</span> <span class="o">=</span> <span class="n">y</span><span class="o">*</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dx</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dx</span><span class="p">)):</span>
+      <span class="n">integral</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">integral</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">y_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">integral</span><span class="p">)</span>
+
+<span class="n">thrust</span> <span class="o">=</span> <span class="n">fuel_density</span><span class="o">*</span><span class="n">fuel_burn_rate</span><span class="o">*</span><span class="n">exhaust_velocity</span> <span class="o">+</span> <span class="n">nozzle_pressure</span><span class="o">*</span><span class="n">nozzle_area</span>
+<span class="n">mass</span> <span class="o">=</span> <span class="n">mass_rocket</span> <span class="o">+</span> <span class="n">fuel_density</span><span class="o">*</span><span class="p">(</span><span class="n">fuel_volume</span> <span class="o">-</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">fuel_burn_rate</span><span class="p">,</span><span class="n">t</span><span class="p">))</span>
+<span class="n">acceleration</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">/</span><span class="n">mass</span>
+<span class="n">velocity</span> <span class="o">=</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">acceleration</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">momentum</span> <span class="o">=</span> <span class="n">mass</span><span class="o">*</span><span class="n">velocity</span>
+<span class="n">displacement</span> <span class="o">=</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">velocity</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">kinetic_energy</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">mass</span><span class="o">*</span><span class="n">velocity</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">work</span> <span class="o">=</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">thrust</span><span class="p">,</span> <span class="n">displacement</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We would discover that the function <tt class="xref py py-func docutils literal"><span class="pre">simple_integral()</span></tt> appears in the list
+of outputs. The reason that this function appears as an output is that, as far
+as a namespace is concerned, defining a function is the same as assigning to a
+variable. Also note that the imports <em>don&#8217;t</em> appear &#8212; imported names are
+available in the <tt class="xref py py-attr docutils literal"><span class="pre">fromimports</span></tt> trait attribute of a Block and don&#8217;t appear
+as outputs.</p>
+<p>So one solution to this problem is to always import functions.  However there
+is a second problem: the variable <em>t</em> needs to be an array, not a float, and
+we probably shouldn&#8217;t have the user interacting with it directly anyway.
+So we need to solve the more general problem of which outputs should be
+displayed.</p>
+<p>There are several approaches to solving this problem, but perhaps the most
+elegant is to have the DataContext itself keep track.  One way to achieve
+this is through the use of a MultiContext, which is a context that contains
+a number of subcontexts, together with rules to decide which of these it
+should use for a particular variable. To an external viewer, the MultiContext
+appears just like a DataContext, but objects can keep references to particular
+subcontexts that supply the information that they require.</p>
+<p>The subcontexts need to be able to tell the MultiContext which items they can
+accept, and which they do not wish to store. To do this they implement the
+IRestrictedContext interface, which simply means that they have to provide
+an <tt class="xref py py-meth docutils literal"><span class="pre">allows()</span></tt> method which should take a key and value as input and
+return True if the Context accepts the item. Regular DataContext objects
+implement the IRestrictedContext interface, deferring to their subcontext if it
+is a DataContext, but allowing any variable to be set otherwise.</p>
+<p>Let&#8217;s say that we want to have a context available which contains only
+variables whose values are floats.  That would be done like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.contexts.api</span> <span class="kn">import</span> <span class="n">MultiContext</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">FloatContext</span><span class="p">(</span><span class="n">DataContext</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">allows</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">BContext</span><span class="p">(</span><span class="n">DataContext</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">allows</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;b&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">float_context</span> <span class="o">=</span> <span class="n">FloatContext</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b_context</span> <span class="o">=</span> <span class="n">BContext</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_context</span> <span class="o">=</span> <span class="n">DataContext</span><span class="p">()</span> <span class="c"># subcontext is a dict, so allows() is always True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span> <span class="o">=</span> <span class="n">MultiContext</span><span class="p">(</span><span class="n">float_context</span><span class="p">,</span> <span class="n">b_context</span><span class="p">,</span> <span class="n">default_context</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">34.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">34</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Hello&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="go">[(&#39;a&#39;, 34.0), (&#39;b&#39;, 34), (&#39;c&#39;, &#39;Hello&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">float_context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="go">[(&#39;a&#39;, 34.0)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b_context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="go">[(&#39;b&#39;, 34)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="go">[(&#39;c&#39;, &#39;Hello&#39;)]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>There are some wrinkles to the way that the MultiContext handles setting an
+item when multiple subcontexts will accept it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]</span>
+<span class="go">10.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">float_context</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]</span>
+<span class="go">10.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_context</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]</span>
+<span class="go">&#39;Hello&#39;</span>
+</pre></div>
+</div>
+<p>There are also some wrinkles in how it handles matching keys in contexts
+that won&#8217;t accept an item:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Goodbye&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+<span class="go">&quot;Goodbye&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_context</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+<span class="go">&quot;Goodbye&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&quot;a&quot;</span> <span class="ow">in</span> <span class="n">float_context</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_context</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;foo&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;bar&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi_context</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span>
+<span class="go">&#39;bar&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">default_context</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_context</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span>
+<span class="go">&#39;foo&#39;</span>
+</pre></div>
+</div>
+<p>Note that if a context rejects an item, the MultiContext removes the key
+for that item from the rejecting context. If a context accepts an item,
+and the same key exists in later contexts (in the context list), the items
+with that key in the later contexts are untouched.</p>
+<p class="last">If this sort of behavior is not what you want, then you can easily subclass
+MultiContext to provide the semantics that your application requires.</p>
+</div>
+<p>Using a MultiContext in the Block-Context-Execution Manager pattern allows us
+to have the Execution Manager looking only at the inputs, and allows us to
+separate out the UI from the Execution Manager.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/e-logo-rev.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tut_tcw.html"
+                        title="previous chapter">TraitslikeContextWrapper</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tut_adapted.html"
+                        title="next chapter">Adapted Data Contexts</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tut_multicontext.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tut_adapted.html" title="Adapted Data Contexts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tut_tcw.html" title="TraitslikeContextWrapper"
+             >previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" >CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008, Enthought.
+      Last updated on Jan 27, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>

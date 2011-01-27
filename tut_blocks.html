@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Blocks &mdash; CodeTools v3.2.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '3.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/et.ico"/>
+    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="up" title="CodeTools Tutorial" href="tutorial.html" />
+    <link rel="next" title="DataContexts" href="tut_datacontexts.html" />
+    <link rel="prev" title="CodeTools Tutorial" href="tutorial.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tut_datacontexts.html" title="DataContexts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="CodeTools Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" accesskey="U">CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="blocks">
+<span id="codetools-tutorial-blocks"></span><h1>Blocks<a class="headerlink" href="#blocks" title="Permalink to this headline">¶</a></h1>
+<p>Creating a <tt class="xref py py-class docutils literal"><span class="pre">Block</span></tt> object is as simple as invoking it on a string
+containing some Python code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.blocks.api</span> <span class="kn">import</span> <span class="n">Block</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s">&quot;&quot;&quot;# my calculations</span>
+<span class="gp">... </span><span class="s">velocity = distance/time</span>
+<span class="gp">... </span><span class="s">momentum = mass*velocity</span>
+<span class="gp">... </span><span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The code in the Block can be executed by using its <tt class="xref py py-meth docutils literal"><span class="pre">execute()</span></tt> method in
+much the same way that the <tt class="xref py py-func docutils literal"><span class="pre">exec()</span></tt> statement works:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">global_namespace</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;distance&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s">&#39;mass&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">local_namespace</span><span class="p">,</span> <span class="n">global_namespace</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After this code, the variables <em>local_namespace</em> and
+<em>global_namespace</em> hold the same contents as if the Block&#8217;s code had
+been executed by the <tt class="xref py py-func docutils literal"><span class="pre">exec()</span></tt> statement.  In particular:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span>
+<span class="go">{&#39;distance&#39;: 10.0, &#39;mass&#39;: 3.0, &#39;time&#39;: 2.5, &#39;velocity&#39;: 4.0, &#39;momentum&#39;: 12.0}</span>
+</pre></div>
+</div>
+<p>Whenever you create a Block, it performs an analysis of the code, so the block
+can tell you which variables are its inputs and outputs:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">inputs</span>
+<span class="go">set([&#39;distance&#39;, &#39;mass&#39;, &#39;time&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">outputs</span>
+<span class="go">set([&#39;velocity&#39;, &#39;momentum&#39;])</span>
+</pre></div>
+</div>
+<p>In more complex situations, the Block object can give further useful
+information about the code, such as imported names and variables which may
+conditionally be output.</p>
+<div class="section" id="restricting-execution">
+<h2>Restricting Execution<a class="headerlink" href="#restricting-execution" title="Permalink to this headline">¶</a></h2>
+<p>Where the Block object is unique is that it is aware of which variables are
+dependent on which other variables within its code.  This allows you to
+restrict the code that is executed by specifying which input and output
+variables you are concerned with.  This is achieved through the
+<tt class="xref py py-meth docutils literal"><span class="pre">restrict()</span></tt> method of the Block object, which expects one or both of
+the following arguments:</p>
+<dl class="docutils">
+<dt><em>inputs</em></dt>
+<dd>a list or tuple of input variables</dd>
+<dt><em>outputs</em></dt>
+<dd>a list or tuple of output variables</dd>
+</dl>
+<p>For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">restrict</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;mass&#39;</span><span class="p">,))</span>
+</pre></div>
+</div>
+<p>This restricted block consists of every line that depends on the variable
+<em>mass</em> in the original code block.  In this case, this is the single line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">momentum</span> <span class="o">=</span> <span class="n">mass</span><span class="o">*</span><span class="n">velocity</span>
+</pre></div>
+</div>
+<p>Internally, the Block object maintains a representation of the code block as
+an abstract syntax tree from the Python standard library <a class="reference external" href="http://docs.python.org/lib/compiler.html">compiler
+package</a>.  This representation
+is not particularly human-friendly, but the <tt class="xref py py-func docutils literal"><span class="pre">unparse()</span></tt> function allows us to
+reconstruct the Python source:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span><span class="o">.</span><span class="n">ast</span>
+<span class="go">Assign([AssName(&#39;momentum&#39;, &#39;OP_ASSIGN&#39;)], Mul((Name(&#39;mass&#39;), Name(&#39;velocity&#39;))))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.blocks.api</span> <span class="kn">import</span> <span class="n">unparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unparse</span><span class="p">(</span><span class="n">restricted_block</span><span class="o">.</span><span class="n">ast</span><span class="p">)</span>
+<span class="go">&#39;momentum = mass*velocity&#39;</span>
+</pre></div>
+</div>
+<p>This allows us to perform the minimum amount of recalculation in response to
+changes in the inputs.  For example, if we change <em>mass</em> in the local
+name space, then we only need to execute the restricted block which depends
+upon <em>mass</em> as input:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span><span class="p">[</span><span class="s">&#39;mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">local_namespace</span><span class="p">,</span> <span class="n">global_namespace</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span>
+<span class="go">{&#39;distance&#39;: 10.0, &#39;mass&#39;: 3.0, &#39;time&#39;: 2.5, &#39;velocity&#39;: 4.0, &#39;momentum&#39;: 16.0}</span>
+</pre></div>
+</div>
+<p>On the other hand, if we are interested in calculating only a particular
+output, we can restrict on the outputs:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">velocity_comp</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">restrict</span><span class="p">(</span><span class="n">outpts</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;velocity&#39;</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unparse</span><span class="p">(</span><span class="n">velocity_comp</span><span class="o">.</span><span class="n">ast</span><span class="p">)</span>
+<span class="go">&#39;velocity = distance/time\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">velocity_comp</span><span class="o">.</span><span class="n">inputs</span>
+<span class="go">set([&#39;distance&#39;, &#39;time&#39;])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Block restriction is designed to answer the questions &#8220;What do I need to
+compute when this changes?&#8221; or &#8220;What do I need to compute to calculate this
+output?&#8221;  It doesn&#8217;t (yet) answer the question &#8220;If I have these inputs, what
+outputs can I calculate?&#8221;</p>
+</div>
+</div>
+<div class="section" id="example-rocket-science">
+<span id="rocket-restriction-example"></span><h2>Example: Rocket Science<a class="headerlink" href="#example-rocket-science" title="Permalink to this headline">¶</a></h2>
+<p>At this point, an extended example is probably worthwhile.  Consider the
+following code which calculates quantities involved in the motion of a rocket
+as it loses reaction mass:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="n">simple_integral</span>
+
+<span class="n">thrust</span> <span class="o">=</span> <span class="n">fuel_density</span><span class="o">*</span><span class="n">fuel_burn_rate</span><span class="o">*</span><span class="n">exhaust_velocity</span> <span class="o">+</span> <span class="n">nozzle_pressure</span><span class="o">*</span><span class="n">nozzle_area</span>
+
+<span class="n">mass</span> <span class="o">=</span> <span class="n">mass_rocket</span> <span class="o">+</span> <span class="n">fuel_density</span><span class="o">*</span><span class="p">(</span><span class="n">fuel_volume</span> <span class="o">-</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">fuel_burn_rate</span><span class="p">,</span><span class="n">t</span><span class="p">))</span>
+
+<span class="n">acceleration</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">/</span><span class="n">mass</span>
+
+<span class="n">velocity</span> <span class="o">=</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">acceleration</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">momentum</span> <span class="o">=</span> <span class="n">mass</span><span class="o">*</span><span class="n">velocity</span>
+
+<span class="n">displacement</span> <span class="o">=</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">velocity</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">kinetic_energy</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">mass</span><span class="o">*</span><span class="n">velocity</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">work</span> <span class="o">=</span> <span class="n">simple_integral</span><span class="p">(</span><span class="n">thrust</span><span class="p">,</span> <span class="n">displacement</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="xref py py-func docutils literal"><span class="pre">simple_integral()</span></tt> function in the helper module looks something like
+this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span>
+
+<span class="k">def</span> <span class="nf">simple_integral</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an array of trapezoid sums of y&quot;&quot;&quot;</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+        <span class="n">y_avg</span> <span class="o">=</span> <span class="n">y</span><span class="o">*</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dx</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dx</span><span class="p">)):</span>
+      <span class="n">integral</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">integral</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">y_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">integral</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Inputs to these computations are expected to be either scalars or 1-D Numpy
+arrays that hold the values of quantities as they vary over time. Some of
+these computations, particularly the <tt class="xref py py-func docutils literal"><span class="pre">simple_integral()</span></tt> computations, are
+potentially expensive.  We can set up a Block to hold this computation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">rocket_science</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s">   ...</span>
+<span class="gp">... </span><span class="s">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rocket_block</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="n">rocket_science</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rocket_block</span><span class="o">.</span><span class="n">inputs</span>
+<span class="go">set([&#39;fuel_volume&#39;, &#39;nozzle_area&#39;, &#39;fuel_density&#39;, &#39;nozzle_pressure&#39;, &#39;mass_rocket&#39;,</span>
+<span class="go">&#39;exhaust_velocity&#39;, &#39;fuel_burn_rate&#39;, &#39;t&#39;])</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rocket_block</span><span class="o">.</span><span class="n">outputs</span>
+<span class="go">set([&#39;acceleration&#39;, &#39;work&#39;, &#39;mass&#39;, &#39;displacement&#39;, &#39;thrust&#39;, &#39;velocity&#39;,</span>
+<span class="go">&#39;kinetic_energy&#39;, &#39;momentum&#39;])</span>
+</pre></div>
+</div>
+<p>We can use this code by setting up a dictionary of local values for the
+inputs and then inspecting it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linspace</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">mass_rocket</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>         <span class="c"># kg</span>
+<span class="gp">... </span>    <span class="n">fuel_density</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>       <span class="c"># kg/m**3</span>
+<span class="gp">... </span>    <span class="n">fuel_volume</span> <span class="o">=</span> <span class="mf">0.060</span><span class="p">,</span>         <span class="c"># m**3</span>
+<span class="gp">... </span>    <span class="n">fuel_burn_rate</span> <span class="o">=</span> <span class="mf">0.030</span><span class="p">,</span>      <span class="c"># m**3/s</span>
+<span class="gp">... </span>    <span class="n">exhaust_velocity</span> <span class="o">=</span> <span class="mf">3100.0</span><span class="p">,</span>   <span class="c"># m/s</span>
+<span class="gp">... </span>    <span class="n">nozzle_pressure</span> <span class="o">=</span> <span class="mf">5000.0</span><span class="p">,</span>    <span class="c"># Pa</span>
+<span class="gp">... </span>    <span class="n">nozzle_area</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>           <span class="c"># m**2</span>
+<span class="gp">... </span>    <span class="n">t</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span> <span class="c"># calculate every millisecond</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rocket_block</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">local_namespace</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;velocity&quot;</span><span class="p">][::</span><span class="mi">100</span><span class="p">]</span>  <span class="c"># values every 0.1 seconds</span>
+<span class="go">[    0.            60.91584683   123.00759628   186.32154205   250.90676661</span>
+<span class="go">   316.81536979   384.10272129   452.82774018   523.05320489   594.84609779</span>
+<span class="go">   668.27798918   743.42546606   820.37061225   899.2015473    980.01303322</span>
+<span class="go">  1062.90715923  1147.9941173   1235.39308291  1325.23321898  1417.65482395]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.chaco.shell</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">(</span><span class="n">local_namespace</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">],</span> <span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;displacement&quot;</span><span class="p">],</span> <span class="s">&quot;b-&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/chaco_plot_1.png" src="_images/chaco_plot_1.png" />
+<div class="section" id="restricting-on-inputs">
+<h3>Restricting on Inputs<a class="headerlink" href="#restricting-on-inputs" title="Permalink to this headline">¶</a></h3>
+<p>If we want to change the inputs into this calculation, say to increase the
+nozzle area of the rocket to 0.8 m**2 and decrease the nozzle pressure to 4800
+Pa, then we don&#8217;t want to have to recalculate everything. We want to calculate
+only the quantities which depend upon <em>nozzle_pressure</em> and <em>nozzle_area</em>.
+We can do this as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span> <span class="o">=</span> <span class="n">rocket_block</span><span class="o">.</span><span class="n">restrict</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">(</span><span class="s">&quot;nozzle_area&quot;</span><span class="p">,</span> <span class="s">&quot;nozzle_pressure&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;nozzle_area&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;nozzle_pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4800</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">local_namespace</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;velocity&quot;</span><span class="p">][::</span><span class="mi">100</span><span class="p">]</span>
+<span class="go">[    0.            61.13047262   123.44099092   186.97801173   251.79079045</span>
+<span class="go">   317.93161047   385.45603658   454.42319544   524.89608665   596.9419286</span>
+<span class="go">   670.63254375   746.04478895   823.2610372    902.36971856   983.46592888</span>
+<span class="go">  1066.65211709  1152.03886341  1239.7457632   1329.90243447  1422.64966996]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;displacement&quot;</span><span class="p">][::</span><span class="mi">100</span><span class="p">]</span>
+<span class="go">[    0.             3.04840167    12.27156425    27.78985293    49.72841906</span>
+<span class="go">    78.21749145   113.39269184   155.39537691   204.37300999   260.47956554</span>
+<span class="go">   323.87597012   394.73058422   473.21972951   559.52826736   653.8502346</span>
+<span class="go">   756.38954417   867.36075888   986.98994825  1115.51563971  1253.18987771]</span>
+</pre></div>
+</div>
+<p>Other values from the namespace can be extracted similarly.</p>
+<p>The structure of the new block can be observed from its traits:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span><span class="o">.</span><span class="n">outputs</span>
+<span class="go">set([&#39;acceleration&#39;, &#39;work&#39;, &#39;displacement&#39;, &#39;thrust&#39;, &#39;velocity&#39;, &#39;kinetic_energy&#39;,</span>
+<span class="go">&#39;momentum&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">unparse</span><span class="p">(</span><span class="n">restricted_block</span><span class="o">.</span><span class="n">ast</span><span class="p">)</span>
+<span class="go">from numpy import array, sum, ones, linspace</span>
+<span class="go">thrust = fuel_density*fuel_burn_rate*exhaust_velocity+nozzle_pressure*nozzle_area</span>
+<span class="go">acceleration = thrust/mass</span>
+<span class="go">velocity = simple_integral(acceleration, t)</span>
+<span class="go">kinetic_energy = 0.5*mass*velocity**2</span>
+<span class="go">displacement = simple_integral(velocity, t)</span>
+<span class="go">momentum = mass*velocity</span>
+<span class="go">work = simple_integral(thrust, displacement)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="restricting-on-outputs">
+<h3>Restricting on Outputs<a class="headerlink" href="#restricting-on-outputs" title="Permalink to this headline">¶</a></h3>
+<p>In the plot above, we only really needed to know the value of <em>displacement</em>
+&#8212; so to simplify the calculation of that value for the plot, we could have
+restricted on the output:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span> <span class="o">=</span> <span class="n">rocket_block</span><span class="o">.</span><span class="n">restrict</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="p">(</span><span class="s">&quot;displacement&quot;</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;mass_rocket&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">110</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">local_namespace</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once again, we can introspect the code block and have a look at what is
+actually going on:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span><span class="o">.</span><span class="n">inputs</span>
+<span class="go">set([&#39;fuel_volume&#39;, &#39;nozzle_area&#39;, &#39;fuel_density&#39;, &#39;nozzle_pressure&#39;,</span>
+<span class="go">&#39;exhaust_velocity&#39;, &#39;mass_rocket&#39;, &#39;t&#39;, &#39;fuel_burn_rate&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unparse</span><span class="p">(</span><span class="n">restricted_block</span><span class="o">.</span><span class="n">ast</span><span class="p">)</span>
+<span class="go">thrust = fuel_density*fuel_burn_rate*exhaust_velocity + nozzle_pressure*nozzle_area</span>
+<span class="go">mass = mass_rocket + fuel_density*(fuel_volume - simple_integral(fuel_burn_rate,t))</span>
+<span class="go">acceleration = thrust/mass</span>
+<span class="go">velocity = simple_integral(acceleration, t)</span>
+<span class="go">displacement = simple_integral(velocity, t)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="restricting-on-both">
+<h3>Restricting on Both<a class="headerlink" href="#restricting-on-both" title="Permalink to this headline">¶</a></h3>
+<p>If we wanted to go even further, and just update the plot depending on changes
+to just one of the inputs (say, <em>mass_rocket</em>), we could do the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span> <span class="o">=</span> <span class="n">rocket_block</span><span class="o">.</span><span class="n">restrict</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">(</span><span class="s">&quot;mass_rocket&quot;</span><span class="p">,),</span>
+<span class="gp">... </span>    <span class="n">outputs</span><span class="o">=</span><span class="p">(</span><span class="s">&quot;displacement&quot;</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unparse</span><span class="p">(</span><span class="n">restricted_block</span><span class="o">.</span><span class="n">ast</span><span class="p">)</span>
+<span class="go">mass = mass_rocket + fuel_density*(fuel_volume - simple_integral(fuel_burn_rate,t))</span>
+<span class="go">acceleration = thrust/mass</span>
+<span class="go">velocity = simple_integral(acceleration, t)</span>
+<span class="go">displacement = simple_integral(velocity, t)</span>
+</pre></div>
+</div>
+<p>To really see the full power of the Block class, and to incorporate it
+into programs, we really need the other half of the system: the DataContext
+class.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/e-logo-rev.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Blocks</a><ul>
+<li><a class="reference internal" href="#restricting-execution">Restricting Execution</a></li>
+<li><a class="reference internal" href="#example-rocket-science">Example: Rocket Science</a><ul>
+<li><a class="reference internal" href="#restricting-on-inputs">Restricting on Inputs</a></li>
+<li><a class="reference internal" href="#restricting-on-outputs">Restricting on Outputs</a></li>
+<li><a class="reference internal" href="#restricting-on-both">Restricting on Both</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">CodeTools Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tut_datacontexts.html"
+                        title="next chapter">DataContexts</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tut_blocks.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tut_datacontexts.html" title="DataContexts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="CodeTools Tutorial"
+             >previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" >CodeTools Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008, Enthought.
+      Last updated on Jan 27, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>

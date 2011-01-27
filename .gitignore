@@ -1,2 +1,5 @@
+# File types to ignore
+*.pyc
+
 # Ignore the built documentation.
 docs/build/

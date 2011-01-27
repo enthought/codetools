@@ -1,0 +1,170 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CodeTools Tutorial &mdash; CodeTools v3.2.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '3.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/et.ico"/>
+    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="next" title="Blocks" href="tut_blocks.html" />
+    <link rel="prev" title="Welcome to the CodeTools documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tut_blocks.html" title="Blocks"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the CodeTools documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="codetools-tutorial">
+<span id="tutorial"></span><h1>CodeTools Tutorial<a class="headerlink" href="#codetools-tutorial" title="Permalink to this headline">¶</a></h1>
+<blockquote class="epigraph">
+<p>Namespaces are one honking great idea &#8212; let&#8217;s do more of those!</p>
+<p class="attribution">&mdash;Tim Peters, <em>The Zen of Python</em> (<span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0020"><strong>PEP 20</strong></a>)</p>
+</blockquote>
+<p>This tutorial introduces the key concepts behind the CodeTools modules, as
+well as highlighting some of their potential applications.  This tutorial
+assumes some familiarity with Traits, and uses Chaco to illustrate some
+potential uses.  Some familiarity with Numpy is also potentially useful for
+the more involved examples.</p>
+<p>The two building-blocks of the CodeTools system are the Block class and the
+DataContext class (and its various subclasses).</p>
+<p>A Block object simply holds a set of executable content, such as might be run by a
+Python exec command.  However, unlike a simple code string, the Block object
+performs analysis of the code it contains so that it can identify which of its
+variables depend on which other variables.</p>
+<p>A DataContext can be thought of as a Traits-aware dictionary object.  The base
+DataContext simply emits Traits events whenever an item is added, modified or
+deleted. Subclasses allow more sophisticated actions to take place
+on access or modification.</p>
+<p>This system of code and data objects evolved out of Enthought&#8217;s scientific
+applications as a common pattern where a series of computationally expensive
+transformations and calculations needed to be repeatedly performed on
+different sets of data. These calculations often involved with simple
+permutations of inputs into the calculation blocks, and often were applied in
+interactive situations where responsiveness
+is important.  The Block object, by being aware of how data flows through the
+code that it contains, can restrict the code that it actually needs to execute
+based on a permutation of an input.  The DataContext, by being able to trigger
+Traits events whenever it changes, can call upon a Block to recalculate
+dependent variables, and user-interface objects can listen to the events it
+generates to update based upon changes in its namespace.</p>
+<p>Subclasses of the DataContext class extend its functionality to provide
+functionality such as unit conversion, data masking, name translation and
+datatype separation.</p>
+<p>Put together, these concepts allow the creation of applications where the
+science code and the underlying application code are kept almost completely
+separate.</p>
+<p class="rubric">Tutorial Sections</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tut_blocks.html">Blocks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tut_blocks.html#restricting-execution">Restricting Execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_blocks.html#example-rocket-science">Example: Rocket Science</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tut_datacontexts.html">DataContexts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_bcem_pattern.html">The Block-Context-Execution Manager Pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_tcw.html">TraitslikeContextWrapper</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tut_tcw.html#example-simple-block-context-application">Example: Simple Block Context Application</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tut_multicontext.html">MultiContexts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_adapted.html">Adapted Data Contexts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_cxt_functions.html">Context Functions</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/e-logo-rev.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to the CodeTools documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tut_blocks.html"
+                        title="next chapter">Blocks</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tut_blocks.html" title="Blocks"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the CodeTools documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008, Enthought.
+      Last updated on Jan 27, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>
