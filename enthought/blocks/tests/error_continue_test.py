@@ -43,5 +43,5 @@ class ErrorContinueTest(unittest.TestCase):
             assert isinstance(e, CompositeException)
             assert len(e.exceptions) == 2
         return
-    
-        
+
+

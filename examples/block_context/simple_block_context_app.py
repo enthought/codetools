@@ -20,25 +20,25 @@ momentum = mass*velocity
 class SimpleBlockContextApp(HasTraits):
     # the data context we are listening to
     data = Instance(DataContext)
-    
+
     # the block we are executing
     block = Instance(Block)
-    
+
     # a wrapper around the data to interface with the UI
     tcw = Property(Instance(TraitslikeContextWrapper), depends_on=["block", "data"])
-    
+
     # a view for the wrapper
     tcw_view = Property(Instance(View), depends_on="block")
-    
+
     @on_trait_change('data.items_modified')
     def data_items_modified(self, event):
         """Execute the block if the inputs in the data change"""
         if isinstance(event, ItemsModified):
-            changed = set(event.added + event.modified + event.removed) 
+            changed = set(event.added + event.modified + event.removed)
             inputs = changed & self.block.inputs
             if inputs:
                 self.execute(inputs)
-    
+
     @cached_property
     def _get_tcw_view(self):
         """Getter for tcw_view: returns View of block inputs and outputs"""
@@ -48,7 +48,7 @@ class SimpleBlockContextApp(HasTraits):
                         for output in sorted(self.block.outputs))
         return View(Group(*(inputs+outputs)),
                     kind="live")
-    
+
     @cached_property
     def _get_tcw(self):
         """Getter for tcw: returns traits-like wrapper for data context"""
@@ -57,7 +57,7 @@ class SimpleBlockContextApp(HasTraits):
         tcw = TraitslikeContextWrapper(_context=self.data)
         tcw.add_traits(*out_vars, **in_vars)
         return tcw
-    
+
     def execute(self, inputs):
         """Restrict the code block to inputs and execute"""
         # only execute if we have all inputs

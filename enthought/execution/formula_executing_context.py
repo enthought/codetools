@@ -34,7 +34,7 @@ class FormulaExecutingContext(DataContext):
 
     # Whether to swallow exceptions from the block
     swallow_exceptions = Bool(False)
-    
+
     # A block representing the external block plus all of the expressions
     _composite_block = Instance(Block)
     # A block representing just the expressions
@@ -77,15 +77,15 @@ class FormulaExecutingContext(DataContext):
     def __init__(self, **kwtraits):
         if 'external_block' in kwtraits:
             self.external_block = kwtraits.pop('external_block')
-            
+
         super(FormulaExecutingContext, self).__init__(**kwtraits)
         self._regenerate_expression_block()
-        
+
         if self.external_block is None:
             self._external_code_changed(self.external_code)
         else:
             self.external_block = Block([self.external_block, Block(self.external_code)])
-            
+
         self._regenerate_composite_block()
 
 
@@ -100,46 +100,46 @@ class FormulaExecutingContext(DataContext):
         if self.execution_needed:
             self.execute_block()
         return
-    
-    def execute_block(self, inputs=(), outputs=()):        
+
+    def execute_block(self, inputs=(), outputs=()):
         if self.data_context is None:
             return
-        
+
         self._executing = True
         self.data_context.defer_events=True
-        
+
         if self._composite_block is None:
             self._regenerate_composite_block()
         if inputs !=() or outputs != ():
             block = self._composite_block.restrict(inputs=inputs, outputs=outputs)
         else:
             block = self._composite_block
-            
+
         old_defer_events = self.data_context.defer_events
 
-        
+
         if self.swallow_exceptions:
             try:
                 self.data_context.defer_events = True
-                block.execute(self.data_context, self._globals_context, 
+                block.execute(self.data_context, self._globals_context,
                               continue_on_errors=self.continue_on_errors)
-                self.data_context.defer_events = old_defer_events                
+                self.data_context.defer_events = old_defer_events
             except:
                 self.data_context.defer_events = old_defer_events
-                
+
         else:
             try:
                 self.data_context.defer_events = True
-                block.execute(self.data_context, self._globals_context, 
+                block.execute(self.data_context, self._globals_context,
                               continue_on_errors=self.continue_on_errors)
-                self.data_context.defer_events = old_defer_events                
+                self.data_context.defer_events = old_defer_events
             except Exception, ex:
-                self.data_context.defer_events = old_defer_events                
+                self.data_context.defer_events = old_defer_events
                 raise ex
 
         self._executing = False
         self.data_context.defer_events=False
-            
+
         execution_needed=False
         return
 
@@ -151,39 +151,39 @@ class FormulaExecutingContext(DataContext):
                 new_datacontext[key] = copy(self.data_context[key])
             except:
                 new_datacontext[key] = self.data_context[key]
-            
+
         # turn off auto-firing of events during construction, then turn it back on
         # after everything is set up
-        
+
         new = FormulaExecutingContext(data_context=new_datacontext,
                                       external_block=self.external_block,
                                       execution_needed=self.execution_needed,
                                       auto_execute=False,
                                       _expressions=self._expressions)
-        
+
         new._regenerate_expression_block()
         new._regenerate_composite_block()
-                
+
         new.auto_execute = self.auto_execute
-        
+
         return new
-    
-                               
-        
+
+
+
 
     # Trait listeners
     def _data_context_changed(self):
         self.execution_needed=True
-        
+
     def _external_code_changed(self, new):
         self.external_block = Block(new)
         return
 
-    
+
     def _external_block_changed(self, new):
         self._regenerate_composite_block()
         self.execute_block_if_auto()
-                                      
+
     def _expression_block_changed(self, new):
         self._regenerate_composite_block()
         self.execute_block_if_auto()
@@ -191,7 +191,7 @@ class FormulaExecutingContext(DataContext):
     def _regenerate_composite_block(self):
         self._composite_block = Block((self.external_block, self._expression_block))
         return
-    
+
     def _regenerate_expression_block(self):
         exprs = ['%s = %s' % (var, expr) for var, expr in self._expressions.items()]
         expression_code = '\n'.join(exprs) + '\n'
@@ -205,12 +205,12 @@ class FormulaExecutingContext(DataContext):
                 return
             self.execute_block_if_auto(inputs=inputs)
         return
-        
+
     def __composite_block_default(self):
         return Block('')
 
     def __expression_block_default(self):
         return Block('')
-    
 
-                                     
+
+

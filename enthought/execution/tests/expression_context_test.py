@@ -27,6 +27,6 @@ class ExpressionContextTest(unittest.TestCase):
     def _event_handler(self, event):
         self.event_count += 1
         self.last_event = event
-                         
-                         
-    
+
+
+

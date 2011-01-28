@@ -9,9 +9,9 @@ from compiler.ast import Const, Name, Tuple
 def rename(ast, mode, old, new):
     if mode not in ['variable', 'function']:
         raise ValueError("mode '%s' not supported")
-    
+
     rename_ast = RenameAst(ast, mode, old, new)
-    
+
     return rename_ast.tree, rename_ast.modifications
 
 class RenameAst:
@@ -34,7 +34,7 @@ class RenameAst:
         self.new = new
         self.tree = tree
         self.modifications = 0
-        
+
         self._dispatch(self.tree)
 
     #########################################################################
@@ -49,13 +49,13 @@ class RenameAst:
             for t in tree:
                 result.append(self._dispatch(t))
             return
-        
+
         if tree.__class__.__name__ == 'NoneType' and not self._do_indent:
             return
-        
+
         if tree.__class__.__name__ == 'NoneType' and not self._do_indent:
             return
-        
+
         if hasattr(self, "_"+tree.__class__.__name__):
             meth = getattr(self, "_"+tree.__class__.__name__)
             meth(tree)
@@ -75,12 +75,12 @@ class RenameAst:
     def _And(self, t):
         for node in t.nodes:
             self._dispatch(node)
-                
+
 #    def _AssAttr(self, t):
 #        """ Handle assigning an attribute of an object
 #        """
 #        self._dispatch(t.expr)
- 
+
     def _Assign(self, t):
         """ Expression Assignment such as "a = 1".
 
@@ -89,7 +89,7 @@ class RenameAst:
         """
         for node in t.nodes:
             self._dispatch(node)
-        
+
         self._dispatch(t.expr)
 
     def _AssName(self, t):
@@ -112,33 +112,33 @@ class RenameAst:
         """
         self._dispatch(t.node)
         self._dispatch(t.expr)
-            
+
     def _Bitand(self, t):
         """ Bit and operation.
-        """        
+        """
         for node in t.nodes:
             self._dispatch(node)
-                
+
     def _Bitor(self, t):
         """ Bit or operation
         """
         for node in t.nodes:
             self._dispatch(node)
-                
+
     def _CallFunc(self, t):
         """ Function call.
         """
         if self.mode == "function":
             self._dispatch(t.node)
-            
+
         for arg in t.args:
-            self._dispatch(arg)        
+            self._dispatch(arg)
 
     def _Compare(self, t):
         """ Comparison operator.
         """
         self._dispatch(t.expr)
-        
+
         for op in t.ops:
             self._dispatch(op[1])
 
@@ -165,7 +165,7 @@ class RenameAst:
 
     def _FloorDiv(self, t):
         self.__binary_op(t, '/')
-        
+
     def _For(self, t):
         self._dispatch(t.assign)
         self._dispatch(t.list)
@@ -177,40 +177,40 @@ class RenameAst:
 #        """ Handle "from xyz import foo, bar as baz".
 #        """
 #        self._dispatch(t.modname)
-#        self._Import(t)        
-                
+#        self._Import(t)
+
     def _Function(self, t):
         """ Handle function definitions
         """
         if t.decorators is not None:
             self._dispatch(t.decorators)
-            
+
         if self.mode == 'function' and t.name == self.old:
             t.name = self.new
             self.modifications += 1
-        
+
         for i, name in enumerate(t.argnames):
             if self.mode == 'variable' and name == self.old:
                 t.argnames[i] = self.new
                 self.modifications += 1
-                
+
         self._dispatch(t.code)
 
     def _Getattr(self, t):
         """ Handle getting an attribute of an object
-        
+
             fixme: decide what to do about hierarchical names
         """
         self._dispatch(t.expr)
-                
+
     def _If(self, t):
         for test in t.tests:
             self._dispatch(test[0])
             self._dispatch(test[1])
-            
+
         if t.else_ is not None:
             self._dispatch(t.else_)
-            
+
 #    def _Import(self, t):
 #        for i, name in enumerate(t.names):
 #            if self.mode == 'function' and name[0] == self.old:
@@ -225,7 +225,7 @@ class RenameAst:
         if self.mode == 'variable' and t.name == self.old:
             t.name = self.new
             self.modifications += 1
-            
+
         self._dispatch(t.expr)
 
     def Lambda(self, t):
@@ -233,7 +233,7 @@ class RenameAst:
             if self.mode == 'variable' and name == self.old:
                 t.argnames[i] = self.new
                 self.modifications += 1
-                
+
         self._dispatch(t.code)
 
     def _LeftShift(self):
@@ -242,23 +242,23 @@ class RenameAst:
     def _List(self, t):
         for node in t.nodes:
             self._dispatch(node)
-            
+
     def _ListComp(self, t):
         self._dispatch(t.expr)
-        
+
         for qual in t.quals:
             self._dispatch(qual)
-            
+
     def _ListCompFor(self, t):
         self._dispatch(t.assign)
         self._dispatch(t.list)
-        
+
         for if_ in t.ifs:
             self._dispatch(if_)
-            
+
     def _ListCompIf(self, t):
         self._dispatch(t.test)
-        
+
     def _Module(self, t):
         self._dispatch(t.node)
 
@@ -269,15 +269,15 @@ class RenameAst:
         if self.old == t.name:
             t.name = self.new
             self.modifications += 1
-        
+
     def _Or(self, t):
         for node in t.nodes:
             self._dispatch(node)
-                
+
     def _Print(self, t):
         for node in t.nodes:
             self._dispatch(node)
-    
+
     def _Printnl(self, t):
         self._Print(t)
 
@@ -310,54 +310,53 @@ class RenameAst:
 
     def _Subscript(self, t):
         self._dispatch(t.expr)
-        
+
         for sub in t.subs:
             self._dispatch(sub)
-            
+
     def _TryExcept(self, t):
         self._dispatch(t.body)
-        
+
         for handler in t.handlers:
             self._dispatch(handler[0])
             self._dispatch(handler[1])
-            
+
         if t.else_ is not None:
             self._dispatch(t.else_)
 
     def _Tuple(self, t):
         for node in t.nodes:
             self._dispatch(node)
-            
+
     def _UnaryAdd(self, t):
         self._write("+")
         self._dispatch(t.expr)
-        
+
     def _UnarySub(self, t):
         self._write("-")
-        self._dispatch(t.expr)        
+        self._dispatch(t.expr)
 
     def _With(self, t):
         self._dispatch(t.expr)
         self._dispatch(t.body)
-        
+
         if t.vars is not None:
             self._dispatch(t.vars)
-        
+
     def __binary_op(self, t, symbol):
         self._dispatch(t.left)
         self._dispatch(t.right)
-        
-        
+
+
 if __name__ == "__main__":
     from block import Block
     code = "with m as z:\n"\
            "   if(a<3): print foo(1)\n"\
            "   else: print foo(2)"
-           
+
     bl = Block(code)
     ast = bl.ast
     print rename(ast, 'variable', 'a', 'A')
     print rename(ast, 'variable', 'm', 'M')
     print rename(ast, 'variable', 'foo', 'FOO')
     print rename(ast, 'function', 'foo', 'Foo')
-    

@@ -90,13 +90,13 @@ local environment; and cling off outside the 'with' block/control.
 
 1. We need to check if any change to the 'context' variable in the data context
    will change the context itself.
-   
+
    - Checked, It does.
-   
+
 2. Check how the ``with`` statement works without a block and context.
 
     - Checked, works well.
-    
+
 3. Check how the ``with`` statement works during block execution.
 
     - Checked, Python crashes on version 2.5.0. However, after upgrading Python
@@ -153,7 +153,7 @@ class Mask:
         locals_val = adapt(locals_val, ICheckpointable).checkpoint()
 
         adapters = [WithMaskAdapter(mask=self.mask)]
-        self.context = AdaptedDataContext(subcontext=locals_val, 
+        self.context = AdaptedDataContext(subcontext=locals_val,
                                           _adapters=adapters)
 
         return

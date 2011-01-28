@@ -101,13 +101,13 @@ class UnparseCompilerAst:
             if i != len(t.nodes)-1:
                 self._write(") and (")
         self._write(")")
-               
+
     def _AssAttr(self, t):
         """ Handle assigning an attribute of an object
         """
         self._dispatch(t.expr)
         self._write('.'+t.attrname)
- 
+
     def _Assign(self, t):
         """ Expression Assignment such as "a = 1".
 
@@ -145,39 +145,39 @@ class UnparseCompilerAst:
     def _AugAssign(self, t):
         """ +=,-=,*=,/=,**=, etc. operations
         """
-        
+
         self._fill()
         self._dispatch(t.node)
         self._write(' '+t.op+' ')
         self._dispatch(t.expr)
         if not self._do_indent:
             self._write(';')
-            
+
     def _Bitand(self, t):
         """ Bit and operation.
         """
-        
+
         for i, node in enumerate(t.nodes):
             self._write("(")
             self._dispatch(node)
             self._write(")")
             if i != len(t.nodes)-1:
                 self._write(" & ")
-                
+
     def _Bitor(self, t):
         """ Bit or operation
         """
-        
+
         for i, node in enumerate(t.nodes):
             self._write("(")
             self._dispatch(node)
             self._write(")")
             if i != len(t.nodes)-1:
                 self._write(" | ")
-                
+
     def _Break(self, t):
         self._write('break')
-                
+
     def _CallFunc(self, t):
         """ Function call.
         """
@@ -241,7 +241,7 @@ class UnparseCompilerAst:
 
     def _Ellipsis(self, t):
         self._write("...")
-        
+
     def _For(self, t):
         self._fill("for ")
         self._dispatch(t.assign)
@@ -273,7 +273,7 @@ class UnparseCompilerAst:
             self._write(name)
             if asname is not None:
                 self._write(" as "+asname)
-                
+
     def _Function(self, t):
         """ Handle function definitions
         """
@@ -296,10 +296,10 @@ class UnparseCompilerAst:
         self._dispatch(t.code)
         self._leave()
         self._do_indent = True
-    
+
     def _GenExpr(self, t):
         self._dispatch(t.code)
-    
+
     def _GenExprInner(self, t):
         self._write("(")
         self._dispatch(t.expr)
@@ -307,7 +307,7 @@ class UnparseCompilerAst:
             self._write(' ')
             self._dispatch(qual)
         self._write(")")
-    
+
     def _GenExprFor(self, t):
         self._write('for ')
         self._dispatch(t.assign)
@@ -316,7 +316,7 @@ class UnparseCompilerAst:
         for ifs in t.ifs:
             self._write(' ')
             self._dispatch(ifs)
-    
+
     def _GenExprIf(self, t):
         self._write('if ')
         self._dispatch(t.test)
@@ -330,12 +330,12 @@ class UnparseCompilerAst:
             self._write(')')
         else:
             self._dispatch(t.expr)
-            
+
         self._write('.'+t.attrname)
-        
+
     def _If(self, t):
         self._fill()
-        
+
         for i, (compare,code) in enumerate(t.tests):
             if i == 0:
                 self._write("if ")
@@ -355,7 +355,7 @@ class UnparseCompilerAst:
             self._dispatch(t.else_)
             self._leave()
             self._write("\n")
-            
+
     def _IfExp(self, t):
         self._dispatch(t.then)
         self._write(" if ")
@@ -370,7 +370,7 @@ class UnparseCompilerAst:
         """ Handle "import xyz.foo".
         """
         self._fill("import ")
-        
+
         for i, (name,asname) in enumerate(t.names):
             if i != 0:
                 self._write(", ")
@@ -384,7 +384,7 @@ class UnparseCompilerAst:
         self._write(t.name)
         self._write("=")
         self._dispatch(t.expr)
-        
+
     def _List(self, t):
         self._write("[")
         for  i,node in enumerate(t.nodes):
@@ -392,7 +392,7 @@ class UnparseCompilerAst:
             if i < len(t.nodes)-1:
                 self._write(", ")
         self._write("]")
-    
+
     def _ListComp(self, t):
         self._write("[")
         self._dispatch(t.expr)
@@ -400,7 +400,7 @@ class UnparseCompilerAst:
             self._write(' ')
             self._dispatch(qual)
         self._write("]")
-    
+
     def _ListCompFor(self, t):
         self._write('for ')
         self._dispatch(t.assign)
@@ -409,7 +409,7 @@ class UnparseCompilerAst:
         for ifs in t.ifs:
             self._write(' ')
             self._dispatch(ifs)
-    
+
     def _ListCompIf(self, t):
         self._write('if ')
         self._dispatch(t.test)
@@ -427,12 +427,12 @@ class UnparseCompilerAst:
 
     def _NoneType(self, t):
         self._write("None")
-        
+
     def _Not(self, t):
         self._write('not (')
         self._dispatch(t.expr)
         self._write(')')
-        
+
     def _Or(self, t):
         self._write(" (")
         for i, node in enumerate(t.nodes):
@@ -440,7 +440,7 @@ class UnparseCompilerAst:
             if i != len(t.nodes)-1:
                 self._write(") or (")
         self._write(")")
-                
+
     def _Pass(self, t):
         self._write("pass\n")
 
@@ -521,7 +521,7 @@ class UnparseCompilerAst:
             self._enter()
             self._dispatch(handler[2])
             self._leave()
-            
+
         if t.else_:
             self._fill("else")
             self._enter()
@@ -546,14 +546,14 @@ class UnparseCompilerAst:
             self._dispatch(last_element)
 
             self._write(")")
-            
+
     def _UnaryAdd(self, t):
         self._write("+")
         self._dispatch(t.expr)
-        
+
     def _UnarySub(self, t):
         self._write("-")
-        self._dispatch(t.expr)        
+        self._dispatch(t.expr)
 
     def _With(self, t):
         self._fill('with ')
@@ -565,7 +565,7 @@ class UnparseCompilerAst:
         self._dispatch(t.body)
         self._leave()
         self._write('\n')
-        
+
     def _int(self, t):
         self._write(repr(t))
 
@@ -602,7 +602,7 @@ class UnparseCompilerAst:
 
     def _str(self, t):
         self._write(repr(t))
-        
+
     def _tuple(self, t):
         self._write(str(t))
 

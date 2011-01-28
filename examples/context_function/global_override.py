@@ -47,7 +47,7 @@ def accumulator_factory():
 def accumulator(value):
     """Accumulate total in accumulation_dict"""
     total += value
-    
+
 for i in range(10):
     accumulator(i)
     print accumulation_dict['total']

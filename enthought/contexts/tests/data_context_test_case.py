@@ -22,7 +22,7 @@ class DataContextTestCase(AbstractContextTestCase):
     def matched_input_output_pair(self):
         """ Return values for testing dictionary get/set, etc.
         """
-        return 1.2, 1.2    
+        return 1.2, 1.2
 
 
 def test_persistence():
@@ -115,7 +115,7 @@ def test_comparison():
     a = DataContext(name='a')
     b = DataContext(name='b')
     c = _TestContext(name='c')
-    
+
     assert a == b
     assert a != c
-    
+

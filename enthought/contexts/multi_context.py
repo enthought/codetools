@@ -77,7 +77,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
         The first subcontext which allows the key/value pair will get it. If an
         earlier subcontext has the key, but does not allow the assignment, then
         that key will be deleted. Later contexts with the key will be untouched.
-        
+
         If the key/value pair cannot be assigned to anything, no deletion will
         take place.
 
@@ -116,7 +116,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
                         added = [key]
                         modified = []
                         c[key] = value
-                        
+
                     set = True
                     break
                 elif key in c:
@@ -159,7 +159,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
 
 
     #### Trait Event Handlers ##################################################
-    
+
     @on_trait_change('subcontexts:items_modified')
     def subcontexts_items_modified(self, event):
         """ Pass events up.
@@ -172,7 +172,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
 
         self._fire_event(added=event.added, removed=event.removed,
             modified=event.modified, context=event.context)
-    
+
     def _subcontexts_items_changed(self, event):
         """ Trait listener for items of subcontexts list.
         """

@@ -110,7 +110,7 @@ def dependency_graph(asts, to_ast=lambda x: x):
         iff a's AST uses names created by b's AST. We assume 'to_ast' is
         injective and elements of 'asts' are hashable. Raises a CyclicGraph
         exception when the output graph would have been cyclic.
-    
+
         If a name is created by multiple elements of 'asts', then the
         dependency graph won't determine a well-defined program. e.g.
 
@@ -128,7 +128,7 @@ def dependency_graph(asts, to_ast=lambda x: x):
         Some examples:
 
             >>> from compiler import parse
-            >>> import enthought.util.graph as graph 
+            >>> import enthought.util.graph as graph
             >>>
             >>> assert graph.eq(dependency_graph(to_ast=parse, asts=[
             ...     'a = b+c', 'c = 3', 'b = f(c)'
@@ -254,7 +254,7 @@ class NameFinder:
                 if prefix in self.locals:
                     return
                 suffix = suffix[suffix.find('.')+1:]
-                
+
             self.free.add(name)
 
     def _bind(self, names):
@@ -333,14 +333,14 @@ class NameFinder:
     def visitAssAttr(self, node):
         v = walk(node.expr, NameFinder())
         self._bind([v.free.pop() + "." + node.attrname])
-        
+
     def visitCallFunc(self, node):
         if isinstance(node.node, Name):
             self._see_unbound([node.node.name])
         elif isinstance(node.node, Getattr):
             v = walk(node.node.expr, NameFinder())
             self._see_unbound(v.free)
-        
+
         for arg in node.args:
             if isinstance(arg, Name):
                 self._see_unbound([arg.name])
@@ -350,7 +350,7 @@ class NameFinder:
             else:
                 v = walk(arg, NameFinder())
                 self._see_unbound(v.free)
-                
+
 
     def visitImport(self, node):
         self.imports.append(node)
@@ -553,16 +553,16 @@ class NameFinder:
         #  For later processing in blocks.
         if node.expr.__repr__().startswith('Const'):
             self.constlist.append(node)
-    
+
         # Walk 'expr' before 'nodes' so that lhs bindings don't capture rhs
         # free vars
         walk([node.expr] + node.nodes, self)
-        
+
     # (Defined above)
     #def visitFor(self, node)
 
     ### Nested blocks #########################################################
-    
+
     def visitKeyword(self, node):
         # kwargs are not supported due to difficulty in managing these in the graph
         logger.warn("Keyword arguments may not be correctly identified in call graph for \"%s\"" \
@@ -576,16 +576,16 @@ class NameFinder:
         # kwargs are not supported due to difficulty in managing these in the graph
         if node.kwargs == 1:
             raise TypeError("keyword args not supported")
-        
+
         # Find free vars nearby
         walk(node.defaults, self)
 
         globals      = self.globals - set(node.argnames)
         locals       = self.locals | set(node.argnames)
         conditionals = self.conditional_locals
-        
+
         self._bind([node.name])
-        
+
         # fixme: the inputs/outputs of functions are not set. This may cause graph errors
         #v = walk(node.code,
         #         NameFinder(globals=globals, locals=locals, conditional_locals=conditionals))
@@ -597,7 +597,7 @@ class NameFinder:
     # in the source control history (with tests!).)
     def visitClass(self, node):
         raise NotImplementedError('Nested block: %s' % node.name)
-    
+
 # A variation on the compiler module's visitor pattern
 class Transformer(object):
     r'''...

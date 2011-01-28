@@ -58,7 +58,7 @@ class Hdf5ContextTest(unittest.TestCase):
 
     @classmethod
     def teardown_class(cls):
-        os.remove('test.h5')       
+        os.remove('test.h5')
 
     def test_empty_keys1(self):
         # test empty keys

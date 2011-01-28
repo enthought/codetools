@@ -9,7 +9,7 @@ from enthought.contexts.api import DataContext, context_function
 class ListeningDataContext(DataContext):
     """ A simple subclass of DataContext which listens for items_modified
     events and pretty-prints them."""
-    
+
     @on_trait_change('items_modified')
     def print_event(self, event):
         print "Event: items_modified"

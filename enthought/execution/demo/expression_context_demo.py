@@ -39,7 +39,7 @@ class ExpressionContextDemo(HasTraits):
 
     def _view_expression_fired(self):
         context_adapter = PlotDataContextAdapter(context=self.expression_context)
-        
+
         plot = Plot(context_adapter)
         plot.plot((self.index_expression, self.value_expression))
         self.plots.add(plot)
@@ -49,9 +49,9 @@ class ExpressionContextDemo(HasTraits):
     def _execute_fired(self):
         exec self.code in {}, self.data_context
         return
-    
+
 if __name__ == '__main__':
     ecd = ExpressionContextDemo()
     ecd.configure_traits()
 
-    
+

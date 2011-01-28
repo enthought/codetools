@@ -141,7 +141,7 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
 
     def test_augmented_assignment(self):
         'Augmented assignment'
-        
+
         equivalent_pairs = (
             ('a += b', 'a = a + b'),
             ('a |= b - c', 'a = a | (b - c)'),
@@ -291,7 +291,7 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
         # outside of 'visitName'
         self._base('a = 0; a += 1', (), 'a', ())
         self._base('a = 0\nif t: b = a', 't', 'a', 'b')
-        
+
     def test_function_positional_args(self):
         code =  "a = 1.0\n" \
                 "def test_func(c, d):\n" \
@@ -299,14 +299,14 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
                 "    f = d + 4\n" \
                 "    return e*f\n" \
                 "m = test_func(a, b)"
-                
+
         block = Block(code)
         self.assertEqual(len(block.sub_blocks), 3)
         self.assertEqual(block.inputs, set(['b']))
         self.assertEqual(block.all_outputs, set(['a', 'm', 'test_func']))
         self.assertEqual(block.conditional_outputs, set([]))
         self.assertEqual(block.outputs, set(['a', 'm', 'test_func']))
-                         
+
     def test_function_varargs_args(self):
         code =  "a = 1.0\n" \
                 "def test_func(*varargs):\n" \
@@ -314,11 +314,11 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
                 "    f = varargs[1] + 4\n" \
                 "    return e*f\n" \
                 "m = test_func(a, b)"
-                
+
 
         def test_raises(code):
             block = Block(code)
-            
+
         self.assertRaises(TypeError, test_raises, code)
 
     def test_function_kwargs_args(self):
@@ -338,7 +338,7 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
             assert(False)
 
         raise nose.SkipTest("inputs do not get mapped correctly, but we need keyword support for decorators")
-            
+
         self.assertRaises(ValueError, test_raises, code)
 
         # keywords might be supported in the future, just not yet
@@ -349,7 +349,7 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
             self.assertEqual(block.all_outputs, set(['a', 'm']))
             self.assertEqual(block.conditional_outputs, set([]))
             self.assertEqual(block.outputs, set(['a', 'm']))
-                
+
     def test_function_kwargs_dict_args(self):
         code =  "a = 1.0\n" \
                 "def test_func(**kwargs):\n" \
@@ -357,10 +357,10 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
                 "    f = kwargs['d'] + 4\n" \
                 "    return e*f\n" \
                 "m = test_func(a=a, b=b)"
-                
+
         def test_raises(code):
             block = Block(code)
-            
+
         self.assertRaises(TypeError, test_raises, code)
 
 
@@ -372,7 +372,7 @@ class NameAnalysisTestCase(unittest.TestCase, NameAnalysisTestMixin):
                 "    f = d + 4\n" \
                 "    return e*f\n" \
                 "m = test_func(b)"
-                
+
         block = Block(code)
         self.assertEqual(len(block.sub_blocks), 3)
         self.assertEqual(block.inputs, set(['b']))

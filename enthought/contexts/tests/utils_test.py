@@ -19,7 +19,7 @@ class UtilsTestCase(unittest.TestCase):
     """
 
     ### compare_objects tests ------------------------------------------------
-    
+
     def test_compare_dicts(self):
         """ Check if dictionaries are compared correctly.
         """
@@ -103,9 +103,9 @@ class UtilsTestCase(unittest.TestCase):
         self.assertNotEqual(repr(longer), safe_repr(longer, limit=100))
         self.assertTrue(len(safe_repr(longer, limit=100)) < 110)
 
-                                        
+
 if __name__ == '__main__':
     import sys
     unittest.main(argv = sys.argv)
-    
+
 ### EOF -----------------------------------------------------------------------

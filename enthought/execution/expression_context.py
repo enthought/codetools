@@ -50,7 +50,7 @@ class ExpressionContext(ListenableMixin, PersistableMixin, DictMixin):
         # and see if it works as an expression on this context if it's not in the underly
         # -ing
         return key in self.underlying_context
-    
+
     def __getitem__(self, key):
         if key in self.underlying_context.keys():
             return self.underlying_context[key]
@@ -83,10 +83,10 @@ class ExpressionContext(ListenableMixin, PersistableMixin, DictMixin):
         future due to plots or other listeners trying to change values.
         Theoretically one could store the inverse of a function and allow this
         if the function was invertable"""
-        
+
         self.underlying_context[key] = value
         return
-    
+
     get = DictMixin.get
 
     def __str__(self):
@@ -114,4 +114,4 @@ class ExpressionContext(ListenableMixin, PersistableMixin, DictMixin):
         self._expressions = {}
         self._dependencies = {}
         return
-        
+

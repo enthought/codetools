@@ -275,7 +275,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         return '%s(name=%r)' % (type(self).__name__, self.name)
 
     #### DictMixin interface ##################################################
-    
+
     def __cmp__(self, other):
         # Dont allow objects of different inherited classes to be equal.
         # This WILL ALLOW different instances with different names but the
@@ -283,7 +283,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         #
         # Subclasses may wish to override this to compare different attributes
         #
-        
+
         cls_cmp = cmp(self.__class__, other.__class__)
         if cls_cmp != 0:
             return cls_cmp
@@ -308,7 +308,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         -------
         allowed : bool
         """
-        # WORKAROUND: subclassing from DataContext can cause the adapter to put the real 
+        # WORKAROUND: subclassing from DataContext can cause the adapter to put the real
         # context in subcontext if used in a class which adapts. In this case
         # call allows on the real context. This only happens occasionally and is a bug.
         if self.subcontext is not None and isinstance(self.subcontext, DataContext):
@@ -342,9 +342,9 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
 
 
 declareAdapter(
-    lambda x: DataContext(subcontext=x), 
+    lambda x: DataContext(subcontext=x),
     [ICheckpointable, IListenableContext, IPersistableContext,
-        IRestrictedContext], 
+        IRestrictedContext],
     forProtocols=[IContext],
 )
 

@@ -186,4 +186,4 @@ def test_checkpoint_nested():
     assert copy['b'] is m['b']
 
 
-    
+

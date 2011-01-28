@@ -37,7 +37,7 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
     def test_print_redirect(self):
         code = "print >> error, x"
         self._check_round_trip(code)
-        
+
     def test_unary_minus(self):
         code = "a = -1"
         self._check_round_trip(code)
@@ -162,12 +162,12 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
     def test_getattr(self):
         code = "foo.bar.baz"
         self._check_round_trip(code)
-        
+
     def test_if(self):
         code = "if True: \n" \
-                   "    pass" 
+                   "    pass"
         self._check_round_trip(code)
-        
+
     def test_if2(self):
         code = "if True: \n" \
                    "    \n" \
@@ -176,7 +176,7 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
                    "    \n" \
                    "    x = 5"
         self._check_round_trip(code)
-        
+
     def test_if3(self):
         code = "if True: \n" \
                    "    pass\n\n" \
@@ -205,7 +205,7 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
                    "    if True: \n" \
                    "        pass"
         self._check_round_trip(code)
-        
+
     def test_list(self):
         code = "[True]"
         self._check_round_trip(code)
@@ -213,7 +213,7 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
     def test_list2(self):
         code = "[True, False]"
         self._check_round_trip(code)
-        
+
     def test_list3(self):
         code = "[list()]"
         self._check_round_trip(code)
@@ -315,7 +315,7 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
                "x = arange(0.0, 10.0, 1.0)\n"\
                "cond = (x > 4) | (x < 8)"
         self._check_round_trip(code)
-               
+
     def test_augassign(self):
         # += check
         code = "c = 1\nc += 1"
@@ -345,32 +345,32 @@ class UnparseCompilerAstTestCase(unittest.TestCase):
         code = 'from __future__ import with_statement\n'\
                'with m: \n'\
                '    vp = 1.0'
-        self._check_round_trip(code) 
-    
+        self._check_round_trip(code)
+
     def test_list_comp1(self):
         code = '[x for x in [1, 2, 3] if x != 2]'
         self._check_round_trip(code)
-    
+
     def test_list_comp2(self):
         code = "[(x, y) for x in [1, 2, 3] if x != 2 for y in ['a', 'b']]"
         self._check_round_trip(code)
-    
+
     def test_list_comp3(self):
         code = "[(x, y) for x in [1, 2, 3] if x != 2 if x > 0 for y in ['a', 'b']]"
         self._check_round_trip(code)
-    
+
     def test_gen_expr1(self):
         code = '(x for x in [1, 2, 3] if x != 2)'
         self._check_round_trip(code)
-    
+
     def test_gen_expr2(self):
         code = "((x, y) for x in [1, 2, 3] if x != 2 for y in ['a', 'b'])"
         self._check_round_trip(code)
-    
+
     def test_gen_expr3(self):
         code = "((x, y) for x in [1, 2, 3] if x != 2 if x > 0 for y in ['a', 'b'])"
         self._check_round_trip(code)
-    
+
     def test_gen_expr4(self):
         code = 'all((x for x in [1, 2, 3] if x != 2))'
         self._check_round_trip(code)

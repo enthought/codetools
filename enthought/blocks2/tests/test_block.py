@@ -35,7 +35,7 @@ def test_basic_02():
     assert_equal(sorted(names), ['x', 'y'])
     assert_equal(names['x'], 100)
     assert_equal(names['y'], 101)
-    
+
 def test_restrict_inputs():
     """Test a basic use of the restrict(inputs=(...)) method."""
 
@@ -91,7 +91,7 @@ def test_impure_execute():
 
     raise SkipTest
 
-    code=""" 
+    code="""
 import os  # module and function names are discarded by default.
 def ff():
     global y  # will not be retained but will be available in the code block.

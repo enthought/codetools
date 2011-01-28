@@ -62,8 +62,8 @@ def extract_const_assigns(node):
 def is_independent(node):
     """ Whether an AST represents a independent expression.
 
-        "Independent" means that this AST has a dependency graph that 
-        does not depend on any other dependency graph or on the context 
+        "Independent" means that this AST has a dependency graph that
+        does not depend on any other dependency graph or on the context
         in which it executes. Here are some examples:
 
             >>> from compiler import parse
@@ -102,10 +102,10 @@ def is_independent(node):
             False
     """
     return (
-        isinstance(node, Num) or isinstance(node, Str) or 
+        isinstance(node, Num) or isinstance(node, Str) or
         isinstance(node, Name) and node.id in ['None', 'True', 'False'] or
         isinstance(node, (List, Tuple, Dict)) and all(map(is_independent, node)) or
-        isinstance(node, expr) and all([is_independent(child) for child in node.iter_child_nodes()]) or 
+        isinstance(node, expr) and all([is_independent(child) for child in node.iter_child_nodes()]) or
         isinstance(node, Expr) and is_independent(node.value)
     )
 
@@ -118,7 +118,7 @@ def dependency_graph(asts, to_ast=lambda x: x):
         iff a's AST uses names created by b's AST. We assume 'to_ast' is
         injective and elements of 'asts' are hashable. Raises a CyclicGraph
         exception when the output graph would have been cyclic.
-    
+
         If a name is created by multiple elements of 'asts', then the
         dependency graph won't determine a well-defined program. e.g.
 
@@ -136,7 +136,7 @@ def dependency_graph(asts, to_ast=lambda x: x):
         Some examples:
 
             >>> from compiler import parse
-            >>> import enthought.util.graph as graph 
+            >>> import enthought.util.graph as graph
             >>>
             >>> assert graph.eq(dependency_graph(to_ast=parse, asts=[
             ...     'a = b+c', 'c = 3', 'b = f(c)'
@@ -246,10 +246,10 @@ class NameFinder (NodeVisitor):
         if x is None:
             pass
         elif isinstance(x, AST):
-            super(NameFinder, self).visit(x) 
+            super(NameFinder, self).visit(x)
         elif is_sequence(x) and not isinstance(x, basestring):
             for n in x:
-                super(NameFinder, self).visit(n) 
+                super(NameFinder, self).visit(n)
         else:
             raise ValueError(x)
 
@@ -278,7 +278,7 @@ class NameFinder (NodeVisitor):
                 if prefix in self.locals:
                     return
                 suffix = suffix[suffix.find('.')+1:]
-                
+
             self.free.add(name)
 
     def _bind(self, names):
@@ -357,14 +357,14 @@ class NameFinder (NodeVisitor):
     def visit_AssAttr(self, node):
         v = walk(node.expr, NameFinder())
         self._bind([v.free.pop() + "." + node.attrname])
-        
+
     def visit_Call(self, node):
         if isinstance(node.node, Name):
             self._see_unbound([node.node.name])
         elif isinstance(node.node, Getattr):
             v = walk(node.node.expr, NameFinder())
             self._see_unbound(v.free)
-        
+
         for arg in node.args:
             if isinstance(arg, Name):
                 self._see_unbound([arg.name])
@@ -374,7 +374,7 @@ class NameFinder (NodeVisitor):
             else:
                 v = walk(arg, NameFinder())
                 self._see_unbound(v.free)
-                
+
 
     def visit_Import(self, node):
         self.imports.append(node)
@@ -579,17 +579,17 @@ class NameFinder (NodeVisitor):
         #  For later processing in blocks.
         if is_independent(node):
             self.constlist.append(node)
-    
+
         # Walk 'value' before 'targets' so that lhs bindings don't capture rhs
         # free vars
         self.visit([node.value] + node.targets)
 #        self.visit(node.value)
 #        for target in node.targets:
 #            self.visit(target)
-        
+
 
     ### Nested blocks #########################################################
-    
+
     def visit_keyword(self, node):
         # kwargs are not supported due to difficulty in managing these in the graph
         logger.warn("Keyword arguments may not be correctly identified in call graph for \"%s\"" \
@@ -603,16 +603,16 @@ class NameFinder (NodeVisitor):
         # kwargs are not supported due to difficulty in managing these in the graph
         if node.kwargs == 1:
             raise TypeError("keyword args not supported")
-        
+
         # Find free vars nearby
         walk(node.defaults, self)
 
         globals      = self.globals - set(node.argnames)
         locals       = self.locals | set(node.argnames)
         conditionals = self.conditional_locals
-        
+
         self._bind([node.name])
-        
+
         # fixme: the inputs/outputs of functions are not set. This may cause graph errors
         #v = walk(node.code,
         #         NameFinder(globals=globals, locals=locals, conditional_locals=conditionals))
@@ -624,7 +624,7 @@ class NameFinder (NodeVisitor):
     # in the source control history (with tests!).)
     def visit_ClassDef(self, node):
         raise NotImplementedError('Nested block: %s' % node.name)
-    
+
 # A variation on the compiler module's visitor pattern
 class Transformer(object):
     r"""...

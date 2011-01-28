@@ -124,7 +124,7 @@ class BlockTestCase(unittest.TestCase):
 
     def test_ast_policy(self):
         'Policy: Keep tidy ASTs'
-        
+
         a = Discard(Name('a'))
         empty = Stmt([])
 
@@ -240,7 +240,7 @@ class BlockTestCase(unittest.TestCase):
         s2 = 'a = f(x)'
         s3 = 'a.foo(z)'
         s4 = 'A.foo(a, z)'
-        
+
         # Pure
         self._base(s1, 'z', 'a', (), { '0':'z', '1':'0', '2':'1', 'a':'1' })
         self._base(s2, 'fx', 'a', (), { '0':'fx', 'a':'0' })
@@ -485,7 +485,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
         a._tidy_ast()
         b._tidy_ast()
         self.assertEqual(str(a.ast), str(b.ast))
-        
+
     def _base(self, code, inputs, outputs, *results):
 
         # Convert results to a string if necessary
@@ -508,15 +508,15 @@ class BlockRestrictionTestCase(unittest.TestCase):
             self.assertTrue(restricted.ast in [Block(r).ast for r in results])
 
     ### Tests #################################################################
-    
+
     def test_restrict_on_nested_blocks(self):
         b1 = Block('a=0;b=a+1')
         b2 = Block('x=99;z=x-1')
         composite=Block([b1,b2])
-        
-        self.assertSimilar( Block('a=0'), 
+
+        self.assertSimilar( Block('a=0'),
                             composite.restrict(outputs=['a']))
-        self.assertSimilar( Block('x=99'), 
+        self.assertSimilar( Block('x=99'),
                             composite.restrict(outputs=['x']))
 
     def test_restrict(self):
@@ -614,54 +614,54 @@ class BlockRestrictionTestCase(unittest.TestCase):
         self.assertRaises(ValueError, b.restrict, inputs='z')
         self.assertRaises(ValueError, b.restrict, outputs='z')
         self.assertRaises(ValueError, b.restrict)
-        
+
     def test_imports(self):
         'restrict blocks containing imports'
-        
+
         # Test 'from' syntax
         b = Block('from math import sin, pi\n'\
                   'b=sin(pi/a)\n' \
                   'd = c * 3.3')
-        
+
         sub_block = b.restrict(inputs=('a'))
         self.assertEqual(sub_block.inputs, set(['a']))
         self.assertEqual(sub_block.outputs, set(['b']))
         self.assertEqual(sub_block.fromimports, set(['pi', 'sin']))
-        
+
         context = {'a':2, 'c':0.0}
         sub_block.execute(context)
         self.assertTrue(context.has_key('b'))
         self.assertEqual(context['b'], 1.0)
-        
+
         # Test 'import' syntax
         b = Block('import math\n'\
                   'b=math.sin(math.pi/a)\n' \
                   'd = c * 3.3')
-        
+
         sub_block = b.restrict(inputs=('a'))
         self.assertEqual(sub_block.inputs, set(['a']))
         self.assertEqual(sub_block.outputs, set(['b']))
         self.assertEqual(sub_block.fromimports, set(['math']))
-        
+
         context = {'a':2, 'c':0.0}
         sub_block.execute(context)
         self.assertTrue(context.has_key('b'))
         self.assertEqual(context['b'], 1.0)
-        
+
     def test_intermediate_inputs(self):
         """ restrict blocks with inputs which are intermediates """
         block = Block('c = a + b\n'\
                   'd = c * 3')
-        
+
         sub_block = block.restrict(inputs=('c'))
         self.assertEqual(sub_block.inputs, set(['c']))
         self.assertEqual(sub_block.outputs, set(['d']))
-        
+
         context = {'a':1, 'b':2}
         block.execute(context)
         self.assertEqual(context['c'], 3)
         self.assertEqual(context['d'], 9)
-        
+
         context = {'c':10}
         sub_block.execute(context)
         self.assertEqual(context['c'], 10)
@@ -674,17 +674,17 @@ class BlockRestrictionTestCase(unittest.TestCase):
         self.assertEqual(sub_block.outputs, set([]))
         sub_block.execute(context)
         self.assertEqual(context['d'], 15)
-                
+
     def test_intermediate_inputs_with_highly_connected_graph(self):
         """ restrict blocks with inputs which are intermediates on a highly connected graph"""
-        
+
         code =  "c = a + b\n" \
                 "d = c * 3\n" \
                 "e = a * c\n" \
                 "f = d + e\n" \
                 "g = e + c\n" \
                 "h = a * 3"
-        
+
         block = Block(code)
         sub_block = block.restrict(inputs=('c'))
         self.assertEqual(sub_block.inputs, set(['a', 'c']))
@@ -708,14 +708,14 @@ class BlockRestrictionTestCase(unittest.TestCase):
 
     def test_intermediate_inputs_and_outputs(self):
         """ restrict blocks with inputs and outputs which are intermediates """
-        
+
         code =  "c = a + b\n" \
                 "d = c * 3\n" \
                 "e = a * c\n" \
                 "f = d + e\n" \
                 "g = e + c\n" \
                 "h = a * 3"
-        
+
         block = Block(code)
         sub_block = block.restrict(inputs=('c'), outputs=('e', 'g'))
         self.assertEqual(sub_block.inputs, set(['a', 'c']))
@@ -732,10 +732,10 @@ class BlockRestrictionTestCase(unittest.TestCase):
         self.assertEqual(context['c'], 10)
         self.assertEqual(context['e'], 10)
         self.assertEqual(context['g'], 20)
-        
+
     def test_inputs_are_imports(self):
         """ restrict blocks with inputs which are imported """
-        
+
         code =  "from numpy import arange\n" \
                 "x = arange(0, 10, 0.1)\n" \
                 "c1 = a * a\n" \
@@ -744,7 +744,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
                 "t2 = b * x\n" \
                 "t3 = t1 + t2\n" \
                 "y = t3 + c\n"
-                
+
         block = Block(code)
         sub_block = block.restrict(inputs=['arange'])
         self.assertEqual(sub_block.inputs, set(['c1', 'b', 'c']))
@@ -756,13 +756,13 @@ class BlockRestrictionTestCase(unittest.TestCase):
 
         code =  "t2 = b * 2\n" \
                 "t3 = t2 + 3\n"
-                
+
         block = Block(code)
         sub_block = block.restrict(inputs=['t2', 't3'])
-        
+
     def test_heirarchical_inputs(self):
         """ restrict blocks with inputs which are nested """
-        
+
         code =  "from numpy import arange\n" \
                 "x = arange(0, 10, 0.1)\n" \
                 "c1 = inner.a * inner.a\n" \
@@ -771,7 +771,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
                 "t2 = inner.b * x\n" \
                 "t3 = t1 + t2\n" \
                 "y = t3 + inner.c\n"
-                
+
         block = Block(code)
         sub_block = block.restrict(inputs=['inner.a'])
         self.assertEqual(sub_block.inputs, set(['inner.a', 'inner.c', 'x1', 't2']))
@@ -783,7 +783,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
         self.assertSimilar(sub_block.sub_blocks[2], Block('t1 = c1 *x1'))
         self.assertSimilar(sub_block.sub_blocks[3], Block('t3 = t1 + t2'))
         self.assertSimilar(sub_block.sub_blocks[4], Block('y = t3 + inner.c'))
-        
+
 
         code =  "from numpy import arange\n" \
                 "x = arange(0, 10, 0.1)\n" \
@@ -793,7 +793,7 @@ class BlockRestrictionTestCase(unittest.TestCase):
                 "t2 = outter.inner.b * x\n" \
                 "t3 = t1 + t2\n" \
                 "y = t3 + outter.inner.c\n"
-                
+
         block = Block(code)
         sub_block = block.restrict(inputs=['outter.a'])
         self.assertEqual(sub_block.inputs, set(['outter.a', 'outter.inner.c', 'x1', 't2']))
@@ -805,9 +805,9 @@ class BlockRestrictionTestCase(unittest.TestCase):
         self.assertSimilar(sub_block.sub_blocks[2], Block('t1 = c1 *x1'))
         self.assertSimilar(sub_block.sub_blocks[3], Block('t3 = t1 + t2'))
         self.assertSimilar(sub_block.sub_blocks[4], Block('y = t3 + outter.inner.c'))
-        
-        
-        
+
+
+
 class BlockPickleTestCase(unittest.TestCase):
 
     def test_pickle(self):

@@ -11,9 +11,9 @@ class ItemsModified ( Vetoable ):
     modified = List(Str)
 
     def __repr__(self):
-        return ('%s(context=%r, added=%r, removed=%r, modified=%r)' % 
+        return ('%s(context=%r, added=%r, removed=%r, modified=%r)' %
             (type(self).__name__, self.context, self.added, self.removed,
                 self.modified))
-        
+
 # Define an Event trait which accepts an ItemsModified object:
 ItemsModifiedEvent = VetoableEvent( ItemsModified )

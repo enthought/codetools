@@ -83,10 +83,10 @@ class Block(HasTraits):
     sub_blocks = List(__this)
 
     # The AST that represents our behavior
-    # AST replaces Node 
+    # AST replaces Node
     # Aslo note that this variable name is hard to choose.
     # It was originally called 'ast', but since this is the same name as
-    # the module, it needed to be changed.  Other possibilities considered 
+    # the module, it needed to be changed.  Other possibilities considered
     # were: as_tree, Ast, a_s_tree, astree, a_s_t.
     ast_tree = Instance(AST)
 
@@ -618,7 +618,7 @@ class Block(HasTraits):
     # Block protected interface
     ###########################################################################
 
-    # 'ast_tree' determines 'sub_blocks' and 'sub_blocks' determines 'ast_tree', 
+    # 'ast_tree' determines 'sub_blocks' and 'sub_blocks' determines 'ast_tree',
     # so when one changes we update the other. Both together represent the main
     # structure of the Block object and determine 'inputs', 'outputs',
     # 'conditional_outputs', '_dep_graph', and '_code'.
@@ -797,7 +797,7 @@ class Block(HasTraits):
                 # Treat 'Stmt([node])' the same as 'node'
                 result = cls._decompose(getattr(ast_tree, ast_tree._fields[0]))
             else:
-                result = Block(ast_tree) 
+                result = Block(ast_tree)
         else:
             result = [Block(ast_tree)]
 

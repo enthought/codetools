@@ -10,7 +10,7 @@ def remove_known_traits(trait_names):
 
     Also, sort the list for ease of use in testing.
     """
-    return sorted([x for x in trait_names 
+    return sorted([x for x in trait_names
         if x not in ('_context', '_synched', 'trait_added', 'trait_modified')])
 
 

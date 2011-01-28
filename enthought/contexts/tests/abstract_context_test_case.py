@@ -52,19 +52,19 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
     """ Defines the set of tests to run on any GeoContext or Adapter.
 
         NOTE: This does not derive from test case so that it doesn't get picked
-        up and run by the unittest harness. You must mixin unittest.TestCase 
+        up and run by the unittest harness. You must mixin unittest.TestCase
         in your derived class.
     """
     #         fixme: There has to be a smarter way of doing this...
 
-    
+
     ############################################################################
     # unittest.TestCase interface
     ############################################################################
 
     # Don't run tests without a concrete test case
     def run(self, result=None):
-        if (type(self).__name__ == 'AbstractContextTestCase' or 
+        if (type(self).__name__ == 'AbstractContextTestCase' or
             type(self) is AbstractContextTestCase):
             return result
         else:
@@ -140,7 +140,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
         context = self.context_factory()
         key_name = self.key_name()
         a,b = self.unmatched_pair()
-        
+
         self._get_set_like_dict(context, key_name, a, a)
         self._get_set_like_dict(context, key_name, b, b)
 

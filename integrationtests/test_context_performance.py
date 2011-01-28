@@ -21,7 +21,7 @@ from enthought.contexts.api import AdaptedDataContext
 
 
 class DataContextTestCase(AbstractContextTestCase):
-    
+
     #### AbstactContextTestCase interface ######################################
 
     def context_factory(self, *args, **kw):
@@ -32,7 +32,7 @@ class DataContextTestCase(AbstractContextTestCase):
     def matched_input_output_pair(self):
         """ Return values for testing dictionary get/set, etc.
         """
-        return 1.2, 1.2    
+        return 1.2, 1.2
 
     @performance
     def test_eval_is_not_slow(self):
@@ -46,7 +46,7 @@ class DataContextTestCase(AbstractContextTestCase):
 
         # Slowdown we will allow compared to standard python evaluation
         allowed_slowdown = 2.0
-        
+
         # Number of timer iterations.
         N = 10000
 
@@ -116,7 +116,7 @@ class MultiContextTestCase(AbstractContextTestCase):
 
         # Slowdown we will allow compared to standard python evaluation
         allowed_slowdown = 1.5
-        
+
         # Number of timer iterations.
         N = 10000
 
@@ -178,7 +178,7 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
 
         # Slowdown we will allow compared to standard python evaluation
         allowed_slowdown = 2.5
-        
+
         # Number of timer iterations.
         N = 1000
 
