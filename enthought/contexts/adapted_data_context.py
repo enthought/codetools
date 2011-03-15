@@ -11,10 +11,11 @@ class AdaptedDataContext(DataContext, AdapterManagerMixin):
     """ A Context (namespace) that supports a list of adapters that can
     adapt key names or the process of getting/setting values in the context.
 
-    It can be used as an execution namespace for expressions or adapted in a number
-    of ways to provide operations on a masked set of its data, unit conversion of 
-    the data, enforcement that values retreived from the namespace (even if they 
-    are scalars) are retreived as arrays of a certain size, etc.
+    It can be used as an execution namespace for expressions or adapted in a
+    number of ways to provide operations on a masked set of its data, unit
+    conversion of the data, enforcement that values retreived from the
+    namespace (even if they are scalars) are retreived as arrays of a certain
+    size, etc.
     """
 
     implements(IAdaptedDataContext)
