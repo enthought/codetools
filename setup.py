@@ -20,7 +20,7 @@ as the foundation for the BlockCanvas project.
 Prerequisites
 -------------
 If you want to build CodeTools from source, you must first install
-`setuptools <http://pypi.python.org/pypi/setuptools/0.6c8>`_.
+`distribute <http://pypi.python.org/pypi/distribute>`_.
 
 """
 
