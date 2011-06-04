@@ -5,7 +5,6 @@
 
 import os.path, re, sys, time
 
-from traits.util.functional import partial, compose
 
 def grep(pattern, lines):
     for line in lines:

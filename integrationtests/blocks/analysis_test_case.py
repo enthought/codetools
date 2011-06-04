@@ -1,12 +1,8 @@
 from compiler import parse
-from compiler.ast import Node
-from copy import deepcopy
 import sys, unittest
 
 from traits.testing.api import doctest_for_module
-from traits.util.functional import partial
-from traits.util.sequence import all
-from traits.util.tree import flatten, tree_zip
+from codetools.util.functional import partial
 
 import codetools.blocks.analysis as analysis
 from codetools.blocks.analysis import (

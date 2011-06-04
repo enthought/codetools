@@ -4,9 +4,8 @@ from cPickle import dumps, loads
 from StringIO import StringIO
 
 from traits.testing.api import doctest_for_module, skip
-from traits.util.dict import map_values
-from traits.util.functional import compose
-import traits.util.graph as graph
+from codetools.util.dict import map_values
+import codetools.util.graph as graph
 
 import codetools.blocks.block as block
 from codetools.blocks.api import Block, Expression

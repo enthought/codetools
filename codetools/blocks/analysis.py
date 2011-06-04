@@ -8,13 +8,13 @@ from copy import copy, deepcopy
 import logging
 logger = logging.getLogger(__name__)
 
-from traits.util.dict import map_keys, map_items
-from traits.util.functional import partial
-import traits.util.graph as graph
-from traits.util.graph import closure, topological_sort
-from traits.util.sequence import \
-    all, any, disjoint, intersect, is_sequence, union
-import traits.util.tree as tree
+from ..util.dict import map_keys
+from ..util.functional import partial
+from ..util import graph
+from ..util.graph import closure
+from ..util.sequence import \
+    all, disjoint, intersect, is_sequence, union
+from ..util import tree
 
 # Extend compiler.ast.Node with a structure-preserving children query
 import \
@@ -128,7 +128,7 @@ def dependency_graph(asts, to_ast=lambda x: x):
         Some examples:
 
             >>> from compiler import parse
-            >>> import traits.util.graph as graph
+            >>> import codetools.util.graph as graph
             >>>
             >>> assert graph.eq(dependency_graph(to_ast=parse, asts=[
             ...     'a = b+c', 'c = 3', 'b = f(c)'
@@ -154,7 +154,7 @@ def dependency_graph(asts, to_ast=lambda x: x):
 
         Sorting non-linear dependency graphs is useful (but non-deterministic):
 
-            >>> from traits.util.graph import reverse, topological_sort
+            >>> from codetools.util.graph import reverse, topological_sort
             >>>
             >>> assert topological_sort(reverse(
             ...     dependency_graph(to_ast=parse, asts=[

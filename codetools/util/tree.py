@@ -1,7 +1,7 @@
 'Functions on trees, that is, nested sequences.'
 
-from traits.util.functional import partial
-from traits.util.sequence import all, any, concat, is_sequence
+from .functional import partial
+from .sequence import all, any, concat, is_sequence
 
 def is_fork(x, leaves=()):
     'Test whether a tree is a fork (instead of a leaf).'

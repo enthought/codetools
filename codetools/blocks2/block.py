@@ -16,9 +16,9 @@ from traits.api import (Bool, Dict, Either, HasTraits,
                                   Instance, List, Property, Str,
                                   cached_property, Event)
 
-from traits.util.dict import map_keys, map_values
-import traits.util.graph as graph
-from traits.util.sequence import is_sequence
+from ..util.dict import map_keys, map_values
+from ..util import graph
+from ..util.sequence import is_sequence
 
 from analysis import NameFinder
 
