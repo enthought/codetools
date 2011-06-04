@@ -1,5 +1,5 @@
 from traits.api import HasTraits, List, Str, Property, Any, implements
-from enthought.contexts.api import IRestrictedContext
+from codetools.contexts.api import IRestrictedContext
 
 import tables
 

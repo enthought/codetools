@@ -8,8 +8,8 @@
 
     >>> from scimath.units.length import meters, feet
     >>> from scimath.units.api import UnitArray
-    >>> from enthought.contexts.api import AdaptedDataContext, DataContext
-    >>> from enthought.contexts.api import UnitConversionAdapter
+    >>> from codetools.contexts.api import AdaptedDataContext, DataContext
+    >>> from codetools.contexts.api import UnitConversionAdapter
     >>> old_log = UnitArray((1,2,3),units=meters)
     >>> context=AdaptedDataContext(context=DataContext())
     >>> context['depth'] = old_log

@@ -2,7 +2,7 @@
 import unittest
 
 # Geo library imports
-from enthought.contexts.function_filter_context import FunctionFilterContext
+from codetools.contexts.function_filter_context import FunctionFilterContext
 from blockcanvas.debug.my_operator import add, mul, div, sub
 
 class FunctionFilterContextTestCase(unittest.TestCase):

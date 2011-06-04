@@ -8,11 +8,11 @@ from traits.util.dict import map_values
 from traits.util.functional import compose
 import traits.util.graph as graph
 
-import enthought.blocks.block as block
-from enthought.blocks.api import Block, Expression
+import codetools.blocks.block as block
+from codetools.blocks.api import Block, Expression
 
 # Extend base class compiler.ast.Node with deep equality
-import enthought.blocks.compiler_.ast.deep_equality
+import codetools.blocks.compiler_.ast.deep_equality
 
 class BlockDocTestCase(doctest_for_module(block)):
     pass

@@ -1,6 +1,6 @@
 import os
 from numpy.testing import assert_equal, assert_
-from enthought.blocks.namespace_tools import *
+from codetools.blocks.namespace_tools import *
 
 def test_Namespace_class():
     ns = Namespace({'a':1, 'b':2})

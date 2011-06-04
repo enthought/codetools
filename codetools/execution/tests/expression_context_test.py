@@ -1,5 +1,5 @@
-from enthought.contexts.api import DataContext
-from enthought.execution.api import ExpressionContext
+from codetools.contexts.api import DataContext
+from codetools.execution.api import ExpressionContext
 
 import unittest
 class ExpressionContextTest(unittest.TestCase):

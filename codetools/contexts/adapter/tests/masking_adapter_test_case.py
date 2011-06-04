@@ -5,7 +5,7 @@ import unittest
 from numpy import all, array, isnan, linspace, nan
 
 # Geo Library imports
-from enthought.contexts.api import AdaptedDataContext, DataContext, MaskingAdapter
+from codetools.contexts.api import AdaptedDataContext, DataContext, MaskingAdapter
 
 
 class MaskingAdapterTestCase(unittest.TestCase):

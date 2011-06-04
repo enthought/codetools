@@ -46,7 +46,7 @@ class IndexContextMask(ContextMask):
 
 # Test
 if __name__ == '__main__':
-    from enthought.contexts.geo_context import GeoContext
+    from codetools.contexts.geo_context import GeoContext
     from scimath.units.api import UnitArray
     from scimath.units.length import feet
 

@@ -23,8 +23,8 @@ from traits.util.sequence import is_sequence
 from analysis import NameFinder
 
 from block_transformer import BlockTransformer
-from enthought.blocks.compiler_unparse import unparse
-from enthought.blocks.util.uuid import UUID, uuid4
+from codetools.blocks.compiler_unparse import unparse
+from codetools.blocks.util.uuid import UUID, uuid4
 
 ###############################################################################
 # TODO:

@@ -23,7 +23,7 @@ method to tell it which names in the Context should appear as traits::
     >>> from traits.api import Int
     >>> from traitsui.api import View, Item
     >>> from traitsui.menu import OKButton, CancelButton
-    >>> from enthought.contexts.api import DataContext, TraitslikeContextWrapper
+    >>> from codetools.contexts.api import DataContext, TraitslikeContextWrapper
     >>> d = DataContext(subcontext={'a': 1, 'b': 2, 'z': 20})
     >>> tcw = TraitslikeContextWrapper(_context=d)
     >>> tcw.add_traits('a', 'b', c=Int)
@@ -60,9 +60,9 @@ in the CodeTools examples::
         on_trait_change, cached_property
     from traitsui.api import View, Group, Item
     
-    from enthought.contexts.api import DataContext, TraitslikeContextWrapper
-    from enthought.contexts.items_modified_event import ItemsModified
-    from enthought.blocks.api import Block
+    from codetools.contexts.api import DataContext, TraitslikeContextWrapper
+    from codetools.contexts.items_modified_event import ItemsModified
+    from codetools.blocks.api import Block
     
     code = """# my calculations
     velocity = distance/time

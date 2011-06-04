@@ -3,10 +3,10 @@ from copy import copy
 
 # Enthought library imports
 from traits.api import Str, Instance, Dict, on_trait_change, Bool
-from enthought.blocks.api import Block
-from enthought.contexts.data_context import DataContext
-from enthought.contexts.items_modified_event import ItemsModified
-from enthought.contexts.data_context import ListenableMixin
+from codetools.blocks.api import Block
+from codetools.contexts.data_context import DataContext
+from codetools.contexts.items_modified_event import ItemsModified
+from codetools.contexts.data_context import ListenableMixin
 
 
 class FormulaExecutingContext(DataContext):

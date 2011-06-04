@@ -2,7 +2,7 @@
 import unittest
 
 # Geo library imports
-from enthought.contexts.name_filter_context import NameFilterContext
+from codetools.contexts.name_filter_context import NameFilterContext
 
 
 class NameFilterContextTestCase(unittest.TestCase):

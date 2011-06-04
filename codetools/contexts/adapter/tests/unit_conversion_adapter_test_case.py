@@ -11,7 +11,7 @@ from scimath.units.length import meters, feet, inch
 
 # Geo Library imports
 from scimath.units.api import UnitArray
-from enthought.contexts.api import UnitConversionAdapter
+from codetools.contexts.api import UnitConversionAdapter
 
 class UnitConversionAdapterTestCase(unittest.TestCase):
     """ Other tests for UnitConversionContextAdapater
@@ -85,7 +85,7 @@ class UnitConversionAdapterTestCase(unittest.TestCase):
 # When nosetests is running this test module, it is not necessary to run
 # doctests here also.  In fact, the code below causes nosetests to fail.
 if 'nose' not in sys.modules:
-    from enthought.contexts.adapter import unit_conversion_adapter
+    from codetools.contexts.adapter import unit_conversion_adapter
     module_test = doctest_for_module(unit_conversion_adapter)
 
 

@@ -1,7 +1,7 @@
 import unittest
 
-from enthought.contexts.data_context import DataContext
-from enthought.contexts.multi_context import MultiContext
+from codetools.contexts.data_context import DataContext
+from codetools.contexts.multi_context import MultiContext
 
 
 class Events2TestCase(unittest.TestCase):
@@ -102,7 +102,7 @@ class Events2TestCase(unittest.TestCase):
 
     def test_block_events(self):
         import numpy
-        from enthought.blocks.api import Block
+        from codetools.blocks.api import Block
 
         context = DataContext(name="data")
         context.on_trait_change(self.event_listener, 'items_modified')

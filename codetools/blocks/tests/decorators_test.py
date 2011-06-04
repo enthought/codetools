@@ -1,6 +1,6 @@
 from numpy.testing import assert_equal
 
-from enthought.blocks.decorators import func2str
+from codetools.blocks.decorators import func2str
 
 def test_func2str():
     expected_lines = "a=1\nb=2\n"

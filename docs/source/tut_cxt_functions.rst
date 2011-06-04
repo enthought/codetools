@@ -11,7 +11,7 @@ This example shows how to set up a simple listening data context that displays
 changes within a function's local namespace as it executes::
 
 	from traits.api import HasTraits, on_trait_change
-	from enthought.contexts.api import DataContext, context_function
+	from codetools.contexts.api import DataContext, context_function
 	
 	class ListeningDataContext(DataContext):
 	    """ A simple subclass of DataContext which listens for items_modified

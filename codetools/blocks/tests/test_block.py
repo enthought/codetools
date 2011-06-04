@@ -2,8 +2,8 @@
 
 from nose.tools import assert_equal, assert_raises
 
-from enthought.blocks.api import Block
-from enthought.contexts.api import DataContext
+from codetools.blocks.api import Block
+from codetools.contexts.api import DataContext
 
 
 def test_basic_01():

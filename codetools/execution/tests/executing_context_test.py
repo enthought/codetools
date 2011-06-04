@@ -1,7 +1,7 @@
 
-from enthought.contexts.api import DataContext
+from codetools.contexts.api import DataContext
 
-from enthought.execution.executing_context import (CodeExecutable,
+from codetools.execution.executing_context import (CodeExecutable,
     ExecutingContext)
 
 

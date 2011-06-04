@@ -7,8 +7,8 @@ from enable.component_editor import ComponentEditor
 from chaco.api import PlotComponent, VPlotContainer
 from chaco.plot import Plot
 
-from enthought.execution.api import ExpressionContext
-from enthought.contexts.data_context import DataContext
+from codetools.execution.api import ExpressionContext
+from codetools.contexts.data_context import DataContext
 from blockcanvas.plot.plot_data_context_adapter import \
      PlotDataContextAdapter
 

@@ -31,7 +31,7 @@ by providing at least one of the :meth:`adapt_name`, :meth:`adapt_getitem`, or
     from numpy import ndarray
     from numpy.fft import fft, ifft
     from traits.api import HasTraits
-    from enthought.contexts.api import IAdapter
+    from codetools.contexts.api import IAdapter
     
     class FFTAdapter(HasTraits):
         implements(IAdapter)
@@ -47,7 +47,7 @@ by providing at least one of the :meth:`adapt_name`, :meth:`adapt_getitem`, or
             if isinstance(value, ndarray) and len(value.shape) == 1:
                 return key, ifft(value)
 
-The :mod:`enthought.contexts` package contains a number of adapters to perform
+The :mod:`codetools.contexts` package contains a number of adapters to perform
 operations like masking, unit conversion, and name translation.
 
 

@@ -6,7 +6,7 @@ Blocks
 Creating a :class:`Block` object is as simple as invoking it on a string
 containing some Python code::
 
-    >>> from enthought.blocks.api import Block
+    >>> from codetools.blocks.api import Block
     >>>
     >>> b = Block("""# my calculations
     ... velocity = distance/time
@@ -72,7 +72,7 @@ reconstruct the Python source::
 
     >>> restricted_block.ast
     Assign([AssName('momentum', 'OP_ASSIGN')], Mul((Name('mass'), Name('velocity'))))
-    >>> from enthought.blocks.api import unparse
+    >>> from codetools.blocks.api import unparse
     >>> unparse(restricted_block.ast)
     'momentum = mass*velocity'
 

@@ -2,7 +2,7 @@
     namespace: decorator
     namespace_from_keywords: function
 """
-from enthought.blocks.decorators import func2str
+from codetools.blocks.decorators import func2str
 
 ##############################################################################
 # Public Interface

@@ -4,10 +4,10 @@ import timeit
 
 # Enthought library imports
 from traits.testing.api import performance
-from enthought.contexts.tests.abstract_context_test_case import AbstractContextTestCase
-from enthought.contexts.data_context import DataContext
-from enthought.contexts.multi_context import MultiContext
-from enthought.contexts.api import AdaptedDataContext
+from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
+from codetools.contexts.data_context import DataContext
+from codetools.contexts.multi_context import MultiContext
+from codetools.contexts.api import AdaptedDataContext
 
 ##########################################################################
 #
@@ -70,7 +70,7 @@ class DataContextTestCase(AbstractContextTestCase):
         eval_res = eval_timer.timeit(N)
 
         ### DataContext execution #############################################
-        this_setup = "from enthought.contexts.data_context import DataContext\n" \
+        this_setup = "from codetools.contexts.data_context import DataContext\n" \
                      "context=DataContext()\n" \
                      "context['vp'] = vp\n"
         context_setup = setup + this_setup + compiled_setup
@@ -140,7 +140,7 @@ class MultiContextTestCase(AbstractContextTestCase):
         eval_res = eval_timer.timeit(N)
 
         ### DataContext execution ##############################################
-        this_setup = "from enthought.contexts.api import MultiContext\n" \
+        this_setup = "from codetools.contexts.api import MultiContext\n" \
                      "context=MultiContext()\n" \
                      "context['vp'] = vp\n"
         context_setup = setup + this_setup + compiled_setup
@@ -198,9 +198,9 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
         # depth2 feet->meters
         setup = "from numpy import arange\n" \
                 "from scimath.units.length import meters, feet\n" \
-                "from enthought.contexts.api import DataContext, AdaptedDataContext\n" \
+                "from codetools.contexts.api import DataContext, AdaptedDataContext\n" \
                 "from scimath.units.api import UnitArray\n" \
-                "from enthought.contexts.api import UnitConversionAdapter\n" \
+                "from codetools.contexts.api import UnitConversionAdapter\n" \
                 "data_context = DataContext()\n" \
                 "context = AdaptedDataContext(context=data_context)\n" \
                 "adapter = UnitConversionAdapter(getitem_units={'depth':feet, 'depth2':meters})\n" \

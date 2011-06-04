@@ -4,9 +4,9 @@ from copy import copy
 
 from traits.testing.api import doctest_for_module
 
-import enthought.blocks.compiler_.compiler_ \
+import codetools.blocks.compiler_.compiler_ \
     as compiler_
-from enthought.blocks.compiler_.api import \
+from codetools.blocks.compiler_.api import \
     compile_ast, parse
 
 class CompilerDocTestCase(doctest_for_module(compiler_)):

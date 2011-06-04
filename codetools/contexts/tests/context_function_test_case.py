@@ -4,7 +4,7 @@ import dis, inspect, pprint
 
 import numpy
 
-from enthought.contexts.context_function import context_function, \
+from codetools.contexts.context_function import context_function, \
         ContextFunctionError, local_context
 
 c = 5.0

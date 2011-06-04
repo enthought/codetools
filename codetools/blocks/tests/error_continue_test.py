@@ -1,7 +1,7 @@
 """Text block execution with multiple exceptions"""
 import unittest
-from enthought.blocks.block import Block, CompositeException
-from enthought.blocks.api import func2str
+from codetools.blocks.block import Block, CompositeException
+from codetools.blocks.api import func2str
 
 def raises_valuerror():
     raise ValueError

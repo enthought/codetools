@@ -8,9 +8,9 @@ import os, unittest
 from numpy import arange, zeros
 
 # ETS imports
-from enthought.contexts.with_mask import Mask
-from enthought.contexts.data_context import DataContext
-from enthought.blocks.api import Block
+from codetools.contexts.with_mask import Mask
+from codetools.contexts.data_context import DataContext
+from codetools.blocks.api import Block
 
 
 class WithMaskTestCase(unittest.TestCase):

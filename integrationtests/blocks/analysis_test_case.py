@@ -8,14 +8,14 @@ from traits.util.functional import partial
 from traits.util.sequence import all
 from traits.util.tree import flatten, tree_zip
 
-import enthought.blocks.analysis as analysis
-from enthought.blocks.analysis import (
+import codetools.blocks.analysis as analysis
+from codetools.blocks.analysis import (
     ConstAssignExtractor, Transformer, free_vars, local_vars,
     conditional_local_vars,
 )
-from enthought.blocks.compiler_.ast.api import \
+from codetools.blocks.compiler_.ast.api import \
     similar
-from enthought.blocks.block import Block
+from codetools.blocks.block import Block
 
 class AnalysisDocTestCase(doctest_for_module(analysis)):
     pass

@@ -9,7 +9,7 @@ There are two parts of this example:
      execution cycles of a function.
 """
 
-from enthought.contexts.api import context_function, local_context
+from codetools.contexts.api import context_function, local_context
 
 #############################################################################
 # Example 1

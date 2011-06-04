@@ -2,7 +2,7 @@
 from UserDict import DictMixin
 
 # Enthought library imports
-from enthought.contexts.api import AdaptedDataContext
+from codetools.contexts.api import AdaptedDataContext
 
 class IterableAdaptedDataContext(AdaptedDataContext):
     """ An AdaptedDataContext whose iteration includes any key mapped

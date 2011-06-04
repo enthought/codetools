@@ -6,9 +6,9 @@ from numpy import arange, zeros
 from numpy.testing import assert_array_equal
 
 # ETS imports
-from enthought.contexts.adapted_data_context import AdaptedDataContext
-from enthought.contexts.with_mask_adapter import WithMaskAdapter
-from enthought.contexts.data_context import DataContext
+from codetools.contexts.adapted_data_context import AdaptedDataContext
+from codetools.contexts.with_mask_adapter import WithMaskAdapter
+from codetools.contexts.data_context import DataContext
 
 
 class WithMaskAdapterTestCase(unittest.TestCase):

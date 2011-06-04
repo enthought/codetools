@@ -5,11 +5,11 @@ from UserDict import DictMixin
 from traits.api import implements, Str, Dict, Any, List, Instance, on_trait_change
 
 # Block Canvas imports
-from enthought.blocks.api import Block
-from enthought.contexts.data_context import ListenableMixin, PersistableMixin, DataContext
-from enthought.contexts.i_context import IContext, IListenableContext, ICheckpointable, \
+from codetools.blocks.api import Block
+from codetools.contexts.data_context import ListenableMixin, PersistableMixin, DataContext
+from codetools.contexts.i_context import IContext, IListenableContext, ICheckpointable, \
                                                      IPersistableContext
-from enthought.contexts.items_modified_event import ItemsModified
+from codetools.contexts.items_modified_event import ItemsModified
 
 class ExpressionContext(ListenableMixin, PersistableMixin, DictMixin):
     """Provide a context wrapper that adds the ability to request expressions on variables

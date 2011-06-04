@@ -16,11 +16,11 @@ from scimath.units.time import second
 from scimath.units.api import UnitArray
 
 # Geo Library imports
-from enthought.contexts.api import DataContext, AdaptedDataContext
-from enthought.contexts.adapter.unit_conversion_adapter import UnitConversionAdapter
+from codetools.contexts.api import DataContext, AdaptedDataContext
+from codetools.contexts.adapter.unit_conversion_adapter import UnitConversionAdapter
 
 # Test imports
-from enthought.contexts.tests.data_context_test_case import DataContextTestCase
+from codetools.contexts.tests.data_context_test_case import DataContextTestCase
 
 class ContextWithUnitConversionAdapterLogTestCase(DataContextTestCase):
     """ Test whether context still works with an adapter attached.

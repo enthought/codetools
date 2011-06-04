@@ -3,12 +3,12 @@ from compiler import parse
 
 from traits.testing.api import doctest_for_module
 
-import enthought.blocks.parser_ as parser_
-from enthought.blocks.parser_ import BlockTransformer
-from enthought.blocks.compiler_.api import parse
+import codetools.blocks.parser_ as parser_
+from codetools.blocks.parser_ import BlockTransformer
+from codetools.blocks.compiler_.api import parse
 
 # Extend base class compiler.ast.Node with deep equality
-import enthought.blocks.compiler_.ast.deep_equality
+import codetools.blocks.compiler_.ast.deep_equality
 
 class ParserDocTestCase(doctest_for_module(parser_)):
     pass

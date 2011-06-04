@@ -3,7 +3,7 @@ import unittest
 import compiler
 
 # Local imports
-from enthought.blocks.api import unparse
+from codetools.blocks.api import unparse
 
 class UnparseCompilerAstTestCase(unittest.TestCase):
 

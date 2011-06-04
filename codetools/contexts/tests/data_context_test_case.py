@@ -6,8 +6,8 @@ import sys
 import nose
 
 # Local library imports
-from enthought.contexts.data_context import DataContext
-from enthought.contexts.tests.abstract_context_test_case import AbstractContextTestCase
+from codetools.contexts.data_context import DataContext
+from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
 
 
 class DataContextTestCase(AbstractContextTestCase):

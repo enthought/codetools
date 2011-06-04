@@ -13,12 +13,12 @@ from traits.util.dict import map_keys, map_values
 import traits.util.graph as graph
 from traits.util.sequence import is_sequence
 
-from enthought.blocks.analysis import NameFinder
-from enthought.blocks.compiler_.api \
+from codetools.blocks.analysis import NameFinder
+from codetools.blocks.compiler_.api \
     import compile_ast, parse
-from enthought.blocks.parser_ import BlockTransformer
-from enthought.blocks.compiler_unparse import unparse
-from enthought.blocks.util.uuid import UUID, uuid4
+from codetools.blocks.parser_ import BlockTransformer
+from codetools.blocks.compiler_unparse import unparse
+from codetools.blocks.util.uuid import UUID, uuid4
 
 ###############################################################################
 # TODO:

@@ -1,4 +1,4 @@
-from enthought.contexts.hdf5_context import Hdf5Context
+from codetools.contexts.hdf5_context import Hdf5Context
 
 import tables
 import numpy as np
@@ -112,7 +112,7 @@ class Hdf5ContextTest(unittest.TestCase):
 
     def test_use_as_context(self):
         # Can we use the context as the namespace of a python calculation?
-        from enthought.contexts.api import DataContext, MultiContext
+        from codetools.contexts.api import DataContext, MultiContext
 
         table = tables.openFile('test.h5')
         hdf_context = Hdf5Context(file_object=table,

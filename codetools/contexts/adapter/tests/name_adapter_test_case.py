@@ -2,7 +2,7 @@
 import unittest
 
 # Geo Library imports
-from enthought.contexts.api import (AdaptedDataContext, DataContext,
+from codetools.contexts.api import (AdaptedDataContext, DataContext,
                                                 NameAdapter)
 
 

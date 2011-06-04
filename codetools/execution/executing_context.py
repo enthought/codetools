@@ -6,8 +6,8 @@ from traits.api import (Bool, HasTraits, Instance, List, Str,
     Undefined, implements, on_trait_change)
 from traits.protocols.api import adapt
 
-from enthought.contexts.data_context import DataContext
-from enthought.contexts.i_context import IContext, IListenableContext
+from codetools.contexts.data_context import DataContext
+from codetools.contexts.i_context import IContext, IListenableContext
 from interfaces import IExecutable, IExecutingContext
 
 

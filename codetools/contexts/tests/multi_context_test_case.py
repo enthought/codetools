@@ -10,9 +10,9 @@ import nose
 from traits.api import Any
 
 # Geo library imports
-from enthought.contexts.tests.abstract_context_test_case import AbstractContextTestCase
-from enthought.contexts.data_context import DataContext
-from enthought.contexts.multi_context import MultiContext
+from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
+from codetools.contexts.data_context import DataContext
+from codetools.contexts.multi_context import MultiContext
 
 
 class MultiContextTestCase(AbstractContextTestCase):

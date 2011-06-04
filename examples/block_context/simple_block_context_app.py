@@ -8,9 +8,9 @@ from traits.api import HasTraits, Instance, Property, Float, \
     on_trait_change, cached_property
 from traitsui.api import View, Group, Item
 
-from enthought.contexts.api import DataContext, TraitslikeContextWrapper
-from enthought.contexts.items_modified_event import ItemsModified
-from enthought.blocks.api import Block
+from codetools.contexts.api import DataContext, TraitslikeContextWrapper
+from codetools.contexts.items_modified_event import ItemsModified
+from codetools.blocks.api import Block
 
 code = """# my calculations
 velocity = distance/time

@@ -1,7 +1,7 @@
 from numpy.testing import assert_equal, assert_
 
 from traits.api import Dict
-from enthought.contexts.api import (DataContext, AdaptedDataContext,
+from codetools.contexts.api import (DataContext, AdaptedDataContext,
                                     NameAdapter, IterableAdaptedDataContext,
                                     UnitConversionAdapter)
 

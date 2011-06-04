@@ -41,7 +41,7 @@ del __module
             nodes with flat ones, e.g.:
 
             >>> from compiler.ast import Assign, AssName, Const, Stmt
-            >>> from enthought.blocks.compiler_.api\
+            >>> from codetools.blocks.compiler_.api\
             ...     import compile_ast
             >>>
             >>> def ass(**kw):

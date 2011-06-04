@@ -6,7 +6,7 @@ import unittest
 from numpy import array, ndarray
 
 # Utils imports
-from enthought.contexts.utils import compare_objects, safe_repr
+from codetools.contexts.utils import compare_objects, safe_repr
 
 
 class TrivialNDArraySubclass(ndarray):

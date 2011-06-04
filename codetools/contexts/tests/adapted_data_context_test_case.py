@@ -7,10 +7,10 @@ from scimath.units import convert
 from scimath.units.length import feet, fathom, meters, yard
 
 # Geo imports
-from enthought.contexts.adapted_data_context import AdaptedDataContext
-from enthought.contexts.data_context import DataContext
-from enthought.contexts.api import MaskingAdapter
-from enthought.contexts.adapter.unit_conversion_adapter import UnitConversionAdapter
+from codetools.contexts.adapted_data_context import AdaptedDataContext
+from codetools.contexts.data_context import DataContext
+from codetools.contexts.api import MaskingAdapter
+from codetools.contexts.adapter.unit_conversion_adapter import UnitConversionAdapter
 
 from scimath.units.api import UnitArray
 

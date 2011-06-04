@@ -3,7 +3,7 @@
 
 from traits.api import Bool, Instance, Interface
 
-from enthought.contexts.i_context import IListenableContext
+from codetools.contexts.i_context import IListenableContext
 
 
 class IExecutable(Interface):

@@ -3,8 +3,8 @@
 from nose.tools import assert_equal, assert_raises
 from nose.plugins.skip import Skip, SkipTest
 
-from enthought.blocks2.block import Block
-from enthought.contexts.api import DataContext
+from codetools.blocks2.block import Block
+from codetools.contexts.api import DataContext
 
 
 def test_basic_01():

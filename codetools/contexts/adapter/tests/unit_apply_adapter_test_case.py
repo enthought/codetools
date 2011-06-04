@@ -8,7 +8,7 @@ from numpy import array
 from scimath.units.length import meters
 
 # Geo library imports
-from enthought.contexts.api import UnitApplyAdapter
+from codetools.contexts.api import UnitApplyAdapter
 
 class UnitApplyAdapterTestCase(unittest.TestCase):
 
