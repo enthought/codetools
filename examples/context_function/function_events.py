@@ -3,7 +3,7 @@ function, together with Traits events to observe the internals of a function
 as it executes.
 """
 
-from enthought.traits.api import HasTraits, on_trait_change
+from traits.api import HasTraits, on_trait_change
 from enthought.contexts.api import DataContext, context_function
 
 class ListeningDataContext(DataContext):

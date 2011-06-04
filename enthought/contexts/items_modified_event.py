@@ -1,4 +1,4 @@
-from enthought.traits.api import Instance, Str, List, Bool, Vetoable, VetoableEvent, Any
+from traits.api import Instance, Str, List, Bool, Vetoable, VetoableEvent, Any
 
 
 class ItemsModified ( Vetoable ):

@@ -1,5 +1,5 @@
 # Enthought library imports
-from enthought.traits.api import implements
+from traits.api import implements
 
 # Local imports
 from i_adapted_data_context import IAdaptedDataContext

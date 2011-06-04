@@ -2,7 +2,7 @@
 from numpy import ndarray, ones, NaN
 
 # Enthought library imports
-from enthought.traits.api import Any, HasTraits
+from traits.api import Any, HasTraits
 
 # Local imports
 from adapter.i_adapter import IAdapter

@@ -1,4 +1,4 @@
-from enthought.traits.api import Interface
+from traits.api import Interface
 
 class IAdapter(Interface):
     """ Handles management of an adapter stack for objects that implement

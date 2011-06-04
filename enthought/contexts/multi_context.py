@@ -4,9 +4,9 @@
 from itertools import chain
 from UserDict import DictMixin
 
-from enthought.traits.api import (Instance, List, Str, Undefined, implements,
+from traits.api import (Instance, List, Str, Undefined, implements,
     on_trait_change)
-from enthought.traits.protocols.api import adapt
+from traits.protocols.api import adapt
 
 from data_context import DataContext, ListenableMixin, PersistableMixin
 from i_context import (ICheckpointable, IListenableContext,

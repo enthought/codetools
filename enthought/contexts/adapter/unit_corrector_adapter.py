@@ -1,6 +1,6 @@
 # ETS library imports
-from enthought.units.api import UnitArray
-from enthought.traits.api import Dict
+from scimath.units.api import UnitArray
+from traits.api import Dict
 
 # Local imports
 from unit_manipulation_adapter import UnitManipulationAdapter

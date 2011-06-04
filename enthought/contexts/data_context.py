@@ -6,9 +6,9 @@ import os
 from UserDict import DictMixin
 
 from enthought import sweet_pickle
-from enthought.traits.api import (Bool, Dict, HasTraits, Instance, Str,
+from traits.api import (Bool, Dict, HasTraits, Instance, Str,
     implements, on_trait_change)
-from enthought.traits.protocols.api import adapt, declareAdapter
+from traits.protocols.api import adapt, declareAdapter
 
 from i_context import (IContext, ICheckpointable, IListenableContext,
     IPersistableContext, IRestrictedContext)

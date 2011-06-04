@@ -1,7 +1,7 @@
 """ Interfaces for the execution package.
 """
 
-from enthought.traits.api import Bool, Instance, Interface
+from traits.api import Bool, Instance, Interface
 
 from enthought.contexts.i_context import IListenableContext
 

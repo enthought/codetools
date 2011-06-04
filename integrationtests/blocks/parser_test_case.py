@@ -1,7 +1,7 @@
 import sys, unittest
 from compiler import parse
 
-from enthought.testing.api import doctest_for_module
+from traits.testing.api import doctest_for_module
 
 import enthought.blocks.parser_ as parser_
 from enthought.blocks.parser_ import BlockTransformer

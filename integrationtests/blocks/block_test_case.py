@@ -3,10 +3,10 @@ from compiler.ast import Discard, Module, Name, Stmt
 from cPickle import dumps, loads
 from StringIO import StringIO
 
-from enthought.testing.api import doctest_for_module, skip
-from enthought.util.dict import map_values
-from enthought.util.functional import compose
-import enthought.util.graph as graph
+from traits.testing.api import doctest_for_module, skip
+from traits.util.dict import map_values
+from traits.util.functional import compose
+import traits.util.graph as graph
 
 import enthought.blocks.block as block
 from enthought.blocks.api import Block, Expression

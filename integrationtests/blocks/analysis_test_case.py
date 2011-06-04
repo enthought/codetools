@@ -3,10 +3,10 @@ from compiler.ast import Node
 from copy import deepcopy
 import sys, unittest
 
-from enthought.testing.api import doctest_for_module
-from enthought.util.functional import partial
-from enthought.util.sequence import all
-from enthought.util.tree import flatten, tree_zip
+from traits.testing.api import doctest_for_module
+from traits.util.functional import partial
+from traits.util.sequence import all
+from traits.util.tree import flatten, tree_zip
 
 import enthought.blocks.analysis as analysis
 from enthought.blocks.analysis import (

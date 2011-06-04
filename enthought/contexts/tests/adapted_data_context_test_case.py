@@ -3,8 +3,8 @@ import unittest
 from numpy import all, allclose, array, isnan, linspace, nan, ndarray
 
 # Enthought imports
-from enthought.units import convert
-from enthought.units.length import feet, fathom, meters, yard
+from scimath.units import convert
+from scimath.units.length import feet, fathom, meters, yard
 
 # Geo imports
 from enthought.contexts.adapted_data_context import AdaptedDataContext
@@ -12,7 +12,7 @@ from enthought.contexts.data_context import DataContext
 from enthought.contexts.api import MaskingAdapter
 from enthought.contexts.adapter.unit_conversion_adapter import UnitConversionAdapter
 
-from enthought.units.api import UnitArray
+from scimath.units.api import UnitArray
 
 class AdaptedDataContextTestCase(unittest.TestCase):
 

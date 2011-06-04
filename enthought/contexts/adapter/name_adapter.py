@@ -1,5 +1,5 @@
 # Enthought library imports
-from enthought.traits.api import HasTraits, Dict, Str
+from traits.api import HasTraits, Dict, Str
 
 # Local imports
 from i_adapter import IAdapter

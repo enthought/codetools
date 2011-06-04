@@ -3,7 +3,7 @@ import unittest
 
 # Geo library imports
 from enthought.contexts.function_filter_context import FunctionFilterContext
-from enthought.block_canvas.debug.my_operator import add, mul, div, sub
+from blockcanvas.debug.my_operator import add, mul, div, sub
 
 class FunctionFilterContextTestCase(unittest.TestCase):
     """ Test whether the context filters values by their type appropriately.

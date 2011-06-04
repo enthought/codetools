@@ -2,7 +2,7 @@ import sys, unittest
 from compiler.ast import Assign, Stmt, Module
 from copy import copy
 
-from enthought.testing.api import doctest_for_module
+from traits.testing.api import doctest_for_module
 
 import enthought.blocks.compiler_.compiler_ \
     as compiler_

@@ -1,4 +1,4 @@
-from enthought.traits.api import HasTraits, List, Str, Property, Any, implements
+from traits.api import HasTraits, List, Str, Property, Any, implements
 from enthought.contexts.api import IRestrictedContext
 
 import tables

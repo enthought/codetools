@@ -2,9 +2,9 @@
 namespace.
 """
 
-from enthought.traits.api import (Bool, HasTraits, Instance, List, Str,
+from traits.api import (Bool, HasTraits, Instance, List, Str,
     Undefined, implements, on_trait_change)
-from enthought.traits.protocols.api import adapt
+from traits.protocols.api import adapt
 
 from enthought.contexts.data_context import DataContext
 from enthought.contexts.i_context import IContext, IListenableContext

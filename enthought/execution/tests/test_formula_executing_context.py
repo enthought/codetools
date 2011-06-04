@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from enthought.execution.formula_executing_context import *
 from enthought.contexts.data_context import DataContext
-from enthought.util.refresh import refresh
+from traits.util.refresh import refresh
 
 
 class FormulaExecutingContextTest(TestCase):

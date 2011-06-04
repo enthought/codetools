@@ -114,7 +114,7 @@ from enthought.contexts.i_context import ICheckpointable
 from enthought.contexts.data_context import DataContext
 from enthought.contexts.multi_context import MultiContext
 from enthought.contexts.adapted_data_context import AdaptedDataContext
-from enthought.traits.protocols.api import adapt
+from traits.protocols.api import adapt
 
 # Local imports
 from with_mask_adapter import WithMaskAdapter

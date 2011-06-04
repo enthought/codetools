@@ -9,7 +9,7 @@ import numpy
 
 #Enthought Library imports
 from enthought import units
-from enthought.units.api import UnitArray
+from scimath.units.api import UnitArray
 
 
 ################################################################################

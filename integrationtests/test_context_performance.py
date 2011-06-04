@@ -3,7 +3,7 @@ import unittest
 import timeit
 
 # Enthought library imports
-from enthought.testing.api import performance
+from traits.testing.api import performance
 from enthought.contexts.tests.abstract_context_test_case import AbstractContextTestCase
 from enthought.contexts.data_context import DataContext
 from enthought.contexts.multi_context import MultiContext
@@ -184,7 +184,7 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
 
         ### Standard execution ################################################
         setup = "from numpy import arange\n" \
-                "from enthought.units.length import meters, feet\n" \
+                "from scimath.units.length import meters, feet\n" \
                 "from enthought import units\n" \
                 "depth_meters = arange(1000)\n"
         code = "depth_feet = units.convert(depth_meters, meters, feet)\n" \
@@ -197,9 +197,9 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
         # Adapter is set up to convert depth meters->feet and
         # depth2 feet->meters
         setup = "from numpy import arange\n" \
-                "from enthought.units.length import meters, feet\n" \
+                "from scimath.units.length import meters, feet\n" \
                 "from enthought.contexts.api import DataContext, AdaptedDataContext\n" \
-                "from enthought.units.api import UnitArray\n" \
+                "from scimath.units.api import UnitArray\n" \
                 "from enthought.contexts.api import UnitConversionAdapter\n" \
                 "data_context = DataContext()\n" \
                 "context = AdaptedDataContext(context=data_context)\n" \

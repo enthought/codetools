@@ -20,9 +20,9 @@ TraitslikeContextWrapper class is available to simplify this procedure.
 To use the TraitslikeContextWrapper, you need to use the :meth:`add_traits`
 method to tell it which names in the Context should appear as traits::
 
-    >>> from enthought.traits.api import Int
-    >>> from enthought.traits.ui.api import View, Item
-    >>> from enthought.traits.ui.menu import OKButton, CancelButton
+    >>> from traits.api import Int
+    >>> from traitsui.api import View, Item
+    >>> from traitsui.menu import OKButton, CancelButton
     >>> from enthought.contexts.api import DataContext, TraitslikeContextWrapper
     >>> d = DataContext(subcontext={'a': 1, 'b': 2, 'z': 20})
     >>> tcw = TraitslikeContextWrapper(_context=d)
@@ -56,9 +56,9 @@ in the CodeTools examples::
     pattern, together with using a TraitslikeContextWrapper to make items inside a
     data context appear like traits so that they can be used in a TraitsUI app.
     """
-    from enthought.traits.api import HasTraits, Instance, Property, Float, \
+    from traits.api import HasTraits, Instance, Property, Float, \
         on_trait_change, cached_property
-    from enthought.traits.ui.api import View, Group, Item
+    from traitsui.api import View, Group, Item
     
     from enthought.contexts.api import DataContext, TraitslikeContextWrapper
     from enthought.contexts.items_modified_event import ItemsModified

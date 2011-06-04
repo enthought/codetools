@@ -2,7 +2,7 @@
 from numpy import ndarray
 
 # ETS imports
-from enthought.units.api import UnitArray
+from scimath.units.api import UnitArray
 
 # Local imports
 from data_context import DataContext
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     """
 
     from numpy import arange
-    from enthought.units.length import feet
+    from scimath.units.length import feet
 
     g = GeoContext(name = 'geo')
     g['depth'] = UnitArray(arange(0., 5000., 100.), units = feet)

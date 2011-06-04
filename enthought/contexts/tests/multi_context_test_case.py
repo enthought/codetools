@@ -7,7 +7,7 @@ import unittest
 import nose
 
 # Enthought library imports
-from enthought.traits.api import Any
+from traits.api import Any
 
 # Geo library imports
 from enthought.contexts.tests.abstract_context_test_case import AbstractContextTestCase

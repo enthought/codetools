@@ -9,11 +9,11 @@ import nose
 from numpy import all
 
 # Enthought Library imports
-from enthought.units.length import meters, feet
-from enthought.units.time import second
+from scimath.units.length import meters, feet
+from scimath.units.time import second
 
 # ETS Library imports
-from enthought.units.api import UnitArray
+from scimath.units.api import UnitArray
 
 # Geo Library imports
 from enthought.contexts.api import DataContext, AdaptedDataContext

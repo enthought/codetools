@@ -5,7 +5,7 @@ import unittest
 from numpy import array
 
 # Enthought library imports
-from enthought.units.length import meters
+from scimath.units.length import meters
 
 # Geo library imports
 from enthought.contexts.api import UnitApplyAdapter

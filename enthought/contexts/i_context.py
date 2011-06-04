@@ -1,5 +1,5 @@
-from enthought.traits.api import Bool, Interface, Str
-from enthought.traits.protocols.api import declareAdapter, declareImplementation
+from traits.api import Bool, Interface, Str
+from traits.protocols.api import declareAdapter, declareImplementation
 
 from items_modified_event import ItemsModifiedEvent
 

@@ -1,7 +1,7 @@
 # Numeric libary imports
 from numpy import ndarray
 
-from enthought.traits.api import Dict
+from traits.api import Dict
 
 # Local imports
 from unit_manipulation_adapter import UnitManipulationAdapter

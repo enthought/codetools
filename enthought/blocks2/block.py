@@ -12,13 +12,13 @@ from ast import AST, Module, stmt
 from traceback import format_exc
 import types
 
-from enthought.traits.api import (Bool, Dict, Either, HasTraits,
+from traits.api import (Bool, Dict, Either, HasTraits,
                                   Instance, List, Property, Str,
                                   cached_property, Event)
 
-from enthought.util.dict import map_keys, map_values
-import enthought.util.graph as graph
-from enthought.util.sequence import is_sequence
+from traits.util.dict import map_keys, map_values
+import traits.util.graph as graph
+from traits.util.sequence import is_sequence
 
 from analysis import NameFinder
 

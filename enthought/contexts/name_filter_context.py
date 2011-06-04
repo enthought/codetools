@@ -2,7 +2,7 @@
 import copy
 
 # Enthought library imports
-from enthought.traits.api import Any
+from traits.api import Any
 
 # Local imports
 from data_context import DataContext

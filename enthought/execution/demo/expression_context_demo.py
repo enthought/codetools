@@ -1,15 +1,15 @@
 # Enthought library imports
-from enthought.traits.api import Code, HasTraits, Instance, Str, Button
-from enthought.traits.ui.api import View, Group, Item
-from enthought.traits.ui.wx.constants import WindowColor
+from traits.api import Code, HasTraits, Instance, Str, Button
+from traitsui.api import View, Group, Item
+from traitsui.wx.constants import WindowColor
 
-from enthought.enable.component_editor import ComponentEditor
-from enthought.chaco.api import PlotComponent, VPlotContainer
-from enthought.chaco.plot import Plot
+from enable.component_editor import ComponentEditor
+from chaco.api import PlotComponent, VPlotContainer
+from chaco.plot import Plot
 
 from enthought.execution.api import ExpressionContext
 from enthought.contexts.data_context import DataContext
-from enthought.block_canvas.plot.plot_data_context_adapter import \
+from blockcanvas.plot.plot_data_context_adapter import \
      PlotDataContextAdapter
 
 class ExpressionContextDemo(HasTraits):

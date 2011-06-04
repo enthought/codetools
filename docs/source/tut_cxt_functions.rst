@@ -10,7 +10,7 @@ module provides some tools for doing this.
 This example shows how to set up a simple listening data context that displays
 changes within a function's local namespace as it executes::
 
-	from enthought.traits.api import HasTraits, on_trait_change
+	from traits.api import HasTraits, on_trait_change
 	from enthought.contexts.api import DataContext, context_function
 	
 	class ListeningDataContext(DataContext):

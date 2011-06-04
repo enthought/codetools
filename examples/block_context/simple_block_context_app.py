@@ -4,9 +4,9 @@ This application demonstrates the use of the Block-Context-Execution Manager
 pattern, together with using a TraitslikeContextWrapper to make items inside a
 data context appear like traits so that they can be used in a TraitsUI app.
 """
-from enthought.traits.api import HasTraits, Instance, Property, Float, \
+from traits.api import HasTraits, Instance, Property, Float, \
     on_trait_change, cached_property
-from enthought.traits.ui.api import View, Group, Item
+from traitsui.api import View, Group, Item
 
 from enthought.contexts.api import DataContext, TraitslikeContextWrapper
 from enthought.contexts.items_modified_event import ItemsModified

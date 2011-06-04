@@ -2,7 +2,7 @@
 from copy import copy
 
 # Enthought library imports
-from enthought.traits.api import Str, Instance, Dict, on_trait_change, Bool
+from traits.api import Str, Instance, Dict, on_trait_change, Bool
 from enthought.blocks.api import Block
 from enthought.contexts.data_context import DataContext
 from enthought.contexts.items_modified_event import ItemsModified

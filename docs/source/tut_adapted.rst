@@ -30,7 +30,7 @@ by providing at least one of the :meth:`adapt_name`, :meth:`adapt_getitem`, or
 
     from numpy import ndarray
     from numpy.fft import fft, ifft
-    from enthought.traits.api import HasTraits
+    from traits.api import HasTraits
     from enthought.contexts.api import IAdapter
     
     class FFTAdapter(HasTraits):

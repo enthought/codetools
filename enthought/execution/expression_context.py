@@ -2,7 +2,7 @@
 from UserDict import DictMixin
 
 # Enthought library imports
-from enthought.traits.api import implements, Str, Dict, Any, List, Instance, on_trait_change
+from traits.api import implements, Str, Dict, Any, List, Instance, on_trait_change
 
 # Block Canvas imports
 from enthought.blocks.api import Block

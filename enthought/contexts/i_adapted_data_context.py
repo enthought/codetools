@@ -1,5 +1,5 @@
 # Enthought library imports
-from enthought.traits.api import Instance, List
+from traits.api import Instance, List
 
 # Geo library imports
 from i_context import IContext

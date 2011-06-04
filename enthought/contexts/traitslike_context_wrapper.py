@@ -2,7 +2,7 @@
 interface to its contents.
 """
 
-from enthought.traits.api import (Any, Bool, HasTraits, Instance, Trait,
+from traits.api import (Any, Bool, HasTraits, Instance, Trait,
     Undefined, on_trait_change)
 
 from i_context import IListenableContext
@@ -38,7 +38,7 @@ class TraitslikeContextWrapper(HasTraits):
 
         Example
         -------
-        >>> from enthought.traits.api import Int
+        >>> from traits.api import Int
         >>> from enthought.contexts.traitslike_context_wrapper import TraitsLikeContextWrapper
         >>> tcw = TraitsLikeContextWrapper(_context={})
         >>> tcw.add_traits('a', 'b', c=Int)

@@ -6,7 +6,7 @@ from copy import copy
 from numpy import NaN, array, empty, float64, iscomplex, isreal, ndarray
 
 # Enthought library imports
-from enthought.traits.api import Any, HasTraits
+from traits.api import Any, HasTraits
 
 # Local imports
 from i_adapter import IAdapter

@@ -183,7 +183,7 @@ inputs and then inspecting it::
        668.27798918   743.42546606   820.37061225   899.2015473    980.01303322
       1062.90715923  1147.9941173   1235.39308291  1325.23321898  1417.65482395]
     >>> 
-    >>> from enthought.chaco.shell import *
+    >>> from chaco.shell import *
     >>> plot(local_namespace['t'], local_namespace["displacement"], "b-")
     >>> show()
 
