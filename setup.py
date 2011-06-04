@@ -40,7 +40,7 @@ DOCLINES = __doc__.split("\n")
 setup(
     author = 'Enthought, Inc.',
     author_email = 'info@enthought.com',
-    download_url = ('http://www.enthought.com/repo/ETS/CodeTools-%s.tar.gz' %
+    download_url = ('http://www.enthought.com/repo/ets/CodeTools-%s.tar.gz' %
                     INFO['version']),
     classifiers = [c.strip() for c in """\
         Development Status :: 5 - Production/Stable
@@ -66,9 +66,6 @@ setup(
     maintainer = 'ETS Developers',
     maintainer_email = 'enthought-dev@enthought.com',
     name = 'CodeTools',
-    namespace_packages = [
-        "enthought",
-        ],
     packages = find_packages(),
     platforms = ["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
     tests_require = [
