@@ -59,7 +59,7 @@ setup(
         """.splitlines() if len(c.strip()) > 0],
     description = DOCLINES[1],
     include_package_data = True,
-    package_data = {'enthought': ['contexts/images/*.png']},
+    package_data = {'codetools': ['contexts/images/*.png']},
     install_requires = INFO['install_requires'],
     license = 'BSD',
     long_description = '\n'.join(DOCLINES[3:]),
