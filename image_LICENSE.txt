@@ -8,7 +8,7 @@ Unless stated in this file, icons are work of Enthought, and are released
 under BSD-like license.
 Files and original authors:
 ----------------------------------------------------------------
-enthought/contexts/images:
+codetools/contexts/images:
                 array.png | Enthought
                scalar.png | Enthought
                   str.png | Enthought
