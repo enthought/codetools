@@ -185,7 +185,7 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
         ### Standard execution ################################################
         setup = "from numpy import arange\n" \
                 "from scimath.units.length import meters, feet\n" \
-                "from enthought import units\n" \
+                "from scimath import units\n" \
                 "depth_meters = arange(1000)\n"
         code = "depth_feet = units.convert(depth_meters, meters, feet)\n" \
                "depth2_feet = depth_feet + depth_feet\n" \

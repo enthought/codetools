@@ -5,13 +5,13 @@ IRestrictedContext interfaces.
 import os
 from UserDict import DictMixin
 
-from enthought import sweet_pickle
+from apptools import sweet_pickle
 from traits.api import (Bool, Dict, HasTraits, Instance, Str,
-    implements, on_trait_change)
+                        implements, on_trait_change)
 from traits.protocols.api import adapt, declareAdapter
 
 from i_context import (IContext, ICheckpointable, IListenableContext,
-    IPersistableContext, IRestrictedContext)
+                       IPersistableContext, IRestrictedContext)
 from items_modified_event import ItemsModifiedEvent, ItemsModified
 
 # This is copied from numerical_modeling.numeric_context.constants

@@ -7,8 +7,8 @@
 
 import numpy
 
-#Enthought Library imports
-from enthought import units
+# ETS
+from scimath import units
 from scimath.units.api import UnitArray
 
 
