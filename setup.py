@@ -1,28 +1,5 @@
-#!/usr/bin/env python
-#
 # Copyright (c) 2008-2011 by Enthought, Inc.
 # All rights reserved.
-
-"""
-Code Analysis and Execution Tools
-
-The CodeTools project includes packages that simplify meta-programming and
-help the programmer separate data from code in Python. This library contains
-classes that allow defining simple snippets, or "blocks", of Python code,
-analyze variable dependencies in the code block, and use these dependencies to
-construct or restrict an execution graph. These (restricted) code blocks can
-then be executed in any namespace. However, this project also provides a
-Traits-event-enhanced namespace, called a "context", which can be used in
-place of a vanilla namespace to allow actions to be performed whenever
-variables are assigned or retrieved from the namespace. This project is used
-as the foundation for the BlockCanvas project.
-
-Prerequisites
--------------
-If you want to build CodeTools from source, you must first install
-`distribute <http://pypi.python.org/pypi/distribute>`_.
-
-"""
 
 from setuptools import setup, find_packages
 
@@ -33,10 +10,7 @@ setup_data = dict(__name__='', __file__='setup_data.py')
 execfile('setup_data.py', setup_data)
 INFO = setup_data['INFO']
 
-# Pull the description values for the setup keywords from our file docstring.
-DOCLINES = __doc__.split("\n")
 
-# Make the actual setup call.
 setup(
     author = 'Enthought, Inc.',
     author_email = 'info@enthought.com',
@@ -57,12 +31,12 @@ setup(
         Topic :: Software Development
         Topic :: Software Development :: Libraries
         """.splitlines() if len(c.strip()) > 0],
-    description = DOCLINES[1],
+    description = 'code analysis and execution tools',
+    long_description = open('README.rst').read(),
     include_package_data = True,
     package_data = {'codetools': ['contexts/images/*.png']},
     install_requires = INFO['install_requires'],
     license = 'BSD',
-    long_description = '\n'.join(DOCLINES[3:]),
     maintainer = 'ETS Developers',
     maintainer_email = 'enthought-dev@enthought.com',
     name = 'CodeTools',
