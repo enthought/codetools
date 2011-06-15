@@ -1,21 +1,24 @@
 # Copyright (c) 2008-2011 by Enthought, Inc.
 # All rights reserved.
 
+from os.path import join
 from setuptools import setup, find_packages
 
 
-# This works around a setuptools bug which gets setup_data.py metadata
-# from incorrect packages.
-setup_data = dict(__name__='', __file__='setup_data.py')
-execfile('setup_data.py', setup_data)
-INFO = setup_data['INFO']
+info = {}
+execfile(join('codetools', '__init__.py'), info)
 
 
 setup(
+    name = 'codetools',
+    version = info['__version__'],    
     author = 'Enthought, Inc.',
     author_email = 'info@enthought.com',
+    maintainer = 'ETS Developers',
+    maintainer_email = 'enthought-dev@enthought.com',
+    url = 'http://code.enthought.com/projects/code_tools.php',
     download_url = ('http://www.enthought.com/repo/ets/CodeTools-%s.tar.gz' %
-                    INFO['version']),
+                    info['__version__']),
     classifiers = [c.strip() for c in """\
         Development Status :: 5 - Production/Stable
         Intended Audience :: Developers
@@ -35,18 +38,9 @@ setup(
     long_description = open('README.rst').read(),
     include_package_data = True,
     package_data = {'codetools': ['contexts/images/*.png']},
-    install_requires = INFO['install_requires'],
+    install_requires = info['__requires__'],
     license = 'BSD',
-    maintainer = 'ETS Developers',
-    maintainer_email = 'enthought-dev@enthought.com',
-    name = 'CodeTools',
     packages = find_packages(),
     platforms = ["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
-    tests_require = [
-        'nose >= 0.10.3',
-        ],
-    test_suite = 'nose.collector',
-    url = 'http://code.enthought.com/projects/code_tools.php',
-    version = INFO['version'],
     zip_safe = False,
 )
