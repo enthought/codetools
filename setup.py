@@ -11,7 +11,7 @@ execfile(join('codetools', '__init__.py'), info)
 
 setup(
     name = 'codetools',
-    version = info['__version__'],    
+    version = info['__version__'],
     author = 'Enthought, Inc.',
     author_email = 'info@enthought.com',
     maintainer = 'ETS Developers',
