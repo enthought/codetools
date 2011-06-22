@@ -16,7 +16,7 @@ setup(
     author_email = 'info@enthought.com',
     maintainer = 'ETS Developers',
     maintainer_email = 'enthought-dev@enthought.com',
-    url = 'http://code.enthought.com/projects/code_tools.php',
+    url = 'https://github.com/enthought/codetools',
     download_url = ('http://www.enthought.com/repo/ets/codetools-%s.tar.gz' %
                     info['__version__']),
     classifiers = [c.strip() for c in """\
