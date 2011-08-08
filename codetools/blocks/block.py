@@ -13,6 +13,7 @@ from traceback import format_exc
 from codetools.blocks.util.uuid import UUID, uuid4
 import inspect
 import abc
+import types
 
 class CompositeException(Exception):
     """A container to consolidate multiple exceptions"""
@@ -134,6 +135,92 @@ class Block(HasTraits):
                     else:
                         raise exceptions[0]
         return
+
+    def execute_impure(self, context, continue_on_errors=False,
+                       clean_shadow=True):
+        """
+        Summary: Allows the execution of code blocks containing impure functions.
+
+        Description:
+
+        If the code block to be executed contains an impure function, then
+        the use of global and local contexts becomes more complex.
+
+        execute_impure helps you do this appropriately.
+
+        The crucial restrictions are (background, optional read):
+
+          * The passed-in global context must be an actual dictionary. It is
+          visible throughout the code block.
+
+          * The passed-in local context is not visible inside the function,
+          unless it is identical to the passed-in global context.
+
+          * Any names defined in the code block top level (outside the
+          function), become part of the passed-in local context, not
+          necessarily part of the passed-in global context.
+
+        Therefore (read this!):
+
+          * If the function needs access to names from a passed-in context,
+          that context must be global and must be a dict.
+
+          * If the function needs access to names defined in the code block's
+          top level (outside the function), including imports or other
+          function definitions, then the passed-in local and global contexts
+          must be identical, and must be a dict.
+
+        To meet these requirements, execute_impure copies a context into a
+        dict, then executes the code block with this dict serving as both
+        local and global context.
+
+        execute_impure also uses a shadow dictionary to track any calls to the
+        context dict's __setitem__, allowing you to keep track of changes made
+        to the context by the code block.
+
+          * If a name is defined in the top level of the code block, then it
+          will be saved in the shadow dictionary.
+
+          * If a value in the context is a mutable object, then both the
+          original context and the shadow dict hold references to it, and any
+          changes to it will automatically be be reflected in the original
+          context, not in the shadow dictionary.
+
+          * Any global names defined inside a function in the code block (via
+          the 'global' command) will not be reflected in the shadow dictionary,
+          because the global context is always directly accessed by low-level
+          c code (as of python versions through 3.2).
+
+        Parameters:
+
+            context: namespace in which to execute the code block(s)
+
+            continue_on_errors: see method 'execute'
+
+            clean_shadow: If True, then before returning the shadow dictionary,
+            deletes from it all functions, methods, and items whose name begins
+            with underscore.
+
+        Returns the shadow dictionary, described above.
+
+            A common usage would be to update the original context with the
+            returned shadow. If the original context is a MultiContext, then
+            by default the first subcontext would be updated with these
+            shadowed names/values.
+
+        """
+        shadowed = ShadowDict(context)
+        self.execute(shadowed, shadowed, continue_on_errors)
+        shadow = shadowed.shadow
+        if clean_shadow:
+            # Fixme: clean_shadow should probably remove a few more types,
+            # but these are the obvious ones.
+            shadow = dict((name, value) for (name, value) in shadow.iteritems()
+                          if name[0] != '_' and
+                          type(value) not in (types.FunctionType,
+                                              types.ModuleType))
+        return shadow
+
 
     def is_empty(self):
         """ Return true if 'block' has an empty AST.

@@ -74,7 +74,6 @@ class Test(unittest.TestCase):
             b.restrict(outputs=())
     
     
-    @unittest.expectedFailure
     def test_impure_execute(self):
         code="""
 import os  # module and function names are discarded by default.
