@@ -35,6 +35,28 @@ class RLValueVisitor(Visitor):
     visitModule = visit_children
     visitPass = visit_children
 
+    def visitWith(self, node):
+        self.rhs.update(get_symbols(node.context_expr, ast.Load))
+        
+        if node.optional_vars:
+            self.lhs.update(get_symbols(node.optional_vars, ast.Load))
+
+        for child in node.body:
+            self.visit(child)
+
+
+    def visitImport(self, node):
+        for alias in node.names:
+            name = alias.asname if alias.asname else alias.name
+            self.lhs.add(name)
+
+    def visitImportFrom(self, node):
+        for alias in node.names:
+            name = alias.asname if alias.asname else alias.name
+            self.lhs.add(name)
+
+
+
     def visitClassDef(self, node):
         for decorator in node.decorator_list:
             self.rhs(get_symbols(decorator, ast.Load))
@@ -69,7 +91,7 @@ class RLValueVisitor(Visitor):
 
     def visitFor(self, node):
         self.rhs.update(get_symbols(node.iter, ast.Store))
-        
+
         self.lhs.update(get_symbols(node.target, ast.Load))
 
         for stmnt in node.body:

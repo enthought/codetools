@@ -23,7 +23,7 @@ def collect_(self, node):
 
 class CollectNodes(Visitor):
 
-    def __init__(self):
+    def __init__(self, call_deps=False):
         self.graph = digraph()
         self.modified = set()
         self.used = set()
@@ -32,6 +32,8 @@ class CollectNodes(Visitor):
         self.targets = set()
 
         self.context_names = set()
+
+        self.call_deps = call_deps
 
     visitDefault = collect_
 
@@ -98,7 +100,9 @@ class CollectNodes(Visitor):
 def add_edges(graph, targets, sources):
         for target in targets:
             for src in sources:
-                graph.add_edge((target, src))
+                edge = target, src
+                if not graph.has_edge(edge):
+                    graph.add_edge(edge)
 
 class GlobalDeps(object):
     def __init__(self, gen, nodes):
@@ -149,6 +153,10 @@ class GraphGen(CollectNodes):
 
         if not self.graph.has_node(node.name):
             self.graph.add_node(node.name)
+
+        for undef in gen.undefined:
+            if not self.graph.has_node(undef):
+                self.graph.add_node(undef)
 
         add_edges(self.graph, [node.name], gen.undefined)
 
