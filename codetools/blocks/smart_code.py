@@ -120,7 +120,6 @@ class SmartCode(object):
         'all symbols found in the ast'
         return set(self.graph_gen.graph.nodes()) | self.global_symbols
 
-    @property
     def lines(self, reversed=False):
         '''
         Split a block into smallest atomic statements.

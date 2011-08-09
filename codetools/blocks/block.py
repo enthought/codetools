@@ -92,7 +92,7 @@ class Block(HasTraits):
         return self.scode.ast
 
     def _sub_blocks_default(self):
-        return [Block(inner=sub_block) for sub_block in split(self.scode, reversed=False)]
+        return [Block(inner=sub_block) for sub_block in self.scode.lines(reversed=False)]
 
     @property
     def all_outputs(self):
