@@ -11,7 +11,7 @@ class Replacer(Visitor):
     '''
     Visitor to replace nodes. 
     '''
-    
+
     def __init__(self, old, new):
         self.old = old
         self.new = new
@@ -39,7 +39,7 @@ class Replacer(Visitor):
         return
 
 def replace_nodes(root, old, new):
-    
+
     '''
     Replace the old node with the new one. 
     Old must be an indirect child of root
@@ -48,7 +48,7 @@ def replace_nodes(root, old, new):
     :param old: node to replace
     :param new: node to replace `old` with 
     '''
-    
+
     rep = Replacer(old, new)
     rep.visit(root)
     return

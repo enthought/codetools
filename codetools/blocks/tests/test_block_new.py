@@ -53,9 +53,9 @@ class Test(unittest.TestCase):
         source = 'a = b; c = d'
         block = SmartCode(source=source)
 
-        self.assertEqual(block.dependends_on(('b', 'd')), set(['a', 'b', 'c', 'd']))
-        self.assertEqual(block.dependends_on(('b',)), set(['a', 'b']))
-        self.assertEqual(block.dependends_on(('d',)), set(['c', 'd']))
+        self.assertEqual(block.depends_on(('b', 'd')), set(['a', 'b', 'c', 'd']))
+        self.assertEqual(block.depends_on(('b',)), set(['a', 'b']))
+        self.assertEqual(block.depends_on(('d',)), set(['c', 'd']))
 
         self.assertEqual(block.dependent_on(('b', 'd')), set(['b', 'd']))
 

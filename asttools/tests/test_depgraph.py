@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
     def assertDepends(self, source, edges, undefined=None, modified=None):
         mod = ast.parse(source)
 
-        gen = GraphGen()
+        gen = GraphGen(call_deps=True)
         gen.visit(mod)
 
         self.assertSetEqual(set(gen.graph.edges()), edges)
@@ -242,15 +242,15 @@ foo = lambda b:  a + b
 
     def test_list_comp(self):
         source = 'a = [b for b in c]'
-        self.assertDepends(source, {('a', 'c'), ('a', 'b')})
+        self.assertDepends(source, {('a', 'c')})
 
     def test_dict_comp(self):
         source = 'a = {b:d for b,d in c}'
-        self.assertDepends(source, {('a', 'c'), ('a', 'b'), ('a', 'd')})
+        self.assertDepends(source, {('a', 'c')})
 
     def test_set_comp(self):
         source = 'a = {b for b in c}'
-        self.assertDepends(source, {('a', 'c'), ('a', 'b')})
+        self.assertDepends(source, {('a', 'c')})
 
     def test_try_except(self):
         source = '''

@@ -128,11 +128,37 @@ class ASTPrinter(Visitor):
         self.print(")")
 
 def dump_ast(ast, indent=' ', newline='\n'):
+    '''
+    
+    Returns a string representing the ast.
+    
+    :param ast: the ast to print.
+    :param indent: how far to indent a newline.
+    :param newline: The newline character.
+    
+    '''
+    
     visitor = ASTPrinter(indent=indent, level=0, newline=newline)
     visitor.visit(ast)
     return visitor.dumps()
-    
+
 def print_ast(ast, indent=' ', initlevel=0, newline='\n', file=sys.stdout):
+    '''
+    Pretty print an ast node.
+    
+    :param ast: the ast to print.
+    :param indent: how far to indent a newline.
+    :param initlevel: starting indent level
+    :param newline: The newline character.
+    :param file: file object to print to
+    
+    To print a short ast you may want to use::
+    
+        node = ast.parse(source)
+        print_ast(node, indent='', newline='')
+        
+    '''
+
     visitor = ASTPrinter(indent=indent, level=initlevel, newline=newline)
     visitor.visit(ast)
     visitor.dump(file=file)

@@ -5,8 +5,7 @@ Created on Aug 5, 2011
 '''
 from asttools.mutators.remove_trivial import \
     remove_trivial as remove_trivial_ast
-from asttools.visitors.assign_visitor import lhs, rhs
-from asttools.visitors.pysourcegen import dump_python_source
+from asttools import lhs, rhs, dump_python_source
 from codetools.blocks.smart_code import SmartCode
 from copy import deepcopy
 from pygraph.algorithms.cycles import find_cycle #@UnresolvedImport
@@ -15,6 +14,7 @@ from pygraph.algorithms.sorting import \
 from pygraph.classes.digraph import digraph #@UnresolvedImport
 import _ast
 import traceback
+from codetools.util.cbook import flatten
 
 
 class DependencyCycleError(Exception):
@@ -27,12 +27,53 @@ class DependencyCycleError(Exception):
         Exception.__init__(self, ' -> '.join(nodestrs))
 
 
-def split(block, reversed=True):
-    '''
-    Split a block into smallest atomic statements.
+leaves = lambda graph: [node for node in graph.nodes() if not graph.neighbors(node)]
 
-    :param block: the block to split into sub - blocks
-    :param reversed: The generator will yield the blocks in reverse order
+def split_contant_values(scode):
+    '''
+    Split scode into to SmartCode objects the first containing all of the constant assignments. 
+    The second will contain the rest of the code.
+    
+    example::
+        
+        >>> scode = SmartCode('import math; a = 1; b = a + 1')
+        >>> const, variable = split_contant_values(scode)
+        >>> print const.codestring
+        import math
+        a = 1 
+        >>> print variable.codestring
+        b = a + 1
+
+    '''
+    constant_symbols = leaves(scode._graph)
+
+    if not constant_symbols:
+        return SmartCode(''), scode
+
+    r_graph = scode._graph.reverse()
+    new_inputs = set.union(*[set(r_graph.neighbors(node)) for node in constant_symbols])
+
+    if not new_inputs:
+        return scode, SmartCode('')
+
+    const_scode = scode.restrict(outputs=constant_symbols)
+    var_scode = scode.restrict(inputs=new_inputs)
+
+    return const_scode, var_scode
+
+def split(scode, reversed=True):
+    '''
+    Split a scode into smallest *sortable* atomic statements.
+
+    :param scode: the scode to split into sub - scodes
+    :param reversed: The generator will yield the scodes in reverse order
+    
+    
+    :return: a list of scodes
+    
+    
+    sco
+    
     '''
 
     if reversed:
@@ -40,10 +81,10 @@ def split(block, reversed=True):
     else:
         shift = lambda left, right:  left.append(right.pop(0))
 
-    if len(block.ast.body) <= 1:
-        yield block
+    if len(scode.ast.body) <= 1:
+        yield scode
 
-    body = deepcopy(block.ast.body)
+    body = deepcopy(scode.ast.body)
 
     while body:
         blob = []
@@ -54,20 +95,20 @@ def split(block, reversed=True):
 
         mod = _ast.Module(body=blob)
 
-        sub_block = SmartCode(ast=mod, path=block.path)
-        yield sub_block
+        sub_scode = SmartCode(ast=mod, path=scode.path)
+        yield sub_scode
 
-def join(blocks):
+def join(scodes):
     '''
-    Join a sequence of blocks into a single Block containing
+    Join a sequence of scodes into a single Block containing
     single ast and code objects.
 
-    :param blocks: a sequence of blocks to join
+    :param scodes: a sequence of scodes to join
     '''
     body = []
     mod = _ast.Module(body=body)
-    for block in blocks:
-        sub_body = deepcopy(block.ast.body)
+    for scode in scodes:
+        sub_body = deepcopy(scode.ast.body)
         for i in range(len(sub_body)):
             if isinstance(sub_body[i], _ast.Pass):
                 del sub_body[i]
@@ -75,34 +116,34 @@ def join(blocks):
 
     return SmartCode(source=dump_python_source(mod))
 
-def sort(blocks):
+def sort(scodes):
     '''
-    Build a graph from the blocks and topologically sort it.
+    Build a graph from the scodes and topologically sort it.
 
     The dependencies on the graph are based on symbols returned
     from the lhs and rhs functions.
 
-    :param blocks: Block objects to sort.
+    :param scodes: Block objects to sort.
     '''
 
     graph = digraph()
 
-    graph.add_nodes(blocks)
+    graph.add_nodes(scodes)
 
     input_dict = {}
     output_dict = {}
 
-    for block in blocks:
-        for intput in rhs(block.ast):
-            input_dict.setdefault(intput, []).append(block)
-        for output in lhs(block.ast):
-            output_dict.setdefault(output, []).append(block)
+    for scode in scodes:
+        for intput in rhs(scode.ast):
+            input_dict.setdefault(intput, []).append(scode)
+        for output in lhs(scode.ast):
+            output_dict.setdefault(output, []).append(scode)
 
     for var in set(input_dict) | set(output_dict):
-        for iblock in input_dict.get(var, []):
-            for oblock in output_dict.get(var, []):
+        for iscode in input_dict.get(var, []):
+            for oscode in output_dict.get(var, []):
 
-                edge = oblock, iblock
+                edge = oscode, iscode
                 graph.add_edge(edge)
 
     cycle = find_cycle(graph)
@@ -110,29 +151,48 @@ def sort(blocks):
         raise DependencyCycleError([(lhs(b.ast), rhs(b.ast)) for b in cycle])
     return topo_sort(graph)
 
-def interleave(blocks):
+def interleave(scodes):
     '''
-    Sort and join blocks.
+    Sort and join scodes.
 
-    :param blocks: sequence of Block objects
+    :param scodes: sequence of Block objects
+    
+    
+    :return: a SmartCode object
+    
+    example::
+     
+        scode1 = SmartCode('a = 1; c = a + b')
+        scode2 = SmartCode('b = a ** 2')
+        
+        scode = interleave([scode1, scode2])
+        
+        print scode.codestring
+        
+    results in ::
+    
+        a = 1
+        b = (a ** 2)
+        c = (a + b)
 
     '''
-    return join(sort(blocks))
+
+    return join(sort(flatten([split(scode) for scode in scodes])))
 
 
-def remove_trivial(block):
+def remove_trivial(scode):
     '''
     Remove duplicate assignments and other
     trivial optimizations.
 
-    :param block: Block object
+    :param scode: Block object
 
-    :returns: a new block object
+    :returns: a new scode object
     '''
 
-    new_ast = deepcopy(block.ast)
+    new_ast = deepcopy(scode.ast)
     remove_trivial_ast(new_ast)
-    return SmartCode(ast=new_ast, path=block.path)
+    return SmartCode(ast=new_ast, path=scode.path)
 
 def eval_inline(codes, global_context=None, local_context=None, continue_on_errors=False):
 
@@ -148,12 +208,12 @@ def eval_inline(codes, global_context=None, local_context=None, continue_on_erro
             else:
                 raise err
 
-def unique_lhs(blocks):
+def unique_lhs(scodes):
     '''
-    Return a dict whose values are from `blocks` and who's keys are
+    Return a dict whose values are from `scodes` and who's keys are
     hashed based on the lhs symbols of assignment statements.
      
-    :param blocks: sequence of Block objects
+    :param scodes: sequence of Block objects
     '''
 
     def o(b):
@@ -163,5 +223,5 @@ def unique_lhs(blocks):
         else:
             return b.code
 
-    return {o(b):b for b in blocks}
+    return {o(b):b for b in scodes}
 

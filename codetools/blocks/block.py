@@ -4,21 +4,34 @@ Created on Aug 4, 2011
 @author: sean
 '''
 from codetools.blocks.smart_code import SmartCode
-from codetools.blocks.lego import split
-from asttools import conditional_lhs
-from asttools.visitors.assign_visitor import rhs
-from traits.api import HasTraits, Instance, List
+from asttools import conditional_symbols
+from traits.api import HasTraits, Instance, List, Property
 from traceback import format_exc
 
 from codetools.blocks.util.uuid import UUID, uuid4
-import inspect
-import abc
 import types
+import _ast
+from asttools.visitors import Visitor, visit_children
+from asttools.visitors.symbol_visitor import get_symbols
 
 class CompositeException(Exception):
     """A container to consolidate multiple exceptions"""
     def __init__(self, exceptions):
         self.exceptions = exceptions
+
+class ImportSymbols(Visitor):
+    def __init__(self):
+        self.imports = set()
+
+    visitDefault = visit_children
+
+    def visitalias(self, node):
+        self.imports.update(get_symbols(node))
+
+def from_imports(node):
+    gen = ImportSymbols()
+    gen.visit(node)
+    return gen.imports
 
 class ShadowDict(dict):
     """ Dictionary whose writes (via indexing) are also saved in a shadow
@@ -33,24 +46,25 @@ class ShadowDict(dict):
         dict.__setitem__(self, key, val)  # avoids recursion
         self.shadow[key] = val
 
+is_file_object = lambda o: hasattr(o, 'read') and hasattr(o, 'name')
 
 class Block(HasTraits):
 
     uuid = Instance(UUID)
     _uuid_default = lambda self: uuid4()
 
+    scode = Instance(SmartCode)
+
     __this = Instance('Block') # (traits.This scopes dynamically (#986))
-    sub_blocks = List(__this)
+    sub_blocks = Property(List(__this))
 
-
-    def __init__(self, x=(), file=None, grouped=False, inner=None, **kw):
+    def __init__(self, x=(), file=None, scode=None, **kw):
 
         super(Block, self).__init__(**kw)
 
-        if inner is not None:
-            self.scode = inner
+        if scode is not None:
+            self.scode = scode
         else:
-            is_file_object = lambda o: hasattr(o, 'read') and hasattr(o, 'name')
 
             if file is not None:
                 # Turn 'file' into a file object and move to 'x'
@@ -60,8 +74,6 @@ class Block(HasTraits):
                     raise ValueError("Expected 'file' to be a file or string, "
                                      "got %r" % file)
                 x = file
-
-
             # 'x': file object -> string
             if is_file_object(x):
                 source = None
@@ -73,13 +85,18 @@ class Block(HasTraits):
             from ..util.sequence import is_sequence
             if isinstance(x, Block):
                 self.scode = x.scode
+            elif isinstance(x, _ast.AST):
+                self.scode = SmartCode(ast=x, path='<unknown>')
+            elif is_file_object(x):
+                self.scode = SmartCode(file=x, path='<unknown>')
             elif is_sequence(x) and not isinstance(x, basestring):
                 from codetools.blocks.lego import join as join_code
                 self.scode = join_code(Block(sub_block) for sub_block in x)
             else:
                 self.scode = SmartCode(source, file, ast=None, path=None)
 
-        self.conditional_outputs, self.outputs = conditional_lhs(self.scode.ast)
+        self._lhs, self._rhs, self._undefined = conditional_symbols(self.scode.ast)
+
 
     def __repr__(self):
         return '%s(uuid=%s)' % (self.__class__.__name__, self.uuid)
@@ -87,23 +104,54 @@ class Block(HasTraits):
     def __str__(self):
         return repr(self) # TODO Unparse ast (2.5) (cf. #1167)
 
+
+    def __eq__(self, other):
+
+        if not isinstance(other, type(self)):
+            return False
+        return self.uuid == other.uuid
+
+    def __ne__(self, other):
+
+        if not isinstance(other, type(self)):
+            return True
+
+        return self.uuid != other.uuid
+
     @property
     def ast(self):
         return self.scode.ast
 
-    def _sub_blocks_default(self):
-        return [Block(inner=sub_block) for sub_block in self.scode.lines(reversed=False)]
+    def _get_sub_blocks(self):
+        return [Block(scode=sub_code) for sub_code in self.scode.lines(reversed=False)]
 
     @property
     def all_outputs(self):
-        return self.conditional_outputs | self.outputs
+        return (self._lhs[0] | self._lhs[1]) - self.scode.global_symbols
+
+    @property
+    def outputs(self):
+        return self._lhs[1] - self.scode.global_symbols
+
+    @property
+    def conditional_outputs(self):
+        return self._lhs[0] - self.scode.global_symbols
 
     @property
     def inputs(self):
-        return rhs(self.scode.ast) - self.all_outputs
+        return self._undefined - self.scode.global_symbols
+    
+    @property
+    def fromimports(self):
+        return from_imports(self.ast)
+        
+    @property
+    def codestring(self):
+        return self.scode.codestring
 
     def restrict(self, inputs=(), outputs=()):
-        return Block(inner=self.scode.restrict(inputs, outputs))
+
+        return Block(scode=self.scode.restrict(inputs, outputs))
 
     def execute(self, local_context, global_context={}, continue_on_errors=False):
 
@@ -150,22 +198,19 @@ class Block(HasTraits):
 
         The crucial restrictions are (background, optional read):
 
-          * The passed-in global context must be an actual dictionary. It is
+        * The passed-in global context must be an actual dictionary. It is
           visible throughout the code block.
-
-          * The passed-in local context is not visible inside the function,
+        * The passed-in local context is not visible inside the function,
           unless it is identical to the passed-in global context.
-
-          * Any names defined in the code block top level (outside the
+        * Any names defined in the code block top level (outside the
           function), become part of the passed-in local context, not
           necessarily part of the passed-in global context.
 
         Therefore (read this!):
 
-          * If the function needs access to names from a passed-in context,
+        * If the function needs access to names from a passed-in context,
           that context must be global and must be a dict.
-
-          * If the function needs access to names defined in the code block's
+        * If the function needs access to names defined in the code block's
           top level (outside the function), including imports or other
           function definitions, then the passed-in local and global contexts
           must be identical, and must be a dict.
@@ -178,15 +223,13 @@ class Block(HasTraits):
         context dict's __setitem__, allowing you to keep track of changes made
         to the context by the code block.
 
-          * If a name is defined in the top level of the code block, then it
+        * If a name is defined in the top level of the code block, then it
           will be saved in the shadow dictionary.
-
-          * If a value in the context is a mutable object, then both the
+        * If a value in the context is a mutable object, then both the
           original context and the shadow dict hold references to it, and any
           changes to it will automatically be be reflected in the original
           context, not in the shadow dictionary.
-
-          * Any global names defined inside a function in the code block (via
+        * Any global names defined inside a function in the code block (via
           the 'global' command) will not be reflected in the shadow dictionary,
           because the global context is always directly accessed by low-level
           c code (as of python versions through 3.2).
@@ -220,7 +263,6 @@ class Block(HasTraits):
                           type(value) not in (types.FunctionType,
                                               types.ModuleType))
         return shadow
-
 
     def is_empty(self):
         """ Return true if 'block' has an empty AST.

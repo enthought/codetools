@@ -648,22 +648,26 @@ class SourceGen(ExprSourceGen):
 
 
 def python_source(ast, file=sys.stdout):
+    '''
+    Generate executable python source code from an ast node.
+      
+    :param ast: ast node
+    :param file: file to write output to.
+    '''
     gen = SourceGen()
     gen.visit(ast)
     gen.dump(file)
 
-def dump_python_source(ast, file=sys.stdout):
+def dump_python_source(ast):
+    '''
+    :return: a string containing executable python source code from an ast node.
+      
+    :param ast: ast node
+    :param file: file to write output to.
+    '''
     gen = SourceGen()
     gen.visit(ast)
     return gen.dumps()
-
-
-
-
-
-
-
-
 
 
 

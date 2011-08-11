@@ -6,6 +6,7 @@ Created on Jul 18, 2011
 from asttools import Visitor, visit_children
 from pygraph.classes.digraph import digraph #@UnresolvedImport
 import _ast
+from asttools.visitors.symbol_visitor import get_symbols
 
 
 def collect_(self, node):
@@ -57,6 +58,10 @@ class CollectNodes(Visitor):
 
     def visitalias(self, node):
         name = node.asname if node.asname else node.name
+
+        if '.' in name:
+            name = name.split('.', 1)[0]
+
         if not self.graph.has_node(name):
             self.graph.add_node(name)
 
@@ -80,8 +85,10 @@ class CollectNodes(Visitor):
             if not self.graph.has_node(src):
                 self.undefined.add(src)
 
-        add_edges(self.graph, left, right)
-        add_edges(self.graph, right, left)
+        if self.call_deps:
+            add_edges(self.graph, left, right)
+            add_edges(self.graph, right, left)
+
         right.update(left)
         return right
 
@@ -94,7 +101,53 @@ class CollectNodes(Visitor):
             self.modified.update(targets)
             add_edges(self.graph, targets, sources)
             return targets
+        
+    def handle_generators(self, generators):
+        defined = set()
+        required = set()
+        for generator in generators:
+            get_symbols(generator, _ast.Load)
+            required.update(get_symbols(generator, _ast.Load) - defined)
+            defined.update(get_symbols(generator, _ast.Store))
+            
+        return defined, required
+    
+    def visitListComp(self, node):
 
+        defined, required = self.handle_generators(node.generators)
+        required.update(get_symbols(node.elt, _ast.Load) - defined)
+
+        for symbol in required:
+            if not self.graph.has_node(symbol):
+                self.graph.add_node(symbol)
+                self.undefined.add(symbol)
+
+        return required
+
+    def visitSetComp(self, node):
+
+        defined, required = self.handle_generators(node.generators)
+        required.update(get_symbols(node.elt, _ast.Load) - defined)
+
+        for symbol in required:
+            if not self.graph.has_node(symbol):
+                self.graph.add_node(symbol)
+                self.undefined.add(symbol)
+
+        return required
+
+    def visitDictComp(self, node):
+
+        defined, required = self.handle_generators(node.generators)
+        required.update(get_symbols(node.key, _ast.Load) - defined)
+        required.update(get_symbols(node.value, _ast.Load) - defined)
+
+        for symbol in required:
+            if not self.graph.has_node(symbol):
+                self.graph.add_node(symbol)
+                self.undefined.add(symbol)
+
+        return required
 
 
 def add_edges(graph, targets, sources):
@@ -136,6 +189,10 @@ class GraphGen(CollectNodes):
         gen = GraphGen()
         gen.visit_lambda(node)
 
+        for undef in gen.undefined:
+            if not self.graph.has_node(undef):
+                self.graph.add_node(undef)
+
         return gen.undefined
 
     def visit_function_def(self, node):
@@ -165,13 +222,16 @@ class GraphGen(CollectNodes):
     def visitAssign(self, node):
         nodes = self.visit(node.value)
 
+        tsymols = get_symbols(node, _ast.Store)
+        re_defined = tsymols.intersection(set(self.graph.nodes()))
+        if re_defined:
+            add_edges(self.graph, re_defined, re_defined)
+
         targets = set()
         for target in node.targets:
             targets.update(self.visit(target))
 
-        for target in targets:
-            for value in nodes:
-                self.graph.add_edge((target, value))
+        add_edges(self.graph, targets, nodes)
 
         return targets | nodes
 
@@ -317,6 +377,23 @@ class GraphGen(CollectNodes):
 
         return all_nodes
 
+
+
+def make_graph(node, call_deps=False):
+    '''
+    Create a dependency graph from an ast node.
+    
+    :param node: ast node.
+    :param call_deps: if true, then the graph will create a cyclic dependance for all
+                      function calls. (i.e for `a.b(c)` a depends on b and b depends on a)
+                      
+    :returns: a tuple of (graph, undefined)
+    '''
+
+    gen = GraphGen(call_deps=call_deps)
+    gen.visit(node)
+
+    return gen.graph, gen.undefined
 
 
 

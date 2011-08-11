@@ -6,10 +6,47 @@ Created on Aug 5, 2011
 import unittest
 
 from codetools.blocks.smart_code import SmartCode
-from codetools.blocks.lego import split, join, sort as sort_blocks, DependencyCycleError
+from codetools.blocks.lego import split, join, sort as sort_blocks, DependencyCycleError, \
+    split_contant_values
 from codetools.blocks.tests import assert_block_eq
 from itertools import permutations
 
+
+class TestSplitConstantValues(unittest.TestCase):
+
+    def test_simple(self):
+
+        scode = SmartCode('import math; a = 1; b = a + 1')
+
+        const, variable = split_contant_values(scode)
+
+        ctx = {}
+        eval(const.code, {}, ctx)
+
+        import math
+        self.assertEqual(ctx, {'math':math, 'a':1})
+
+
+        eval(variable.code, {}, ctx)
+
+        self.assertIn('b', ctx)
+        self.assertEqual(ctx['b'], 2)
+
+    def test_circular(self):
+
+        scode = SmartCode('a = 1; b = a + 1; a = 2')
+
+        const, variable = split_contant_values(scode)
+
+        ctx = {}
+        eval(const.code, {}, ctx)
+
+        self.assertEqual(ctx, {})
+
+
+        eval(variable.code, {}, ctx)
+
+        self.assertEqual(ctx, {'a': 2, 'b':2})
 
 class TestSplit(unittest.TestCase):
 
@@ -219,7 +256,7 @@ class TestSort(unittest.TestCase):
         with self.assertRaises(DependencyCycleError):
             sort_blocks(seq_of_blocks)
 
-    
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test_split_simple']

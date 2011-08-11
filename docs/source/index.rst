@@ -29,7 +29,7 @@ Contents
 
 .. toctree::
    
-   tutorial.rst
+   tutorials/tutorial.rst
    roadmap.rst
-
+   api/index.rst
 

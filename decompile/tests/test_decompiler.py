@@ -7,7 +7,7 @@ import unittest
 
 import _ast
 from decompile import make_module
-from decompile.util import cmp_tree, print_ast
+from asttools import cmp_ast, print_ast
 from StringIO import StringIO
 
 filename = 'tests.py'
@@ -20,7 +20,7 @@ class Base(unittest.TestCase):
             raise self.failureException("%s is not an _ast.AST instance" % (left))
         if not isinstance(right, _ast.AST):
             raise self.failureException("%s is not an _ast.AST instance" % (right))
-        result = cmp_tree(left, right)
+        result = cmp_ast(left, right)
 
         if not result:
             
