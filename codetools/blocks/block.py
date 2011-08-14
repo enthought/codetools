@@ -13,6 +13,8 @@ import types
 import _ast
 from asttools.visitors import Visitor, visit_children
 from asttools.visitors.symbol_visitor import get_symbols
+from asttools.mutators.remove_trivial import remove_unused_assign
+from copy import deepcopy
 
 class CompositeException(Exception):
     """A container to consolidate multiple exceptions"""
@@ -140,18 +142,31 @@ class Block(HasTraits):
     @property
     def inputs(self):
         return self._undefined - self.scode.global_symbols
-    
+
     @property
     def fromimports(self):
         return from_imports(self.ast)
-        
+
     @property
     def codestring(self):
         return self.scode.codestring
 
     def restrict(self, inputs=(), outputs=()):
 
-        return Block(scode=self.scode.restrict(inputs, outputs))
+        ast = self.scode.restrict(inputs, outputs).ast
+
+        for expr in self.ast.body[::-1]:
+            if isinstance(expr, (_ast.Import, _ast.ImportFrom)):
+                ast.insert(0, deepcopy(expr))
+                
+        #Remove any constant symbols that we want to use as inputs
+        for symbol in inputs:
+            remove_unused_assign(ast, symbol)
+
+
+        scode = SmartCode(ast=ast, path=self.scode.path, global_symbols=self.scode.global_symbols)
+
+        return Block(scode=scode)
 
     def execute(self, local_context, global_context={}, continue_on_errors=False):
 
