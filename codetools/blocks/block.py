@@ -157,7 +157,7 @@ class Block(HasTraits):
 
         for expr in self.ast.body[::-1]:
             if isinstance(expr, (_ast.Import, _ast.ImportFrom)):
-                if not any(cmp_ast(expr, right) for right in self.ast.body):
+                if not any(cmp_ast(expr, right) for right in ast.body):
                     ast.insert(0, deepcopy(expr))
 
         #Remove any constant symbols that we want to use as inputs
