@@ -4,7 +4,7 @@ Created on Aug 4, 2011
 @author: sean
 '''
 from codetools.blocks.smart_code import SmartCode
-from asttools import conditional_symbols
+from asttools import conditional_symbols, cmp_ast
 from traits.api import HasTraits, Instance, List, Property
 from traceback import format_exc
 
@@ -157,8 +157,9 @@ class Block(HasTraits):
 
         for expr in self.ast.body[::-1]:
             if isinstance(expr, (_ast.Import, _ast.ImportFrom)):
-                ast.insert(0, deepcopy(expr))
-                
+                if not any(cmp_ast(expr, right) for right in self.ast.body):
+                    ast.insert(0, deepcopy(expr))
+
         #Remove any constant symbols that we want to use as inputs
         for symbol in inputs:
             remove_unused_assign(ast, symbol)
