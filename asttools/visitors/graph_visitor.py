@@ -4,7 +4,7 @@ Created on Jul 18, 2011
 @author: sean
 '''
 from asttools import Visitor, visit_children
-from pygraph.classes.digraph import digraph #@UnresolvedImport
+from networkx import DiGraph
 import _ast
 from asttools.visitors.symbol_visitor import get_symbols
 
@@ -25,7 +25,7 @@ def collect_(self, node):
 class CollectNodes(Visitor):
 
     def __init__(self, call_deps=False):
-        self.graph = digraph()
+        self.graph = DiGraph()
         self.modified = set()
         self.used = set()
         self.undefined = set()
@@ -51,8 +51,8 @@ class CollectNodes(Visitor):
                 self.undefined.add(node.id)
 
         for ctx_var in self.context_names:
-            if not self.graph.has_edge((node.id, ctx_var)):
-                self.graph.add_edge((node.id, ctx_var))
+            if not self.graph.has_edge(node.id, ctx_var):
+                self.graph.add_edge(node.id, ctx_var)
 
         return {node.id}
 
@@ -154,8 +154,8 @@ def add_edges(graph, targets, sources):
         for target in targets:
             for src in sources:
                 edge = target, src
-                if not graph.has_edge(edge):
-                    graph.add_edge(edge)
+                if not graph.has_edge(*edge):
+                    graph.add_edge(*edge)
 
 class GlobalDeps(object):
     def __init__(self, gen, nodes):
@@ -245,13 +245,13 @@ class GraphGen(CollectNodes):
         for target in targets:
             for value in values:
                 edge = target, value
-                if not self.graph.has_edge(edge):
-                    self.graph.add_edge(edge)
+                if not self.graph.has_edge(*edge):
+                    self.graph.add_edge(*edge)
 
             for tgt2 in targets:
                 edge = target, tgt2
-                if not self.graph.has_edge(edge):
-                    self.graph.add_edge(edge)
+                if not self.graph.has_edge(*edge):
+                    self.graph.add_edge(*edge)
 
         return targets | values
 

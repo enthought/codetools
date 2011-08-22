@@ -6,14 +6,14 @@ Created on Aug 2, 2011
 from __future__ import print_function
 
 from StringIO import StringIO
-from asttools import python_source
+from asttools import lhs, make_graph, python_source
 from asttools.mutators.prune_mutator import PruneVisitor
-from asttools import lhs, make_graph
 from copy import deepcopy
+from networkx.algorithms.traversal.breadth_first_search import bfs_edges
 from os.path import exists
-from pygraph.algorithms.searching import breadth_first_search #@UnresolvedImport
 import _ast
 import tempfile
+
 
 cmparable_code_attrs = ['co_argcount',
  'co_cellvars',
@@ -107,7 +107,7 @@ class SmartCode(object):
         self.global_symbols = (set(self._graph.nodes()) & set(global_symbols)) - lhs(self.ast)
 
         for symbol in self.global_symbols:
-            self._graph.del_node(symbol)
+            self._graph.remove_node(symbol)
 
     @property
     def nodes(self):
@@ -198,11 +198,12 @@ class SmartCode(object):
         if not inputs.issubset(self.variables):
             raise ValueError('Unknown rhs: %s' % (inputs - self.variables))
 
-        nodes = set()
+        nodes = set(inputs)
 
         for input in inputs:
-            _, nodelst = breadth_first_search(gr, root=input)
-            nodes.update(nodelst)
+            edgelist = bfs_edges(gr, source=input)
+            nodelist = [node for edge in edgelist for node in edge]
+            nodes.update(nodelist)
 
         return nodes
 
@@ -225,11 +226,12 @@ class SmartCode(object):
         if not outputs.issubset(self.variables):
             raise ValueError('Unknown lhs: %s' % (outputs - self.variables))
 
-        nodes = set()
+        nodes = set(outputs)
 
         for output in outputs:
-            _, nodelst = breadth_first_search(g, root=output)
-            nodes.update(nodelst)
+            edgelist = bfs_edges(g, source=output)
+            nodelist = [node for edge in edgelist for node in edge]
+            nodes.update(nodelist)
 
         return nodes
 
@@ -264,7 +266,6 @@ class SmartCode(object):
             raise ValueError('Must provide inputs or outputs')
 
         ast = deepcopy(self.ast)
-
 
         #===============================================================================
         # Remove any staement that does not contain an input anywhere in

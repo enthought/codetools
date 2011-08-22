@@ -8,7 +8,11 @@ from asttools import conditional_symbols, cmp_ast
 from traits.api import HasTraits, Instance, List, Property
 from traceback import format_exc
 
-from codetools.blocks.util.uuid import UUID, uuid4
+try:
+    from uuid import UUID, uuid4
+except:
+    from codetools.blocks.util.uuid import UUID, uuid4
+    
 import types
 import _ast
 from asttools.visitors import Visitor, visit_children
@@ -153,19 +157,20 @@ class Block(HasTraits):
 
     def restrict(self, inputs=(), outputs=()):
 
-        ast = self.scode.restrict(inputs, outputs).ast
+        
+        ast_node = self.scode.restrict(inputs, outputs).ast
 
         for expr in self.ast.body[::-1]:
             if isinstance(expr, (_ast.Import, _ast.ImportFrom)):
-                if not any(cmp_ast(expr, right) for right in ast.body):
-                    ast.insert(0, deepcopy(expr))
+                if not any(cmp_ast(expr, right) for right in ast_node.body):
+                    ast_node.body.insert(0, deepcopy(expr))
 
         #Remove any constant symbols that we want to use as inputs
         for symbol in inputs:
-            remove_unused_assign(ast, symbol)
+            remove_unused_assign(ast_node, symbol)
 
 
-        scode = SmartCode(ast=ast, path=self.scode.path, global_symbols=self.scode.global_symbols)
+        scode = SmartCode(ast=ast_node, path=self.scode.path, global_symbols=self.scode.global_symbols)
 
         return Block(scode=scode)
 

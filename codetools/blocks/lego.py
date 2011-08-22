@@ -8,10 +8,14 @@ from asttools.mutators.remove_trivial import \
 from asttools import lhs, rhs, dump_python_source
 from codetools.blocks.smart_code import SmartCode
 from copy import deepcopy
-from pygraph.algorithms.cycles import find_cycle #@UnresolvedImport
-from pygraph.algorithms.sorting import \
-    topological_sorting as topo_sort #@UnresolvedImport
-from pygraph.classes.digraph import digraph #@UnresolvedImport
+#from pygraph.algorithms.cycles import find_cycle #@UnresolvedImport
+#from pygraph.algorithms.sorting import \
+#    topological_sorting as topo_sort #@UnresolvedImport
+#from pygraph.classes.digraph import digraph #@UnresolvedImport
+
+from networkx import DiGraph
+from networkx import topological_sort as topo_sort
+from networkx.algorithms.cycles import simple_cycles
 import _ast
 import traceback
 from codetools.util.cbook import flatten
@@ -126,9 +130,10 @@ def sort(scodes):
     :param scodes: Block objects to sort.
     '''
 
-    graph = digraph()
+    graph = DiGraph()
 
-    graph.add_nodes(scodes)
+    for scode in scodes:
+        graph.add_node(scode)
 
     input_dict = {}
     output_dict = {}
@@ -144,11 +149,11 @@ def sort(scodes):
             for oscode in output_dict.get(var, []):
 
                 edge = oscode, iscode
-                graph.add_edge(edge)
+                graph.add_edge(*edge)
 
-    cycle = find_cycle(graph)
-    if cycle:
-        raise DependencyCycleError([(lhs(b.ast), rhs(b.ast)) for b in cycle])
+    cycles = simple_cycles(graph)
+    if len(cycles):
+        raise DependencyCycleError([(lhs(b.ast), rhs(b.ast)) for b in cycles[0]])
     return topo_sort(graph)
 
 def interleave(scodes):

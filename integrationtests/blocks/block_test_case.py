@@ -632,8 +632,14 @@ class BlockRestrictionTestCase(unittest.TestCase):
                   'b=sin(pi/a)\n' \
                   'd = c * 3.3')
         sub_block = b.restrict(inputs=('a'))
-        self.assertEqual(sub_block.inputs, set(['a', 'sin', 'pi']))
-        self.assertEqual(sub_block.outputs, set(['b']))
+
+        print
+        print
+        print sub_block.codestring
+        print
+        print
+        self.assertEqual(sub_block.inputs, set(['a']))
+        self.assertEqual(sub_block.outputs, set(['b', 'pi', 'sin']))
         self.assertEqual(b.fromimports, set(['pi', 'sin']))
 #        self.assertEqual(sub_block.fromimports, set(['pi', 'sin']))
 
