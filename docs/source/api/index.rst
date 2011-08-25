@@ -1,4 +1,4 @@
-CodeTools API Refrence
+CodeTools API Reference
 =======================
 
 
