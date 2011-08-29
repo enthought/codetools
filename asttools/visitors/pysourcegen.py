@@ -269,6 +269,17 @@ class ExprSourceGen(Visitor):
                 self.print(':')
                 self.print('{:node}', node.step)
 
+    def visitExtSlice(self, node):
+
+        dims = list(node.dims)
+        with self.no_indent:
+            dim = dims.pop(0)
+            self.print('{0:node}', dim)
+            
+            while dims:
+                dim = dims.pop(0)
+                self.print(', {0:node}', dim)
+
     def visitUnaryOp(self, node):
         self.print('({0:node}{1:node})', node.op, node.operand)
 
