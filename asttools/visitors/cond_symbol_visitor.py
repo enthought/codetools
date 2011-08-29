@@ -163,6 +163,11 @@ class ConditionalSymbolVisitor(Visitor):
         rhs_ids = get_symbols(node, ast.Load)
         self.update_stable_rhs(rhs_ids)
 
+    def visitPrint(self, node):
+
+        rhs_ids = get_symbols(node, ast.Load)
+        self.update_stable_rhs(rhs_ids)
+
     def visitWhile(self, node):
 
         rhs_symbols = get_symbols(node.test, ast.Load)
