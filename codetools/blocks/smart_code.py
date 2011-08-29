@@ -11,9 +11,8 @@ from asttools.mutators.prune_mutator import PruneVisitor
 from copy import deepcopy
 from networkx.algorithms.traversal.breadth_first_search import bfs_edges
 from os.path import exists
-import _ast
+import ast as pyast
 import tempfile
-
 
 cmparable_code_attrs = ['co_argcount',
  'co_cellvars',
@@ -94,13 +93,13 @@ class SmartCode(object):
                 self.path = file.name
                 self.source = file.read()
 
-            self.ast = compile(self.source, self.path, 'exec', _ast.PyCF_ONLY_AST)
+            self.ast = pyast.parse(self.source, self.path, 'exec')
         else: # ast is not None
             self.source = source
             self.path = path
             self.ast = ast
 
-        self.code = compile(self.ast, self.path, 'exec')
+        self.code = compile(self.ast, self.path, 'exec', dont_inherit=True)
 
         self._graph, self._undefined = make_graph(self.ast, call_deps=call_deps)
 
@@ -152,7 +151,7 @@ class SmartCode(object):
         'all local symbols found in the ast'
         return self.nodes - self.global_symbols
 
-    def lines(self, reversed=False):
+    def lines(self):
         '''
         Split a block into smallest atomic statements.
     
@@ -167,7 +166,7 @@ class SmartCode(object):
         body = deepcopy(self.ast.body)
 
         for stmnt in body:
-            mod = _ast.Module(body=[stmnt])
+            mod = pyast.Module(body=[stmnt])
 
             sub_code = SmartCode(ast=mod, path=self.path, global_symbols=self.global_symbols)
             yield sub_code
