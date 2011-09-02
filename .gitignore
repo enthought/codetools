@@ -9,3 +9,5 @@ build/
 dist/
 docs/build/
 htmlcov
+.project
+.pydevproject

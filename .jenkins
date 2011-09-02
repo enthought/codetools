@@ -1,0 +1,64 @@
+#Clean everything like a brand new checkout 
+#Don't remove "jenkins-upstream" directory
+if test -t 1  ; then
+  echo "stdout is a tty. Are you sure you want to continue? This operation will clean any uncommitted files." 
+  read -p "CTRL-C to exit. Enter to continue:"
+fi
+
+git clean -dxf -e "jenkins-upstream"
+
+#Unlink any current development d
+# echo `python setup.py develop -u`
+
+#if EPD_INSTALL path is given then use it first
+if [ -n "${EPD_INSTALL}" ]; then
+	export PATH=${EPD_INSTALL}/bin:$PATH
+fi
+
+#if WORKSPACE is not given then set it to '.'
+if [ -z "${WORKSPACE}" ]; then
+	export WORKSPACE=`pwd`
+fi
+
+#We must set the PYTHONPATH env variable for a local install
+export PYTHONPATH="${WORKSPACE}/install/lib/python2.7/site-packages":"$PYTHONPATH"
+
+#If dependant projects have been built then intall the eggs into a local prefix
+if [ -d "${WORKSPACE}/jenkins-upstream/" ]; then
+    egginst --prefix="${WORKSPACE}/install" "${WORKSPACE}/jenkins-upstream/"/*.egg
+    
+fi
+
+###################################################################
+##Choose one of the following #####################################
+
+#Build this project in-place for the tests to run
+python setup.py build_ext --inplace
+
+# OR ##############################################################
+
+#build the python egg for this project
+#python setup.py bdist_egg
+
+#Install project to a local install
+#egginst --prefix="${WORKSPACE}/install" "${WORKSPACE}/dist/"/*.egg
+
+#Change to a clean testing directory
+#We done want to import from the local python package.
+#cd "tests"
+
+###################################################################
+###################################################################
+
+
+#Run the tests with coverage and unittest outputs
+nosetests tests --with-xunit --xunit-file="${WORKSPACE}/nosetests.xml" --with-coverage
+
+#Convert the coverage to xml format
+coverage xml -o "${WORKSPACE}/coverage.xml"
+
+#build the python egg for this project
+python setup.py bdist_egg
+
+echo "Done!"
+
