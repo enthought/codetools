@@ -129,7 +129,7 @@ class Block(HasTraits):
         return self.scode.ast
 
     def _get_sub_blocks(self):
-        return [Block(scode=sub_code) for sub_code in self.scode.lines(reversed=False)]
+        return [Block(scode=sub_code) for sub_code in self.scode.lines()]
 
     @property
     def all_outputs(self):

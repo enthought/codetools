@@ -654,8 +654,8 @@ class BlockRestrictionTestCase(unittest.TestCase):
                   'd = c * 3.3')
 
         sub_block = b.restrict(inputs=('a'))
-        self.assertEqual(sub_block.inputs, set(['a', 'math']))
-        self.assertEqual(sub_block.outputs, set(['b']))
+        self.assertEqual(sub_block.inputs, set(['a', ]))
+        self.assertEqual(sub_block.outputs, set(['b','math']))
         self.assertEqual(b.fromimports, set(['math']))
 
         import math

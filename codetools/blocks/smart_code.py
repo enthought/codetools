@@ -156,7 +156,6 @@ class SmartCode(object):
         Split a block into smallest atomic statements.
     
         :param block: the block to split into sub - blocks
-        :param reversed: The generator will yield the blocks in reverse order
         '''
 
         if len(self.ast.body) <= 1:

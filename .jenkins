@@ -7,7 +7,7 @@ fi
 
 git clean -dxf -e "jenkins-upstream"
 
-#Unlink any current development d
+#Unlink any current development
 # echo `python setup.py develop -u`
 
 #if EPD_INSTALL path is given then use it first
@@ -52,13 +52,21 @@ python setup.py build_ext --inplace
 
 
 #Run the tests with coverage and unittest outputs
-nosetests tests --with-xunit --xunit-file="${WORKSPACE}/nosetests.xml" --with-coverage
+nosetests --with-xunit --xunit-file="${WORKSPACE}/nosetests.xml" --with-coverage
 
 #Convert the coverage to xml format
-coverage xml -o "${WORKSPACE}/coverage.xml"
+coverage xml -i -o "${WORKSPACE}/coverage.xml"
 
 #build the python egg for this project
 python setup.py bdist_egg
 
+###################################################################
+##Create html documentation #######################################
+cd "${WORKSPACE}/docs/"
+make html
+cd "build"
+tar -cvzf "${WORKSPACE}/dist/codetools-doc.tar.gz" "html"
+
+##Done! ###########################################################
 echo "Done!"
 
