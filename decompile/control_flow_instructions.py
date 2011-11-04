@@ -311,6 +311,24 @@ class CtrlFlowInstructions(object):
 
         self.ast_stack.append(list_comp)
 
+    def extract_listcomp(self, function, sequence):
+
+        assert len(function.code.nodes) == 1
+        assert isinstance(function.code.nodes[0], _ast.Return)
+
+        value = function.code.nodes[0].value
+
+        assert isinstance(value, _ast.ListComp)
+
+        quals = value.quals
+        expr = value.expr
+
+        for qual in quals:
+            qual.list = sequence
+
+        setcomp = _ast.ListComp(elt=expr, generators=quals, lineno=value.lineno, col_offset=0)
+        self.ast_stack.append(setcomp)
+        
     def extract_setcomp(self, function, sequence):
 
         assert len(function.code.nodes) == 1
@@ -358,6 +376,9 @@ class CtrlFlowInstructions(object):
             sequence = self.ast_stack.pop()
             function = self.ast_stack.pop()
 
+            if function.name == '<listcomp>':
+#                raise Exception('listcomp')
+                self.extract_listcomp(function, sequence)
             if function.name == '<setcomp>':
                 self.extract_setcomp(function, sequence)
             elif function.name == '<dictcomp>':

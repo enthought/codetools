@@ -3,10 +3,13 @@ Created on Jul 14, 2011
 
 @author: sean
 '''
+from __future__ import print_function
+
 from decompile.simple_instructions import SimpleInstructions
 from decompile.control_flow_instructions import CtrlFlowInstructions
 import _ast
 from asttools import print_ast
+from decompile.util import py3, py3op, py2op
 
 def pop_doc(stmnts):
 
@@ -56,7 +59,7 @@ def make_module(code):
 
         return ast_obj
 
-def make_function(code, defaults=None, lineno=0):
+def make_function(code, defaults=None, annotations=(), lineno=0):
         from decompile.disassemble import disassemble
 
         instructions = Instructions(disassemble(code))
@@ -78,7 +81,20 @@ def make_function(code, defaults=None, lineno=0):
         if code.co_flags & 8:
             kwarg = co_locals.pop()
 
-        args = [_ast.Name(id=argname, ctx=_ast.Param(), lineno=lineno, col_offset=0) for argname in varnames]
+        if py3:
+            args = []
+            annotation_names = [annotation.arg for annotation in annotations]
+            
+            for argname in varnames:
+                if argname in annotation_names:
+                    arg = [annotation for annotation in annotations if annotation.arg == argname][0]
+                else:
+                    arg = _ast.arg(annotation=None, arg=argname, lineno=lineno, col_offset=0) 
+                    
+                args.append(arg)
+        else:
+            args = [_ast.Name(id=argname, ctx=_ast.Param(), lineno=lineno, col_offset=0) for argname in varnames]
+            
         args = _ast.arguments(args=args,
                               defaults=defaults if defaults else [],
                               kwarg=kwarg,
@@ -107,16 +123,16 @@ def make_function(code, defaults=None, lineno=0):
 
 class StackLogger(list):
     def append(self, object):
-        print '    + ',
+        print('    + ', end='')
         print_ast(object, indent='', newline='')
-        print
+        print()
         list.append(self, object)
 
     def pop(self, *index):
         value = list.pop(self, *index)
-        print '    - ',
+        print('    + ', end='')
         print_ast(value, indent='', newline='')
-        print
+        print()
         return value
 
 
@@ -158,7 +174,7 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
         if method is None:
             raise AttributeError('can not handle instruction %r' % (str(instr)))
 
-#        print ">>>", name
+#        print( ">>>", name)
         method(instr)
 
 
@@ -178,7 +194,34 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
                 raise IndexError("no instrcution i=%s " % (to,))
 
         return block
+    
+    @py3op
+    def MAKE_FUNCTION(self, instr):
 
+        code = self.ast_stack.pop()
+
+        ndefaults = 65535 & instr.oparg
+        nannotations = (instr.oparg >> 16) - 1
+
+        annotations = []
+        for i in range(nannotations):
+            annotations.insert(0, self.ast_stack.pop())
+        
+        defaults = []
+        for i in range(ndefaults):
+            defaults.insert(0, self.ast_stack.pop())
+
+        function = make_function(code, defaults, lineno=instr.lineno, annotations=annotations)
+        
+        doc = code.co_consts[0] if code.co_consts else None
+        
+        if isinstance(doc, str):
+            function.body.insert(0, _ast.Expr(value=_ast.Str(s=doc, lineno=instr.lineno, col_offset=0),
+                                              lineno=instr.lineno, col_offset=0))
+            
+        self.ast_stack.append(function)
+        
+    @MAKE_FUNCTION.py2op
     def MAKE_FUNCTION(self, instr):
 
         code = self.ast_stack.pop()
@@ -190,12 +233,55 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
             defaults.insert(0, self.ast_stack.pop())
 
         function = make_function(code, defaults, lineno=instr.lineno)
+        
+        doc = code.co_consts[0] if code.co_consts else None
+        
+        if isinstance(doc, str):
+            function.body.insert(0, _ast.Expr(value=_ast.Str(s=doc, lineno=instr.lineno, col_offset=0),
+                                              lineno=instr.lineno, col_offset=0))
 
+        
         self.ast_stack.append(function)
 
     def LOAD_LOCALS(self, instr):
         self.ast_stack.append('LOAD_LOCALS')
-
+    
+    @py3op
+    def LOAD_BUILD_CLASS(self, instr):
+        
+        class_body = []
+        
+        body_instr = instr
+        while body_instr.opname != 'CALL_FUNCTION':
+            body_instr = self.ilst.pop(0)
+            class_body.append(body_instr)
+            
+        call_func = self.decompile_block(class_body, stack_items=[None]).stmnt()
+        
+        assert len(call_func) == 1
+        call_func = call_func[0]
+        
+        code = call_func.args[0].body
+        name = call_func.args[1].s
+        bases = call_func.args[2:]
+        
+        if isinstance(code[0], _ast.Expr):
+            _name = code.pop(1)
+            _doc = code.pop(1)
+        elif isinstance(code[0], _ast.Assign):
+            _name = code.pop(0)
+        else:
+            assert False
+            
+        ret = code.pop(-1)
+        assert isinstance(ret, _ast.Return)
+            
+        class_ = _ast.ClassDef(name=name, bases=bases, body=code, decorator_list=[],
+                               lineno=instr.lineno, col_offset=0)
+        
+        self.ast_stack.append(class_)
+    
+    @py2op
     def BUILD_CLASS(self, instr):
 
         call_func = self.ast_stack.pop()
@@ -210,8 +296,8 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
         pop_assignment(code, '__module__')
         doc = pop_doc(code)
 
-        if doc is not None:
-            code.insert(0, _ast.Expr(value=doc, lineno=doc.lineno, col_offset=0))
+#        if doc is not None:
+#            code.insert(0, _ast.Expr(value=doc, lineno=doc.lineno, col_offset=0))
 
         ret = code.pop()
 

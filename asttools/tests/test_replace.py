@@ -3,6 +3,8 @@ Created on Aug 5, 2011
 
 @author: sean
 '''
+from __future__ import print_function
+
 import unittest
 from asttools.mutators.replace_mutator import replace_nodes
 import ast

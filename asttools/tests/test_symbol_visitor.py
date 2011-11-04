@@ -3,6 +3,7 @@ Created on Aug 5, 2011
 
 @author: sean
 '''
+from __future__ import print_function
 
 import unittest
 import ast

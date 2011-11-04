@@ -4,13 +4,21 @@ Created on Jul 14, 2011
 @author: sean
 '''
 import unittest
-
+import sys
 import _ast
 from decompile import make_module
 from asttools import cmp_ast, print_ast
-from StringIO import StringIO
 
+py2 = sys.version_info.major < 3
+if py2:
+    from StringIO import StringIO
+else:
+    from io import StringIO
+    
 filename = 'tests.py'
+
+
+py2only = unittest.skipIf(not py2, "Only valid for python 2.x")
 
 class Base(unittest.TestCase):
 
@@ -25,10 +33,10 @@ class Base(unittest.TestCase):
         if not result:
             
             lstream = StringIO()
-            print_ast(left, indent='', stream=lstream, newline='')
+            print_ast(left, indent='', file=lstream, newline='')
 
             rstream = StringIO()
-            print_ast(right, indent='', stream=rstream, newline='')
+            print_ast(right, indent='', file=rstream, newline='')
 
             lstream.seek(0)
             rstream.seek(0)
@@ -173,15 +181,17 @@ class Simple(Base):
         stmnt = 'del a.a'
         self.statement(stmnt)
 
-
+    @py2only
     def test_exec1(self):
         stmnt = 'exec a'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_exec2(self):
         stmnt = 'exec a in b'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_exec3(self):
         stmnt = 'exec a in b,c'
         self.statement(stmnt)
@@ -238,34 +248,43 @@ class Simple(Base):
     def test_call_var_kwargs(self):
         stmnt = 'a(a, b=0, *d, **a)'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_print(self):
         stmnt = 'print foo,'
         self.statement(stmnt)
+    
+    @py2only
     def test_printnl(self):
         stmnt = 'print foo'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_printitems(self):
         stmnt = 'print foo, bar, bas,'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_printitemsnl(self):
         stmnt = 'print foo, bar, bas'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_print_to(self):
         stmnt = 'print >> stream, foo,'
         self.statement(stmnt)
-        
+    
+    @py2only
     def test_print_to_nl(self):
         stmnt = 'print >> stream, foo'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_printitems_to(self):
         stmnt = 'print >> stream, foo, bar, bas,'
         self.statement(stmnt)
-
+    
+    @py2only
     def test_printitems_to_nl(self):
         stmnt = 'print >> stream, foo, bar, bas'
         self.statement(stmnt)

@@ -3,9 +3,21 @@ Created on Jul 14, 2011
 
 @author: sean
 '''
+from __future__ import print_function
 
 from opcode import *
 import _ast
+import sys
+
+from decompile.util import py3op
+py3 = sys.version_info.major >= 3
+
+if py3:
+    class _ast_Print: pass
+else:
+    _ast_Print = _ast.Print
+
+    
 
 def isNone(node):
     if node is None:
@@ -60,25 +72,29 @@ CMP_OPMAP = {'>=' :_ast.GtE,
              'is not':_ast.IsNot,
              }
 
+def make_const(arg, lineno=0, col_offset=0):
+    kw = {'lineno':lineno, 'col_offset':col_offset}
+    
+    if isinstance(arg, str):
+        const = _ast.Str(s=arg, **kw)
+    elif isinstance(arg, (int, float, complex)):
+        const = _ast.Num(n=arg, **kw)
+    elif arg is None:
+        const = _ast.Name(id='None', ctx=_ast.Load(), **kw)
+    elif isinstance(arg, tuple):
+        elts = []
+        for item in arg:
+            elts.append(make_const(item, **kw))
+        const = _ast.Tuple(elts=elts, ctx=_ast.Load(), **kw)
+    else:
+        const = arg
+    
+    return const
+    
 class SimpleInstructions(object):
 
     def LOAD_CONST(self, instr):
-
-        if isinstance(instr.arg, str):
-            const = _ast.Str(s=instr.arg, lineno=instr.lineno, col_offset=0)
-        elif isinstance(instr.arg, (int, float, complex)):
-            const = _ast.Num(n=instr.arg, lineno=instr.lineno, col_offset=0)
-        elif instr.arg is None:
-            const = _ast.Name(id='None', ctx=_ast.Load(), lineno=instr.lineno, col_offset=0)
-        elif isinstance(instr.arg, tuple):
-            const = instr.arg
-        elif isinstance(instr.arg, tuple):
-            const = instr.arg
-        else:
-            const = instr.arg
-#        elif instr.arg is None:
-#            _ast.
-#            const = ast.Const(instr.arg, instr.lineno)
+        const = make_const(instr.arg, lineno=instr.lineno, col_offset=0)
 
         self.ast_stack.append(const)
 
@@ -214,8 +230,12 @@ class SimpleInstructions(object):
 
             assign = _ast.Assign(targets=[assname], value=value, lineno=instr.lineno, col_offset=0)
             self.ast_stack.append(assign)
-#            self.ast_stack.append(_ast.Assign([assname], value, lineno=instr.lineno))
-
+    
+    @py3op
+    def STORE_LOCALS(self, instr):
+        'remove Locals from class def'
+        self.ast_stack.pop()
+        
     def RETURN_VALUE(self, instr):
         value = self.ast_stack.pop()
         ret = _ast.Return(value=value, lineno=instr.lineno, col_offset=0)
@@ -304,7 +324,7 @@ class SimpleInstructions(object):
         if isinstance(node, _ast.Import):
             return
 
-        if isinstance(node, _ast.Print):
+        if isinstance(node, _ast_Print):
             _ = self.ast_stack.pop()
             self.ast_stack.append(node)
             return
@@ -322,6 +342,7 @@ class SimpleInstructions(object):
     BINARY_ADD = BINARY_(_ast.Add)
     BINARY_SUBTRACT = BINARY_(_ast.Sub)
     BINARY_DIVIDE = BINARY_(_ast.Div)
+    BINARY_TRUE_DIVIDE = BINARY_(_ast.Div)
     BINARY_MULTIPLY = BINARY_(_ast.Mult)
     BINARY_FLOOR_DIVIDE = BINARY_(_ast.FloorDiv)
     BINARY_POWER = BINARY_(_ast.Pow)
@@ -496,8 +517,19 @@ class SimpleInstructions(object):
 
         self.ast_stack.append(expr)
         self.ast_stack.append(expr)
+    
+    @py3op
+    def DUP_TOP_TWO(self, instr):
+        
+        expr1 = self.ast_stack.pop()
+        expr2 = self.ast_stack.pop()
 
+        self.ast_stack.append(expr2)
+        self.ast_stack.append(expr1)
+        self.ast_stack.append(expr2)
+        self.ast_stack.append(expr1)
 
+    
     def DUP_TOPX(self, instr):
 
         exprs = []
@@ -529,19 +561,19 @@ class SimpleInstructions(object):
         else:
             print_ = None
 
-        if isinstance(print_, _ast.Print) and not print_.nl and print_.dest == None:
+        if isinstance(print_, _ast_Print) and not print_.nl and print_.dest == None:
             print_.values.append(item)
         else:
-            print_ = _ast.Print(dest=None, values=[item], nl=False, lineno=instr.lineno, col_offset=0)
+            print_ = _ast_Print(dest=None, values=[item], nl=False, lineno=instr.lineno, col_offset=0)
             self.ast_stack.append(print_)
 
     def PRINT_NEWLINE(self, instr):
         item = self.ast_stack[-1]
 
-        if isinstance(item, _ast.Print) and not item.nl and item.dest == None:
+        if isinstance(item, _ast_Print) and not item.nl and item.dest == None:
             item.nl = True
         else:
-            print_ = _ast.Print(dest=None, values=[], nl=True, lineno=instr.lineno, col_offset=0)
+            print_ = _ast_Print(dest=None, values=[], nl=True, lineno=instr.lineno, col_offset=0)
             self.ast_stack.append(print_)
 
     def PRINT_ITEM_TO(self, instr):
@@ -550,14 +582,14 @@ class SimpleInstructions(object):
 
         print_ = None
 
-        if isinstance(stream, _ast.Print) and not stream.nl:
+        if isinstance(stream, _ast_Print) and not stream.nl:
             print_ = stream
             stream = self.ast_stack.pop()
             dup_print = self.ast_stack.pop()
             assert dup_print is print_
             self.ast_stack.append(stream)
         else:
-            print_ = _ast.Print(dest=stream, values=[], nl=False, lineno=instr.lineno, col_offset=0)
+            print_ = _ast_Print(dest=stream, values=[], nl=False, lineno=instr.lineno, col_offset=0)
 
         item = self.ast_stack.pop()
 
@@ -571,10 +603,10 @@ class SimpleInstructions(object):
 
         self.ast_stack.append(item)
 
-        if isinstance(item, _ast.Print) and not item.nl and item.dest is stream:
+        if isinstance(item, _ast_Print) and not item.nl and item.dest is stream:
             item.nl = True
         else:
-            print_ = _ast.Print(dest=stream, values=[], nl=True, lineno=instr.lineno, col_offset=0)
+            print_ = _ast_Print(dest=stream, values=[], nl=True, lineno=instr.lineno, col_offset=0)
             self.ast_stack.append(print_)
 
 
@@ -828,4 +860,29 @@ class SimpleInstructions(object):
         raise_ = _ast.Raise(tback=tback, inst=inst, type=type,
                             lineno=instr.lineno, col_offset=0)
         self.ast_stack.append(raise_)
+    
+    @py3op
+    def EXTENDED_ARG(self, instr):
+#        print('EXTENDED_ARG', repr(instr))
+        code = self.ast_stack.pop()
+        argument_names = self.ast_stack.pop()
+        
+        assert len(argument_names.elts) == (instr.oparg - 1)
+        args = []
+        kw = dict(lineno=instr.lineno, col_offset=0)
+        for argument_name in argument_names.elts[::-1]:
+            annotation = self.ast_stack.pop()
+            arg = _ast.arg(annotation=annotation, arg=argument_name.s, **kw)
+            args.append(arg)
+#        _ast
+#        print(instr.oparg)
+#        print(self.ast_stack)
 
+        for arg in args:
+            self.ast_stack.append(arg)
+        self.ast_stack.append(code)
+        
+    @EXTENDED_ARG.py2op
+    def EXTENDED_ARG(self, instr):
+        raise Exception("This is not available in python 2.x")
+        

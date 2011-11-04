@@ -3,6 +3,7 @@ Created on Aug 2, 2011
 
 @author: sean
 '''
+from __future__ import print_function
 import unittest
 import ast
 from asttools.visitors.graph_visitor import GraphGen
@@ -288,5 +289,5 @@ if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test_assign']
     unittest.main(exit=False)
 
-    print tested.tested()
+    print(tested.tested())
 

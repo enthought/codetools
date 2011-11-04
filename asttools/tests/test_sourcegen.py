@@ -3,6 +3,8 @@ Created on Aug 3, 2011
 
 @author: sean
 '''
+from __future__ import print_function
+
 import unittest
 import ast
 from asttools.visitors.pysourcegen import SourceGen
@@ -362,5 +364,5 @@ if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test_expr']
     unittest.main(exit=False)
 
-    print tested.tested()
+    print(tested.tested())
 

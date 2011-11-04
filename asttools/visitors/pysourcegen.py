@@ -6,9 +6,15 @@ Created on Jul 15, 2011
 from __future__ import print_function
 import _ast
 from asttools import Visitor
-from StringIO import StringIO
 from string import Formatter
 import sys
+from asttools.utils import py3op
+
+if sys.version_info.major < 3:
+    from StringIO import StringIO
+else:
+    from io import StringIO
+
 
 class ASTFormatter(Formatter):
 
@@ -28,9 +34,9 @@ class ASTFormatter(Formatter):
         elif key in kwargs:
             return kwargs[key]
         elif isinstance(key, int):
-            return args
+            return args[key]
 
-        key = long(key)
+        key = int(key)
         return args[key]
 
         raise Exception
@@ -393,7 +399,14 @@ class ExprSourceGen(Visitor):
             if_ = ifs.pop(0)
             self.print(" if {0:node}", if_)
 
-
+    @py3op
+    def visitarg(self, node):
+        self.print(node.arg)
+        
+        if node.annotation:
+            with self.no_indent:
+                self.print(' : {0:node}', node.annotation)
+    
 def visit_expr(node):
     gen = ExprSourceGen()
     gen.visit(node)
@@ -422,7 +435,6 @@ class Indenter(object):
         self.gen.level -= 1
 
 class SourceGen(ExprSourceGen):
-
 
     def __init__(self, header=''):
         super(SourceGen, self).__init__()
@@ -654,9 +666,11 @@ class SourceGen(ExprSourceGen):
             self.print(":")
 
         with self.indenter:
-            for stmnt in node.body:
-                self.visit(stmnt)
-
+            if node.body:
+                for stmnt in node.body:
+                    self.visit(stmnt)
+            else:
+                self.print("pass")
 
 def python_source(ast, file=sys.stdout):
     '''

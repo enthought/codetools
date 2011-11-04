@@ -3,9 +3,16 @@ Created on Jul 14, 2011
 
 @author: sean
 '''
+from __future__ import print_function
+
 from opcode import *
 from dis import findlabels, findlinestarts
 import types
+import sys
+
+py3 = sys.version_info.major >= 3
+
+co_ord = (lambda c:c) if py3 else ord
 
 class Instruction(object):
 
@@ -93,7 +100,10 @@ def disassemble(co, lasti= -1):
     free = None
     while i < n:
         c = code[i]
-        op = ord(c)
+        op = co_ord(c)
+    
+        
+    
         if i in linestarts:
             lineno = linestarts[i]
 
@@ -113,12 +123,12 @@ def disassemble(co, lasti= -1):
 
         i = i + 1
         if op >= HAVE_ARGUMENT:
-            oparg = ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg
+            oparg = co_ord(code[i]) + co_ord(code[i + 1]) * 256 + extended_arg
             instr.oparg = oparg
             extended_arg = 0
             i = i + 2
             if op == EXTENDED_ARG:
-                extended_arg = oparg * 65536L
+                extended_arg = oparg * 65536
             instr.extended_arg = extended_arg
             if op in hasconst:
                 instr.arg = co.co_consts[oparg]
@@ -141,6 +151,11 @@ def disassemble(co, lasti= -1):
 def print_code(co, lasti= -1, level=0):
     """Disassemble a code object."""
     code = co.co_code
+    
+    for constant in co.co_consts:
+        print( '|              |' * level, end=' ')
+        print( 'constant:', constant)
+        
     labels = findlabels(code)
     linestarts = dict(findlinestarts(co))
     n = len(code)
@@ -150,51 +165,51 @@ def print_code(co, lasti= -1, level=0):
     while i < n:
         have_inner = False
         c = code[i]
-        op = ord(c)
+        op = co_ord(c)
 
         if i in linestarts:
             if i > 0:
-                print
-            print '|              |' * level,
-            print "%3d" % linestarts[i],
+                print()
+            print( '|              |' * level, end=' ')
+            print( "%3d" % linestarts[i], end=' ')
         else:
-            print '|              |' * level,
-            print '   ',
+            print( '|              |' * level, end=' ')
+            print('   ', end=' ')
 
-        if i == lasti: print '-->',
-        else: print '   ',
-        if i in labels: print '>>',
-        else: print '  ',
-        print repr(i).rjust(4),
-        print opname[op].ljust(20),
+        if i == lasti: print( '-->',end=' ')
+        else: print( '   ', end=' ')
+        if i in labels: print( '>>', end=' ')
+        else: print( '  ',end=' ')
+        print(repr(i).rjust(4), end=' ')
+        print(opname[op].ljust(20), end=' ')
         i = i + 1
         if op >= HAVE_ARGUMENT:
-            oparg = ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg
+            oparg = co_ord(code[i]) + co_ord(code[i + 1]) * 256 + extended_arg
             extended_arg = 0
             i = i + 2
             if op == EXTENDED_ARG:
-                extended_arg = oparg * 65536L
-            print repr(oparg).rjust(5),
+                extended_arg = oparg * 65536
+            print( repr(oparg).rjust(5), end=' ')
             if op in hasconst:
 
-                print '(' + repr(co.co_consts[oparg]) + ')',
+                print( '(' + repr(co.co_consts[oparg]) + ')', end=' ')
                 if type(co.co_consts[oparg]) == types.CodeType:
                     have_inner = co.co_consts[oparg]
 
 
             elif op in hasname:
-                print '(' + co.co_names[oparg] + ')',
+                print( '(' + co.co_names[oparg] + ')',end=' ')
             elif op in hasjrel:
-                print '(to ' + repr(i + oparg) + ')',
+                print('(to ' + repr(i + oparg) + ')', end=' ')
             elif op in haslocal:
-                print '(' + co.co_varnames[oparg] + ')',
+                print('(' + co.co_varnames[oparg] + ')', end=' ')
             elif op in hascompare:
-                print '(' + cmp_op[oparg] + ')',
+                print('(' + cmp_op[oparg] + ')', end=' ')
             elif op in hasfree:
                 if free is None:
                     free = co.co_cellvars + co.co_freevars
-                print '(' + free[oparg] + ')',
-        print
+                print('(' + free[oparg] + ')', end=' ')
+        print()
 
         if have_inner is not False:
             print_code(have_inner, level=level + 1)

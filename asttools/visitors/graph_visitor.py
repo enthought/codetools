@@ -4,10 +4,13 @@ Created on Jul 18, 2011
 @author: sean
 '''
 from asttools import Visitor, visit_children
-from networkx import DiGraph
+
 import _ast
 from asttools.visitors.symbol_visitor import get_symbols
-
+try:
+    from networkx import DiGraph
+except ImportError:
+    DiGraph = None
 
 def collect_(self, node):
     names = set()

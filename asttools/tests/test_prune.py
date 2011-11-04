@@ -3,6 +3,8 @@ Created on Aug 2, 2011
 
 @author: sean
 '''
+from __future__ import print_function
+
 from asttools.tests import AllTypesTested, assert_ast_eq
 import unittest
 from asttools.mutators.prune_mutator import PruneVisitor
@@ -479,5 +481,5 @@ if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test_assign']
     unittest.main(exit=False)
 
-    print tested.tested()
+    print(tested.tested())
 

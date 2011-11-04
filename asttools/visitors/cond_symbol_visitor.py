@@ -3,6 +3,8 @@ Created on Aug 4, 2011
 
 @author: sean
 '''
+from __future__ import print_function
+
 from asttools.visitors import Visitor, visit_children
 from asttools.visitors.symbol_visitor import get_symbols
 import ast
@@ -404,6 +406,6 @@ else:
     d = 1
     '''
 
-    print conditional_lhs(ast.parse(source))
+    print(conditional_lhs(ast.parse(source)))
 
 

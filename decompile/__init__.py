@@ -5,13 +5,13 @@ This module can decompile arbitrary code objects into a python ast.
 '''
 
 from decompile.instructions import make_module, make_function
-from compiler.pycodegen import FunctionCodeGenerator, ModuleCodeGenerator
 
 import _ast
 import struct
 import time
 import sys
 import marshal
+
 
 
 def decompile_func(func):
@@ -27,9 +27,10 @@ def decompile_func(func):
     if code is None:
         raise TypeError('can not get ast from %r' % (func,))
 
-
-    if func.func_defaults:
-        default_names = code.co_varnames[:code.co_argcount][-len(func.func_defaults):]
+    # For python 3
+    defaults = func.func_defaults if sys.version_info.major < 3 else func.__defaults__
+    if defaults:
+        default_names = code.co_varnames[:code.co_argcount][-len(defaults):]
     else:
         default_names = []
     defaults = [_ast.Name(id='%s_default' % name, ctx=_ast.Load() , lineno=0, col_offset=0) for name in default_names]
