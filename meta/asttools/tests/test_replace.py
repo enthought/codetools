@@ -6,9 +6,9 @@ Created on Aug 5, 2011
 from __future__ import print_function
 
 import unittest
-from asttools.mutators.replace_mutator import replace_nodes
+from meta.asttools.mutators.replace_mutator import replace_nodes
 import ast
-from asttools.tests import assert_ast_eq
+from meta.asttools.tests import assert_ast_eq
 
 
 replace_nodes

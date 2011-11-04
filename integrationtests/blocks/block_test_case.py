@@ -10,7 +10,7 @@ import codetools.blocks.block as block
 from codetools.blocks.api import Block
 
 # Extend base class compiler.ast.Node with deep equality
-from asttools import cmp_ast as deep_equality
+from meta.asttools import cmp_ast as deep_equality
 import _ast
 import ast
 

@@ -5,12 +5,13 @@ Created on Aug 3, 2011
 '''
 from __future__ import print_function
 import _ast
-from asttools.visitors.graph_visitor import GraphGen
-from asttools import Visitor, dont_visit, visit_children
-from asttools.mutators.replace_mutator import replace_nodes
-from asttools.visitors.symbol_visitor import get_symbols
 import ast
-from asttools.visitors.cond_symbol_visitor import conditional_lhs
+
+from meta.asttools.visitors.graph_visitor import GraphGen
+from meta.asttools import Visitor, dont_visit, visit_children
+from meta.asttools.mutators.replace_mutator import replace_nodes
+from meta.asttools.visitors.symbol_visitor import get_symbols
+from meta.asttools.visitors.cond_symbol_visitor import conditional_lhs
 
 class Assignment(object):
 

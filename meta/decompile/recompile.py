@@ -11,7 +11,7 @@ from time import time
 py3 = sys.version_info.major >= 3
 
 if py3:
-    import builtins
+    import builtins #@UnresolvedImport
 else:
     import __builtin__ as builtins
      

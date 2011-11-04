@@ -6,8 +6,8 @@ Created on Aug 2, 2011
 from __future__ import print_function
 import unittest
 import ast
-from asttools.visitors.graph_visitor import GraphGen
-from asttools.tests import AllTypesTested
+from meta.asttools.visitors.graph_visitor import GraphGen
+from meta.asttools.tests import AllTypesTested
 
 tested = AllTypesTested()
 

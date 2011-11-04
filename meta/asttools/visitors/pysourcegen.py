@@ -5,10 +5,10 @@ Created on Jul 15, 2011
 '''
 from __future__ import print_function
 import _ast
-from asttools import Visitor
+from meta.asttools import Visitor
 from string import Formatter
 import sys
-from asttools.utils import py3op
+from meta.utils import py3op
 
 if sys.version_info.major < 3:
     from StringIO import StringIO

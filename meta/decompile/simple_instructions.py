@@ -9,7 +9,7 @@ from opcode import *
 import _ast
 import sys
 
-from decompile.util import py3op
+from meta.decompile.util import py3op
 py3 = sys.version_info.major >= 3
 
 if py3:
@@ -872,7 +872,7 @@ class SimpleInstructions(object):
         kw = dict(lineno=instr.lineno, col_offset=0)
         for argument_name in argument_names.elts[::-1]:
             annotation = self.ast_stack.pop()
-            arg = _ast.arg(annotation=annotation, arg=argument_name.s, **kw)
+            arg = _ast.arg(annotation=annotation, arg=argument_name.s, **kw) #@UndefinedVariable
             args.append(arg)
 #        _ast
 #        print(instr.oparg)

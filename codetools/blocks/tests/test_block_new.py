@@ -4,10 +4,10 @@ Created on Aug 5, 2011
 @author: sean
 '''
 import unittest
-from codetools.blocks.smart_code import SmartCode
-from asttools.tests import assert_ast_eq
 import ast
 from os.path import exists
+from codetools.blocks.smart_code import SmartCode
+from meta.asttools.tests import assert_ast_eq
 from codetools.blocks.tests import assert_block_eq
 
 class Test(unittest.TestCase):

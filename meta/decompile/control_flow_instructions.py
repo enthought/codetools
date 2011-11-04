@@ -6,7 +6,7 @@ Created on Jul 14, 2011
 
 from opcode import *
 import _ast
-from decompile.disassemble import Instruction
+from meta.decompile.disassemble import Instruction
 AND_JUMPS = ['JUMP_IF_FALSE_OR_POP', 'POP_JUMP_IF_FALSE']
 OR_JUMPS = ['JUMP_IF_TRUE_OR_POP', 'POP_JUMP_IF_TRUE']
 JUMPS = AND_JUMPS + OR_JUMPS

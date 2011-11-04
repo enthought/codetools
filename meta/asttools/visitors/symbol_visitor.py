@@ -3,7 +3,7 @@ Created on Aug 3, 2011
 
 @author: sean
 '''
-from asttools.visitors import Visitor
+from meta.asttools.visitors import Visitor
 import ast
 
 class SymbolVisitor(Visitor):

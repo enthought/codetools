@@ -5,7 +5,7 @@ Created on Jul 19, 2011
 '''
 from __future__ import print_function
 
-from asttools import Visitor
+from meta.asttools import Visitor
 import sys
 import _ast
 

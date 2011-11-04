@@ -7,8 +7,8 @@ from __future__ import print_function
 
 import unittest
 import ast
-from asttools.mutators.remove_trivial import remove_trivial
-from asttools.tests import assert_ast_eq
+from meta.asttools.mutators.remove_trivial import remove_trivial
+from meta.asttools.tests import assert_ast_eq
 import new
 
 

@@ -6,8 +6,8 @@ Created on Jul 14, 2011
 import unittest
 import sys
 import _ast
-from decompile import make_module
-from asttools import cmp_ast, print_ast
+from meta.decompile import make_module
+from meta.asttools import cmp_ast, print_ast
 
 py2 = sys.version_info.major < 3
 if py2:

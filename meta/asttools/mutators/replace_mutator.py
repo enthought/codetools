@@ -4,8 +4,8 @@ Created on Aug 3, 2011
 @author: sean
 '''
 
-from asttools.visitors import Visitor
 import _ast
+from meta.asttools.visitors import Visitor
 
 class Replacer(Visitor):
     '''

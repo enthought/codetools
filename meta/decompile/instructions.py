@@ -5,11 +5,11 @@ Created on Jul 14, 2011
 '''
 from __future__ import print_function
 
-from decompile.simple_instructions import SimpleInstructions
-from decompile.control_flow_instructions import CtrlFlowInstructions
+from meta.decompile.simple_instructions import SimpleInstructions
+from meta.decompile.control_flow_instructions import CtrlFlowInstructions
 import _ast
-from asttools import print_ast
-from decompile.util import py3, py3op, py2op
+from meta.asttools import print_ast
+from meta.decompile.util import py3, py3op, py2op
 
 def pop_doc(stmnts):
 
@@ -43,7 +43,7 @@ def pop_return(stmnts):
 
 
 def make_module(code):
-        from decompile.disassemble import disassemble
+        from meta.decompile.disassemble import disassemble
         instructions = Instructions(disassemble(code))
         stmnts = instructions.stmnt()
 
@@ -60,7 +60,7 @@ def make_module(code):
         return ast_obj
 
 def make_function(code, defaults=None, annotations=(), lineno=0):
-        from decompile.disassemble import disassemble
+        from meta.decompile.disassemble import disassemble
 
         instructions = Instructions(disassemble(code))
 
@@ -89,7 +89,7 @@ def make_function(code, defaults=None, annotations=(), lineno=0):
                 if argname in annotation_names:
                     arg = [annotation for annotation in annotations if annotation.arg == argname][0]
                 else:
-                    arg = _ast.arg(annotation=None, arg=argname, lineno=lineno, col_offset=0) 
+                    arg = _ast.arg(annotation=None, arg=argname, lineno=lineno, col_offset=0) #@UndefinedVariable
                     
                 args.append(arg)
         else:

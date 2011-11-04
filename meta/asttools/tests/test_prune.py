@@ -5,9 +5,9 @@ Created on Aug 2, 2011
 '''
 from __future__ import print_function
 
-from asttools.tests import AllTypesTested, assert_ast_eq
+from meta.asttools.tests import AllTypesTested, assert_ast_eq
 import unittest
-from asttools.mutators.prune_mutator import PruneVisitor
+from meta.asttools.mutators.prune_mutator import PruneVisitor
 import ast
 
 tested = AllTypesTested()
