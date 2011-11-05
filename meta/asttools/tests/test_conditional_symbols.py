@@ -7,7 +7,6 @@ import unittest
 from meta.asttools.visitors.cond_symbol_visitor import conditional_symbols
 import ast
 
-
 class Test(unittest.TestCase):
 
 
