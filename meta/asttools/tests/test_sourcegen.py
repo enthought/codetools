@@ -9,6 +9,7 @@ import unittest
 import ast
 from meta.asttools.visitors.pysourcegen import SourceGen
 from meta.asttools.tests import AllTypesTested
+from meta.testing import py2only, py3only
 
 tested = AllTypesTested()
 
@@ -86,7 +87,13 @@ class TestSimple(Test):
     test_slice7 = simple_expr('a[...]')
 
     test_raise = simple_expr('raise Foo')
+    
+    test_raise1 = py2only(simple_expr('raise Foo, bar'))
+    test_raise2 = py2only(simple_expr('raise Foo, bar, baz'))
 
+    test_raise_from = py3only(simple_expr('raise Foo() from bar'))
+    
+    
     test_call0 = simple_expr('foo()')
     test_call1 = simple_expr('a = foo()')
     test_call2 = simple_expr('foo(x)')
@@ -116,9 +123,9 @@ class TestSimple(Test):
     test_set1 = simple_expr('{a}')
     test_set2 = simple_expr('{a, b}')
 
-    test_exec0 = simple_expr('exec a in None, None')
-    test_exec1 = simple_expr('exec a in b, None')
-    test_exec2 = simple_expr('exec a in b, c')
+    test_exec0 = py2only(simple_expr('exec a in None, None'))
+    test_exec1 = py2only(simple_expr('exec a in b, None'))
+    test_exec2 = py2only(simple_expr('exec a in b, c'))
 
     test_assert1 = simple_expr('assert False')
     test_assert2 = simple_expr('assert False, msg')

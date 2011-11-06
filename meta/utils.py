@@ -11,6 +11,9 @@ class Python2(object):
     @staticmethod
     def py2op(func):
         return func
+    
+    def __init__(self,*args, **kwargs):
+        raise NotImplementedError("This function is not implemented in python 2.x")
 
 def py3op(func):
     if py3:
@@ -21,6 +24,10 @@ def py3op(func):
         return Python2
 
 class Python3(object):
+
+    def __init__(self,*args, **kwargs):
+        raise NotImplementedError("This function is not implemented in python 3.x")
+    
     @staticmethod
     def py3op(func):
         return func

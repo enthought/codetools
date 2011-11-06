@@ -9,8 +9,7 @@ from opcode import *
 import _ast
 import sys
 
-from meta.decompile.util import py3op
-py3 = sys.version_info.major >= 3
+from meta.utils import py3, py3op
 
 if py3:
     class _ast_Print: pass

@@ -3,10 +3,12 @@ Created on Jul 14, 2011
 
 @author: sean
 '''
-
+from __future__ import print_function
 from opcode import *
 import _ast
 from meta.decompile.disassemble import Instruction
+from meta.asttools.visitors.print_visitor import print_ast
+from meta.utils import py3op, py2op, py3
 AND_JUMPS = ['JUMP_IF_FALSE_OR_POP', 'POP_JUMP_IF_FALSE']
 OR_JUMPS = ['JUMP_IF_TRUE_OR_POP', 'POP_JUMP_IF_TRUE']
 JUMPS = AND_JUMPS + OR_JUMPS
@@ -112,7 +114,6 @@ class LogicalOp(object):
 class CtrlFlowInstructions(object):
 
     def split_handlers(self, handlers_blocks):
-
         handlers = []
         except_instrs = []
 
@@ -166,7 +167,11 @@ class CtrlFlowInstructions(object):
                 ends.append(handler_body[-1].arg)
 
                 exc_body = self.decompile_block(handler_body[:-1]).stmnt()
-
+                
+                #is this for python 3?
+                if py3 and exc_name is not None:
+                    exc_name = exc_name.id
+                    
                 handlers.append(_ast.ExceptHandler(type=exc_type, name=exc_name, body=exc_body, lineno=instr.lineno, col_offset=0))
 
                 except_instrs = []
@@ -190,20 +195,92 @@ class CtrlFlowInstructions(object):
         end = ends[0]
 
         return end, handlers
+    
 
-#
-#
+#    @py3op
+    def do_try_except_block(self, block):
+        
+        while 1:
+            instr = block.pop(-1)
+            if instr.opname == 'POP_BLOCK':
+                break
+
+        try_except = self.decompile_block(block).stmnt()
+        
+        finally_block = []
+        while 1:
+            next_instr = self.ilst.pop(0)
+            if next_instr.opname == 'END_FINALLY':
+                break
+            finally_block.append(next_instr)
+
+        finally_ = self.decompile_block(finally_block).stmnt()
+
+        try_finally = _ast.TryFinally(body=try_except, finalbody=finally_)
+        
+        self.ast_stack.append(try_finally)
+
+#    @py3op
+    def do_except_block(self, block):
+        
+        handler_block = []
+        for instr in block:
+            if  instr.opname == 'POP_BLOCK':
+                break
+            handler_block.append(instr)
+            
+        while 1:
+            instr = self.ilst.pop(0)
+            if instr.opname == 'END_FINALLY':
+                break 
+
+        body = self.decompile_block(handler_block).stmnt()
+        
+        self.ast_stack.extend(body)
+        
+#    @py2op
 #    def SETUP_FINALLY(self, instr):
-#        raise Exception
-
+#        pass
+#
+#    @SETUP_FINALLY.py3op
+    def SETUP_FINALLY(self, instr):
+        to = instr.arg
+        try_except_block = self.make_block(to, inclusive=False)
+        
+        if try_except_block[0].opname == 'SETUP_EXCEPT':
+            self.do_try_except_block(try_except_block)
+        else:
+            self.do_except_block(try_except_block)
+            
+#            raise Exception()
+#        print("try_except_block", try_except_block)
+#        
+#        finally_block = []
+#        while 1:
+#            next_instr = self.ilst.pop(0)
+#            if next_instr.opname == 'END_FINALLY':
+#                break
+#            finally_block.append(next_instr)
+#
+#        print("finally_block", finally_block)
+#        
+#        finally_ = self.decompile_block(finally_block).stmnt()
+#        
+#        print("finally_", finally_)
+#        print_ast(finally_[0])
+#        print()
+##        print_ast(finally_[1])
+##        print("\n\n")
+#        
+#        try_except = self.decompile_block(try_except_block).stmnt()
+        
+    @py2op
     def SETUP_EXCEPT(self, instr):
 
         to = instr.arg
 
         try_block = self.make_block(to, inclusive=False)
 
-#        if opname[try_block[-1].op] == 'DUP_TOP':
-#            try_block.pop()
         assert opname[try_block[-1].op] == 'JUMP_FORWARD'
         assert opname[try_block[-2].op] == 'POP_BLOCK'
 
@@ -213,8 +290,10 @@ class CtrlFlowInstructions(object):
         handlers_blocks = self.make_block(try_block[-1].arg, inclusive=False)
 
         end, handlers = self.split_handlers(handlers_blocks)
+        
+        #raise exception in python 3 (python 2 ilst does not include end so else may go beond)
+        else_block = self.make_block(end, inclusive=False, raise_=py3)
 
-        else_block = self.make_block(end, inclusive=False)
         else_stmnts = self.decompile_block(else_block).stmnt()
         if else_stmnts:
             else_ = else_stmnts
@@ -225,6 +304,40 @@ class CtrlFlowInstructions(object):
 
         self.ast_stack.append(try_except)
 
+    @SETUP_EXCEPT.py3op
+    def SETUP_EXCEPT(self, instr):
+
+        to = instr.arg
+
+        try_block = self.make_block(to, inclusive=False)
+
+        assert opname[try_block[-1].op] == 'JUMP_FORWARD'
+        assert opname[try_block[-2].op] == 'POP_BLOCK'
+
+        try_stmnts = self.decompile_block(try_block[:-2]).stmnt()
+        body = try_stmnts
+
+        handlers_blocks = self.make_block(try_block[-1].arg, inclusive=False)
+
+        end, handlers = self.split_handlers(handlers_blocks)
+
+        else_block = self.make_block(end, inclusive=False, raise_=False)
+        
+        else_stmnts = self.decompile_block(else_block).stmnt()
+        
+        if else_stmnts:
+            else_ = else_stmnts
+        else:
+            else_ = []
+
+        try_except = _ast.TryExcept(body=body, handlers=handlers, orelse=else_, lineno=instr.lineno, col_offset=0)
+
+        self.ast_stack.append(try_except)
+    
+    @py3op
+    def POP_EXCEPT(self, instr):
+        pass
+    
     def SETUP_LOOP(self, instr):
         to = instr.arg
         loop_block = self.make_block(to, inclusive=False)
@@ -280,90 +393,122 @@ class CtrlFlowInstructions(object):
 
     def make_list_comp(self, get_iter, for_iter):
 
-        block = self.make_block(for_iter.to, inclusive=False, raise_=True)
+        block = self.make_block(for_iter.to, inclusive=False, raise_=False)
 
         jump_abs = block.pop()
 
-        assert jump_abs.opname == 'JUMP_ABSOLUTE'
+        assert jump_abs.opname == 'JUMP_ABSOLUTE', jump_abs.opname
+        jump_map = {for_iter.i:for_iter.to}
 
-        stmnts = self.decompile_block(block, stack_items=[None], jump_map={for_iter.i:for_iter.to}).stmnt()
+        stmnts = self.decompile_block(block, stack_items=[None], jump_map=jump_map).stmnt()
 
-        assert len(stmnts) > 1
+        if len(stmnts) > 1:
 
-        assign = stmnts.pop(0)
-
-        assert len(stmnts) == 1
-
-        assert isinstance(assign, _ast.Assign)
-
-
-        list_expr = self.ast_stack.pop()
-        # empty ast.List object
-        list_ = self.ast_stack.pop()
-
-        ifs = []
-        list = refactor_ifs(stmnts[0], ifs)
-
-        assert len(assign.targets) == 1
-        quals = [_ast.comprehension(target=assign.targets[0], iter=list_expr, ifs=ifs, lineno=get_iter.lineno, col_offset=0)]
-
-        list_comp = _ast.ListComp(elt=list, generators=quals, lineno=get_iter.lineno, col_offset=0)
+            assign = stmnts.pop(0)
+    
+            assert len(stmnts) == 1
+    
+            assert isinstance(assign, _ast.Assign)
+    
+            list_expr = self.ast_stack.pop()
+    
+            # empty ast.List object
+            list_ = self.ast_stack.pop()
+    
+            ifs = []
+            elt = refactor_ifs(stmnts[0], ifs)
+    
+            assert len(assign.targets) == 1
+            generators = [_ast.comprehension(target=assign.targets[0], iter=list_expr, ifs=ifs, lineno=get_iter.lineno, col_offset=0)]
+    
+            if isinstance(list_, _ast.Assign):
+                
+                comp = _ast.comprehension(target=list_.targets[0], iter=None, ifs=ifs, lineno=get_iter.lineno, col_offset=0)
+                generators.insert(0, comp)
+            
+            list_comp = _ast.ListComp(elt=elt, generators=generators, lineno=get_iter.lineno, col_offset=0)
+        else:
+            list_expr = self.ast_stack.pop()
+            list_comp = stmnts[0]
+            
+            generators = list_comp.generators
+            
+            # empty ast.List object
+            list_ = self.ast_stack.pop()
+            if not isinstance(list_, _ast.Assign):
+                comp = _ast.comprehension(target=list_.targets[0], iter=None, ifs=[], lineno=get_iter.lineno, col_offset=0)
+                generators.insert(0, comp)
+                
+            generators[0].iter = list_expr
 
         self.ast_stack.append(list_comp)
 
     def extract_listcomp(self, function, sequence):
 
-        assert len(function.code.nodes) == 1
-        assert isinstance(function.code.nodes[0], _ast.Return)
+        assert len(function.body) == 1
+        assert isinstance(function.body[0], _ast.Return)
 
-        value = function.code.nodes[0].value
+        value = function.body[0].value
 
         assert isinstance(value, _ast.ListComp)
-
-        quals = value.quals
-        expr = value.expr
-
-        for qual in quals:
-            qual.list = sequence
-
-        setcomp = _ast.ListComp(elt=expr, generators=quals, lineno=value.lineno, col_offset=0)
+        
+        generators = list(value.generators)
+        for generator in generators:
+            if generator.iter.id == '.0':
+                generator.iter = sequence
+        
+        setcomp = _ast.ListComp(elt=value.elt, generators=generators, lineno=value.lineno, col_offset=0)
         self.ast_stack.append(setcomp)
         
     def extract_setcomp(self, function, sequence):
+        
+        assert len(function.body) == 1
+        assert isinstance(function.body[0], _ast.Return)
 
-        assert len(function.code.nodes) == 1
-        assert isinstance(function.code.nodes[0], _ast.Return)
-
-        value = function.code.nodes[0].value
+        value = function.body[0].value
 
         assert isinstance(value, _ast.ListComp)
-
-        quals = value.quals
-        expr = value.expr
-
-        for qual in quals:
-            qual.list = sequence
-
-        setcomp = _ast.SetComp(elt=expr, generators=quals, lineno=value.lineno, col_offset=0)
+        
+        generators = list(value.generators)
+        for generator in generators:
+            if generator.iter.id == '.0':
+                generator.iter = sequence
+        
+        setcomp = _ast.SetComp(elt=value.elt, generators=generators, lineno=value.lineno, col_offset=0)
         self.ast_stack.append(setcomp)
 
     def extract_dictcomp(self, function, sequence):
 
-        assert len(function.code.nodes) == 1
-        assert isinstance(function.code.nodes[0], _ast.Return)
+        assert len(function.body) == 1
+        assert isinstance(function.body[0], _ast.Return)
 
-        value = function.code.nodes[0].value
+        value = function.body[0].value
 
         assert isinstance(value, _ast.ListComp)
-
-        quals = value.quals
-        key, value = value.expr
-
-        for qual in quals:
-            qual.list = sequence
-
-        setcomp = _ast.DictComp(key=key, value=value, generators=quals, lineno=value.lineno, col_offset=0)
+        
+        generators = list(value.generators)
+        for generator in generators:
+            if generator.iter.id == '.0':
+                generator.iter = sequence
+        
+        setcomp = _ast.DictComp(key=value.elt[0], value=value.elt[1], generators=generators, lineno=value.lineno, col_offset=0)
         self.ast_stack.append(setcomp)
+#
+#        assert len(function.code.nodes) == 1
+#        assert isinstance(function.code.nodes[0], _ast.Return)
+#
+#        value = function.code.nodes[0].value
+#
+#        assert isinstance(value, _ast.ListComp)
+#
+#        quals = value.quals
+#        key, value = value.expr
+#
+#        for qual in quals:
+#            qual.list = sequence
+#
+#        setcomp = _ast.DictComp(key=key, value=value, generators=quals, lineno=value.lineno, col_offset=0)
+#        self.ast_stack.append(setcomp)
 
     def GET_ITER(self, instr):
 
@@ -377,9 +522,8 @@ class CtrlFlowInstructions(object):
             function = self.ast_stack.pop()
 
             if function.name == '<listcomp>':
-#                raise Exception('listcomp')
                 self.extract_listcomp(function, sequence)
-            if function.name == '<setcomp>':
+            elif function.name == '<setcomp>':
                 self.extract_setcomp(function, sequence)
             elif function.name == '<dictcomp>':
                 self.extract_dictcomp(function, sequence)
@@ -393,8 +537,8 @@ class CtrlFlowInstructions(object):
 
 
     def LIST_APPEND(self, instr):
-
-        assert instr.oparg == 2
+#        assert instr.oparg == 2
+        pass
 
     def MAP_ADD(self, instr):
         key = self.ast_stack.pop()

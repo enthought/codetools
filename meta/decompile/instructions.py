@@ -9,7 +9,9 @@ from meta.decompile.simple_instructions import SimpleInstructions
 from meta.decompile.control_flow_instructions import CtrlFlowInstructions
 import _ast
 from meta.asttools import print_ast
-from meta.decompile.util import py3, py3op, py2op
+from meta.utils import py3, py3op, py2op
+
+function_ops = ['CALL_FUNCTION', 'CALL_FUNCTION_KW', 'CALL_FUNCTION_VAR', 'CALL_FUNCTION_VAR_KW']
 
 def pop_doc(stmnts):
 
@@ -59,7 +61,8 @@ def make_module(code):
 
         return ast_obj
 
-def make_function(code, defaults=None, annotations=(), lineno=0):
+@py2op
+def make_function(code, defaults=None, lineno=0):
         from meta.decompile.disassemble import disassemble
 
         instructions = Instructions(disassemble(code))
@@ -81,19 +84,7 @@ def make_function(code, defaults=None, annotations=(), lineno=0):
         if code.co_flags & 8:
             kwarg = co_locals.pop()
 
-        if py3:
-            args = []
-            annotation_names = [annotation.arg for annotation in annotations]
-            
-            for argname in varnames:
-                if argname in annotation_names:
-                    arg = [annotation for annotation in annotations if annotation.arg == argname][0]
-                else:
-                    arg = _ast.arg(annotation=None, arg=argname, lineno=lineno, col_offset=0) #@UndefinedVariable
-                    
-                args.append(arg)
-        else:
-            args = [_ast.Name(id=argname, ctx=_ast.Param(), lineno=lineno, col_offset=0) for argname in varnames]
+        args = [_ast.Name(id=argname, ctx=_ast.Param(), lineno=lineno, col_offset=0) for argname in varnames]
             
         args = _ast.arguments(args=args,
                               defaults=defaults if defaults else [],
@@ -120,6 +111,118 @@ def make_function(code, defaults=None, annotations=(), lineno=0):
 
         return ast_obj
 
+@make_function.py3op
+def make_function(code, defaults=None, annotations=(), kw_defaults=(), lineno=0):
+        from meta.decompile.disassemble import disassemble
+
+        instructions = Instructions(disassemble(code))
+
+        stmnts = instructions.stmnt()
+
+        if code.co_flags & 2:
+            vararg = None
+            kwarg = None
+
+        varnames = list(code.co_varnames[:code.co_argcount])
+        kwonly_varnames = list(code.co_varnames[code.co_argcount:code.co_argcount + code.co_kwonlyargcount])
+        co_locals = list(code.co_varnames[code.co_argcount + code.co_kwonlyargcount:])
+
+        assert (len(kw_defaults) % 2) == 0
+        
+        kw_defaults = list(kw_defaults)
+        kw_default_dict = {}
+        
+        while kw_defaults:
+            name = kw_defaults.pop(0)
+            value = kw_defaults.pop(0)
+            
+            kw_default_dict[name.s] = value
+        
+        kw_defaults = []
+        for argname in kwonly_varnames:
+            kw_defaults.append(kw_default_dict.pop(argname))
+        
+        #have var args
+        if code.co_flags & 4:
+            vararg = co_locals.pop(0)
+
+        #have kw args
+        if code.co_flags & 8:
+            kwarg = co_locals.pop()
+
+        args = []
+        annotation_names = [annotation.arg for annotation in annotations]
+        
+        for argname in varnames:
+            if argname in annotation_names:
+                arg = [annotation for annotation in annotations if annotation.arg == argname][0]
+            else:
+                arg = _ast.arg(annotation=None, arg=argname, lineno=lineno, col_offset=0) #@UndefinedVariable
+                
+            args.append(arg)
+
+        kwonlyargs = []
+
+        for argname in kwonly_varnames:
+            if argname in annotation_names:
+                arg = [annotation for annotation in annotations if annotation.arg == argname][0]
+            else:
+                arg = _ast.arg(annotation=None, arg=argname, lineno=lineno, col_offset=0) #@UndefinedVariable
+                
+            kwonlyargs.append(arg)
+            
+        if 'return' in annotation_names:
+            arg = [annotation for annotation in annotations if annotation.arg == 'return'][0]
+            returns = arg.annotation
+        else:
+            returns = None
+        
+        if vararg in annotation_names:
+            arg = [annotation for annotation in annotations if annotation.arg == vararg][0]
+            varargannotation = arg.annotation
+        else:
+            varargannotation = None
+            
+        if kwarg in annotation_names:
+            arg = [annotation for annotation in annotations if annotation.arg == kwarg][0]
+            kwargannotation = arg.annotation
+        else:
+            kwargannotation = None
+        
+        args = _ast.arguments(args=args,
+                              defaults=defaults if defaults else [],
+                              kwarg=kwarg,
+                              vararg=vararg,
+                              kw_defaults=kw_defaults,
+                              kwonlyargs=kwonlyargs,
+                              kwargannotation=kwargannotation,
+                              varargannotation=varargannotation,
+                              lineno=lineno, col_offset=0
+                              )
+        
+        
+        if code.co_name == '<lambda>':
+            assert len(stmnts) == 1
+            assert isinstance(stmnts[0], _ast.Return)
+
+            stmnt = stmnts[0].value
+            ast_obj = _ast.Lambda(args=args, body=stmnt, lineno=lineno, col_offset=0)
+        else:
+
+            if instructions.seen_yield:
+                return_ = stmnts[-1]
+
+                assert isinstance(return_, _ast.Return)
+                assert isinstance(return_.value, _ast.Name)
+                assert return_.value.id == 'None'
+                return_.value = None
+            
+            ast_obj = _ast.FunctionDef(name=code.co_name, args=args,
+                                       body=stmnts, decorator_list=[],
+                                       returns=returns,
+                                       lineno=lineno, col_offset=0)
+
+        return ast_obj
 
 class StackLogger(list):
     def append(self, object):
@@ -135,7 +238,10 @@ class StackLogger(list):
         print()
         return value
 
+def bitrange(x, start, stop):
+    return ((1 << (stop - start)) - 1) & (x >> start)
 
+level = 0
 class Instructions(CtrlFlowInstructions, SimpleInstructions):
 
     def __init__(self, ilst, stack_items=None, jump_map=False):
@@ -168,29 +274,38 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
         return self.ast_stack
 
     def visit(self, instr):
+        global level
         name = instr.opname.replace('+', '_')
 
         method = getattr(self, name, None)
         if method is None:
             raise AttributeError('can not handle instruction %r' % (str(instr)))
-
-#        print( ">>>", name)
+        
+#        print(' ' * level, "+ visit:", repr(instr))
+#        level += 1
         method(instr)
+#        level -= 1
+#        print(' ' * level, "- stack:", self.ast_stack)
 
 
     def make_block(self, to, inclusive=True, raise_=True):
-
+#        print("make_block", to,)
         block = []
         while len(self.ilst):
             instr = self.ilst.pop(0)
             block.append(instr)
-            if instr.i == to:
+            
+#            instr_i = self.jump_map.get(instr.i, instr.i)
+            instr_i = instr.i
+            
+            if to == instr_i:
                 if not inclusive:
                     instr = block.pop()
                     self.ilst.insert(0, instr)
                 break
         else:
             if raise_:
+#                print(block)
                 raise IndexError("no instrcution i=%s " % (to,))
 
         return block
@@ -199,19 +314,24 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
     def MAKE_FUNCTION(self, instr):
 
         code = self.ast_stack.pop()
-
-        ndefaults = 65535 & instr.oparg
-        nannotations = (instr.oparg >> 16) - 1
-
+        
+        ndefaults = bitrange(instr.oparg, 0, 8)
+        nkwonly_defaults = bitrange(instr.oparg, 8, 16)
+        nannotations = bitrange(instr.oparg, 16, 32) - 1
+        
         annotations = []
         for i in range(nannotations):
             annotations.insert(0, self.ast_stack.pop())
         
+        kw_defaults = []
+        for i in range(nkwonly_defaults * 2):
+            kw_defaults.insert(0, self.ast_stack.pop())
+            
         defaults = []
         for i in range(ndefaults):
             defaults.insert(0, self.ast_stack.pop())
 
-        function = make_function(code, defaults, lineno=instr.lineno, annotations=annotations)
+        function = make_function(code, defaults, lineno=instr.lineno, annotations=annotations, kw_defaults=kw_defaults)
         
         doc = code.co_consts[0] if code.co_consts else None
         
@@ -252,7 +372,8 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
         class_body = []
         
         body_instr = instr
-        while body_instr.opname != 'CALL_FUNCTION':
+
+        while body_instr.opname not in function_ops:
             body_instr = self.ilst.pop(0)
             class_body.append(body_instr)
             
@@ -261,10 +382,15 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
         assert len(call_func) == 1
         call_func = call_func[0]
         
-        code = call_func.args[0].body
+        func_def = call_func.args[0]
+        code = func_def.body
         name = call_func.args[1].s
         bases = call_func.args[2:]
         
+        keywords = call_func.keywords
+        kwargs = call_func.kwargs
+        starargs = call_func.starargs
+                
         if isinstance(code[0], _ast.Expr):
             _name = code.pop(1)
             _doc = code.pop(1)
@@ -274,11 +400,14 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
             assert False
             
         ret = code.pop(-1)
+        
         assert isinstance(ret, _ast.Return)
             
         class_ = _ast.ClassDef(name=name, bases=bases, body=code, decorator_list=[],
-                               lineno=instr.lineno, col_offset=0)
-        
+                               kwargs=kwargs, keywords=keywords, starargs=starargs,
+                               lineno=instr.lineno, col_offset=0,
+                               )
+
         self.ast_stack.append(class_)
     
     @py2op
@@ -295,9 +424,6 @@ class Instructions(CtrlFlowInstructions, SimpleInstructions):
         code = func.body
         pop_assignment(code, '__module__')
         doc = pop_doc(code)
-
-#        if doc is not None:
-#            code.insert(0, _ast.Expr(value=doc, lineno=doc.lineno, col_offset=0))
 
         ret = code.pop()
 

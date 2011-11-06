@@ -6,6 +6,7 @@ Created on Aug 9, 2011
 import unittest
 from meta.asttools.visitors.cond_symbol_visitor import conditional_symbols
 import ast
+from meta.testing import py2only
 
 class Test(unittest.TestCase):
 
@@ -126,6 +127,7 @@ class Test(unittest.TestCase):
     def test_conditional_after_stable(self):
         self.assertCorrect(source='a = 1\nif b: a = 2', lhs_conditional=[], lhs_stable=['a'], rhs_conditional=[], rhs_stable=['b'], undefined=['b'])
 
+    @py2only
     def test_exec(self):
         self.assertCorrect(source='exec a in b, c', lhs_conditional=[], lhs_stable=[], rhs_conditional=[], rhs_stable=['a', 'b', 'c'], undefined=['a', 'b', 'c'])
 

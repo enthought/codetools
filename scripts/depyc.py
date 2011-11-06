@@ -14,11 +14,12 @@ import time
 import struct
 import marshal
 import ast
-from decompile.instructions import make_module
-from asttools import print_ast, python_source
-from decompile.disassemble import print_code
 from py_compile import MAGIC
-from decompile.recompile import create_pyc
+
+from meta.decompile.instructions import make_module
+from meta.asttools import print_ast, python_source
+from meta.decompile.disassemble import print_code
+from meta.decompile.recompile import create_pyc
 import os
 
 py3 = sys.version_info.major >= 3
@@ -76,6 +77,10 @@ def src_tool(args):
     elif args.output_type == 'python':
         print(source.decode(), file=args.output)
     elif args.output_type == 'pyc':
+        
+        if py3 and args.output is sys.stdout:
+            args.output = sys.stdout.buffer
+
         try:
             timestamp = int(os.fstat(args.input.fileno()).st_mtime)
         except AttributeError:
@@ -111,8 +116,6 @@ if __name__ == '__main__':
     input_python = args.input.name.endswith('.py') if args.input_type == 'from_filename' else args.input_type == 'python'
     
     if args.input.name.endswith('.py'):
-        if py3 and args.output is sys.stdout:
-            args.output = sys.stdout.buffer
         src_tool(args)
     else:
         if py3 and args.input is sys.stdin:

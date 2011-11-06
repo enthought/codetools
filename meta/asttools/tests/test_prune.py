@@ -9,6 +9,7 @@ from meta.asttools.tests import AllTypesTested, assert_ast_eq
 import unittest
 from meta.asttools.mutators.prune_mutator import PruneVisitor
 import ast
+from meta.testing import py2only
 
 tested = AllTypesTested()
 
@@ -233,7 +234,8 @@ finally:
 
         pruned = ''
         self.assertPruned(source, pruned, symbols=['a', 'd', 'e', 'f'])
-
+    
+    @py2only
     def test_exec(self):
         source = 'exec a'
         pruned = 'exec a'
@@ -466,6 +468,7 @@ finally:
         pruned = ''
         self.assertPruned(source, pruned, symbols=['a', 'd', 'e', 'f'])
 
+    @py2only
     def test_exec(self):
         source = 'exec a'
         pruned = 'exec a'

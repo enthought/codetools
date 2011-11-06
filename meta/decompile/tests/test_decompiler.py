@@ -8,8 +8,9 @@ import sys
 import _ast
 from meta.decompile import make_module
 from meta.asttools import cmp_ast, print_ast
+from meta.testing import py2, py2only
 
-py2 = sys.version_info.major < 3
+
 if py2:
     from StringIO import StringIO
 else:
@@ -18,7 +19,7 @@ else:
 filename = 'tests.py'
 
 
-py2only = unittest.skipIf(not py2, "Only valid for python 2.x")
+py2only
 
 class Base(unittest.TestCase):
 
