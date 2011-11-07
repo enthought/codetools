@@ -1,7 +1,7 @@
-:mod:`decompile` - decompile code objects into ast  nodes 
-==========================================================
+:mod:`meta.decompile` - decompile code objects into ast  nodes 
+==============================================================
 
-.. automodule:: decompile
+.. automodule:: meta.decompile
     :members:
     :undoc-members:
     :member-order: bysource
