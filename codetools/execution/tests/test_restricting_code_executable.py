@@ -49,9 +49,12 @@ class TestRestrictingCodeExecutable(unittest.TestCase, TestAssistant):
     def test_api_compatibility(self):
         executing_context = ExecutingContext(executable=self.restricting_exec,
                 subcontext=self.context)
+        self.assertIs(self.context, executing_context.subcontext.subcontext)
         executing_context.execute_for_names(None)
         with self.assertTraitChanges(executing_context, 'items_modified'):
-            executing_context['a'] = 5
+            executing_context['bb'] = 5
+        expected_context = {'a': 1, 'b': 10, 'aa': 2, 'bb': 5, 'c': 18}
+        self.assertEqual(self.context, expected_context)
 
 
 if __name__ == '__main__':
