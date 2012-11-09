@@ -1,4 +1,5 @@
-from traits.api import HasStrictTraits, Str, implements, Instance
+from traits.api import (HasStrictTraits, Str, implements, Instance,
+        on_trait_change)
 from traits.protocols.api import adapt
 from codetools.blocks.block import Block
 from codetools.execution.interfaces import IExecutable
@@ -17,7 +18,7 @@ class RestrictingCodeExecutable(HasStrictTraits):
     code = Str
 
     # The block that handles code restriction
-    block = Instance(Block)
+    _block = Instance(Block)
 
     def __init__(self, code=None, **kwargs):
         """
@@ -31,7 +32,7 @@ class RestrictingCodeExecutable(HasStrictTraits):
                     self.__class__)
         super(RestrictingCodeExecutable, self).__init__(**kwargs)
         self.code = code
-        self.block = Block(code)
+        self._block = Block(code)
 
     def execute(self, context, globals=None, inputs=None, outputs=None):
         """ Execute code in context, optionally restricting on inputs or
@@ -56,7 +57,11 @@ class RestrictingCodeExecutable(HasStrictTraits):
 
         #If called with no inputs or outputs the full block executes
         if inputs or outputs:
-            block = self.block.restrict(inputs=inputs, outputs=outputs)
+            block = self._block.restrict(inputs=inputs, outputs=outputs)
         else:
-            block = self.block
+            block = self._block
         block.execute(icontext, global_context=globals)
+
+    @on_trait_change('code', post_init=True)
+    def _code_changed(self, new):
+        self._block = Block(new)

@@ -1,10 +1,10 @@
 import unittest
 
 from codetools.execution.executing_context import ExecutingContext
+from codetools.execution.restricting_code_executable import (
+        RestrictingCodeExecutable)
 
 from fei.testing.test_assistant import TestAssistant
-from fei.edx.model.block_pipeline.restricting_code_executable import (
-        RestrictingCodeExecutable)
 
 CODE = """aa = 2 * a
 bb = 2 * b
@@ -36,15 +36,19 @@ class TestRestrictingCodeExecutable(unittest.TestCase, TestAssistant):
 
     def test_code_exists(self):
         self.assertEqual(self.restricting_exec.code, CODE)
-        self.assertEqual(self.restricting_exec.block.codestring, CODE)
+        self.assertEqual(self.restricting_exec._block.codestring, CODE)
 
     def test_init_with_code_error_fails(self):
         with self.assertRaises(SyntaxError):
-            restricting_exec = RestrictingCodeExecutable(".,.")
+            restricting_exec = RestrictingCodeExecutable(code=".,.")
 
     def test_init_without_code_fails(self):
         with self.assertRaises(ValueError):
             restricting_exec = RestrictingCodeExecutable()
+
+    def test_code_changing(self):
+        with self.assertTraitChanges(self.restricting_exec, '_block'):
+            self.restricting_exec.code = "c = a + b"
 
     def test_api_compatibility(self):
         executing_context = ExecutingContext(executable=self.restricting_exec,
