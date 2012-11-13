@@ -45,6 +45,13 @@ class RestrictingCodeExecutable(HasStrictTraits):
         inputs : List of strings, options
         outputs : List of strings, optional
 
+        Returns
+        -------
+        inputs : set
+            the inputs to the restricted block
+        outpus : set
+            the outputs of the restricted block
+
         """
         icontext = adapt(context, IContext)
 
@@ -61,6 +68,7 @@ class RestrictingCodeExecutable(HasStrictTraits):
         else:
             block = self._block
         block.execute(icontext, global_context=globals)
+        return block.inputs, block.outputs
 
     @on_trait_change('code', post_init=True)
     def _code_changed(self, new):
