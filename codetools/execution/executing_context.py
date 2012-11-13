@@ -27,7 +27,7 @@ class CodeExecutable(HasTraits):
             globals = {}
 
         exec self.code in globals, icontext
-        return inputs, outputs
+        return set(inputs), set(outputs)
 
 
 class ExecutingContext(DataContext):
