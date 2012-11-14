@@ -23,6 +23,11 @@ class CodeExecutable(HasTraits):
     def execute(self, context, globals=None, inputs=None, outputs=None):
         icontext = adapt(context, IContext)
 
+        if not inputs:
+            inputs = []
+        if not outputs:
+            outputs = []
+
         if globals is None:
             globals = {}
 
