@@ -29,20 +29,20 @@ class TestAsyncExecutingContext(unittest.TestCase):
         d['a'] = 1
         d['b'] = 2
         ec = AsyncExecutingContext(subcontext=d, executable=ce)
-        assert 'a' in ec
-        assert 'b' in ec
-        assert 'c' not in ec
+        self.assertIn('a', ec)
+        self.assertIn('b', ec)
+        self.assertNotIn('c', ec)
 
         ec['a'] = 2
         ec._wait()
-        assert ec['a'] == 2
-        assert 'c' in ec
-        assert ec['c'] == 4
+        self.assertEqual(ec['a'], 2)
+        self.assertIn('c', ec)
+        self.assertEqual(ec['c'], 4)
 
         ec['a'] = 4
         ec._wait()
-        assert ec['a'] == 4
-        assert ec['c'] == 6
+        self.assertEqual(ec['a'], 4)
+        self.assertEqual(ec['c'], 6)
 
     def test_defer_execution(self):
         """ Does deferring execution work?
@@ -53,13 +53,13 @@ class TestAsyncExecutingContext(unittest.TestCase):
 
         ec.defer_execution = True
         ec['a'] = 1
-        assert 'c' not in ec
+        self.assertNotIn('c', ec)
         ec['b'] = 2
-        assert 'c' not in ec
+        self.assertNotIn('c', ec)
         ec.defer_execution = False
         ec._wait()
-        assert 'c' in ec
-        assert ec['c'] == 3
+        self.assertIn('c', ec)
+        self.assertEqual(ec['c'], 3)
 
     def test_rapid_updates(self):
         self.ec.on_trait_change(self._items_modified_fired, 'items_modified')
