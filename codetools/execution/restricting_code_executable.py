@@ -15,24 +15,10 @@ class RestrictingCodeExecutable(HasStrictTraits):
     implements(IExecutable)
 
     # The code to execute.
-    code = Str
+    code = Str('Pass')
 
     # The block that handles code restriction
     _block = Instance(Block)
-
-    def __init__(self, code=None, **kwargs):
-        """
-        Parameters
-        ----------
-        code: String, required
-
-        """
-        if code is None:
-            raise ValueError('%s must be initialized with code' % \
-                    self.__class__)
-        super(RestrictingCodeExecutable, self).__init__(**kwargs)
-        self.code = code
-        self._block = Block(code)
 
     def execute(self, context, globals=None, inputs=None, outputs=None):
         """ Execute code in context, optionally restricting on inputs or
@@ -70,6 +56,6 @@ class RestrictingCodeExecutable(HasStrictTraits):
         block.execute(icontext, global_context=globals)
         return block.inputs, block.outputs
 
-    @on_trait_change('code', post_init=True)
+    @on_trait_change('code')
     def _code_changed(self, new):
         self._block = Block(new)

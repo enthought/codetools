@@ -38,14 +38,6 @@ class TestRestrictingCodeExecutable(unittest.TestCase, TestAssistant):
         self.assertEqual(self.restricting_exec.code, CODE)
         self.assertEqual(self.restricting_exec._block.codestring, CODE)
 
-    def test_init_with_code_error_fails(self):
-        with self.assertRaises(SyntaxError):
-            restricting_exec = RestrictingCodeExecutable(code=".,.")
-
-    def test_init_without_code_fails(self):
-        with self.assertRaises(ValueError):
-            restricting_exec = RestrictingCodeExecutable()
-
     def test_code_changing(self):
         with self.assertTraitChanges(self.restricting_exec, '_block'):
             self.restricting_exec.code = "c = a + b"
