@@ -58,6 +58,9 @@ class AsyncExecutingContext(ExecutingContext):
     # A lock for shared data
     _data_lock = Instance(threading.Lock, ())
 
+    # A lock future access
+    _future_lock = Instance(threading.Lock, ())
+
     def execute_for_names(self, names=None):
         """ Possibly execute for a set of names which have been changed.
 
@@ -137,22 +140,24 @@ class AsyncExecutingContext(ExecutingContext):
     def _update(self):
         """Update based on changes in _context_delta"""
 
-        # If we already have a future, then we get out of here.
-        if self._future is not None:
-            return
-
-        # If there is no delta, then we leave as well
+        # If there is no delta, we have no work to do
         if not self._context_delta:
             return
 
+        # If we are defering we should simply accumulate deltas and not execute
         if self.defer_execution:
             return
 
-        # Create a new future
-        self._future = self.executor.submit(self._update_worker)
+        with self._future_lock:
+            # If we already have a future, then we get out of here.
+            if self._future is not None:
+                return
 
-        # Add a callback to update listeners
-        self._future.add_done_callback(self._update_callback)
+            # Create a new future
+            self._future = self.executor.submit(self._update_worker)
+
+            # Add a callback to update listeners
+            self._future.add_done_callback(self._update_callback)
 
     def _update_worker(self):
         """Worker for the _update method.
