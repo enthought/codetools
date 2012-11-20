@@ -67,6 +67,7 @@ class TestAsyncExecutingContext(unittest.TestCase):
             self.ec['a'] = i
         self.ec._wait()
         self.assertEqual(self.ec['a'], 9)
+        self.assertEqual(self.ec['c'], 11)
 
     def test_execute(self):
         d = DataContext()
