@@ -15,6 +15,7 @@ class TestRestrictingCodeExecutable(unittest.TestCase):
     def setUp(self):
         self.restricting_exec = RestrictingCodeExecutable(code=CODE)
         self.context = {'a': 1, 'b': 10}
+        self.events = []
 
     def test_execute(self):
         self.restricting_exec.execute(self.context)
@@ -37,18 +38,23 @@ class TestRestrictingCodeExecutable(unittest.TestCase):
         self.assertEqual(self.restricting_exec._block.codestring, CODE)
 
     def test_code_changing(self):
-        with self.assertTraitChanges(self.restricting_exec, '_block'):
-            self.restricting_exec.code = "c = a + b"
+        self.restricting_exec.on_trait_change(self._change_detect, '_block')
+        self.restricting_exec.code = "c = a + b"
+        self.assertEqual(self.events, ['fired'])
 
     def test_api_compatibility(self):
         executing_context = ExecutingContext(executable=self.restricting_exec,
                 subcontext=self.context)
         self.assertIs(self.context, executing_context.subcontext.subcontext)
         executing_context.execute_for_names(None)
-        with self.assertTraitChanges(executing_context, 'items_modified'):
-            executing_context['bb'] = 5
+        executing_context.on_trait_change(self._change_detect, 'items_modified')
+        executing_context['bb'] = 5
+        self.assertEqual(self.events, ['fired'])
         expected_context = {'a': 1, 'b': 10, 'aa': 2, 'bb': 5, 'c': 18}
         self.assertEqual(self.context, expected_context)
+
+    def _change_detect(self):
+        self.events.append('fired')
 
 
 if __name__ == '__main__':
