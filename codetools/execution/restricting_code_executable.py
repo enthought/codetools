@@ -15,7 +15,7 @@ class RestrictingCodeExecutable(HasStrictTraits):
     implements(IExecutable)
 
     # The code to execute.
-    code = Str('Pass')
+    code = Str('pass')
 
     # The block that handles code restriction
     _block = Instance(Block)
