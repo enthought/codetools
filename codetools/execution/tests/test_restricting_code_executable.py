@@ -4,15 +4,13 @@ from codetools.execution.executing_context import ExecutingContext
 from codetools.execution.restricting_code_executable import (
         RestrictingCodeExecutable)
 
-from fei.testing.test_assistant import TestAssistant
-
 CODE = """aa = 2 * a
 bb = 2 * b
 c = a + b + aa + bb
 """
 
 
-class TestRestrictingCodeExecutable(unittest.TestCase, TestAssistant):
+class TestRestrictingCodeExecutable(unittest.TestCase):
 
     def setUp(self):
         self.restricting_exec = RestrictingCodeExecutable(code=CODE)
