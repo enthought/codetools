@@ -1,6 +1,6 @@
+import contextlib
 import threading
-import time
-from concurrent.futures import Executor
+from concurrent.futures import Executor, Future
 from concurrent.futures import ThreadPoolExecutor
 
 from codetools.contexts.data_context import DataContext
@@ -8,8 +8,8 @@ from codetools.execution.executing_context import ExecutingContext
 from codetools.execution.interfaces import IListenableContext
 from codetools.execution.restricting_code_executable import (
         RestrictingCodeExecutable)
-from traits.api import (Instance, Dict, Event, Code, Any, on_trait_change, Bool,
-        Undefined, Enum)
+from traits.api import (Instance, Dict, Event, Code, Any, on_trait_change,
+        Bool, Undefined)
 
 
 class AsyncExecutingContext(ExecutingContext):
@@ -137,80 +137,70 @@ class AsyncExecutingContext(ExecutingContext):
     #### Concurrency methods and state machine.
     ###########################################################################
 
-    # A lock for state changes
+    # A lock for state changes.
     _state_lock = Instance(threading.Condition, ())
 
-    # Flag indicating whether we're currently 'deferred' or not.  True
-    # iff execution is deferred.
-    _on_hold = Bool(False)
-
-    # Flag indicating whether there's a currently scheduled task or not.
-    # True iff there's no currently scheduled or executing future, else
-    # True.
-    _idle = Bool(True)
+    # State flag: true iff execution is currently deferred.
+    _execution_deferred = Bool(False)
 
     # Flag indicating whether there's a need to do a new update at
     # some point.
-    _pending = Bool(False)
+    _update_pending = Bool(False)
 
-    def _dispatch_task(self):
-        """Start executing a pending task if appropriate.
+    # The current Future instance, or None.
+    _future = Instance(Future)
 
-        Return either the future or None if no task started.
+    @contextlib.contextmanager
+    def _update_state(self):
+        """Helper for state updates.
+
+        Applies the state update in the body of the associated with block;
+        starts a new future execution if necessary, and notifies all listeners
+        of the state change.
 
         """
-        if self._idle and self._pending and not self._on_hold:
-            self._idle = self._pending = False
-            return self.executor.submit(self._worker)
-        else:
-            return None
+        with self._state_lock:
+            yield
+            if (self._future is None and
+                    self._update_pending and
+                    not self._execution_deferred):
+                self._update_pending = False
+                self._future = self.executor.submit(self._worker)
+            self._state_lock.notify_all()
+
+        if self._future is not None:
+            self._future.add_done_callback(self._callback)
+
+    # Transition methods.
 
     def _update(self):
         """Update based on changes in _context_delta."""
-        with self._state_lock:
-            self._pending = True
-            future = self._dispatch_task()
-            self._state_lock.notify_all()
-
-        if future is not None:
-            future.add_done_callback(self._callback)
+        with self._update_state():
+            self._update_pending = True
 
     def _callback(self, future):
         """Callback for the _worker"""
-        with self._state_lock:
-            self._idle = True
-            future = self._dispatch_task()
-            self._state_lock.notify_all()
-
-        if future is not None:
-            future.add_done_callback(self._callback)
-
-    def _resume(self):
-        """Resume execution."""
-        with self._state_lock:
-            self._on_hold = False
-            future = self._dispatch_task()
-            self._state_lock.notify_all()
-
-        if future is not None:
-            future.add_done_callback(self._callback)
+        with self._update_state():
+            self._future = None
 
     def _pause(self):
         """Temporarily pause execution."""
-        with self._state_lock:
-            self._on_hold = True
-            # No need to consider dispatching a task in this case.
-            self._state_lock.notify_all()
+        with self._update_state():
+            self._execution_deferred = True
+
+    def _resume(self):
+        """Resume execution."""
+        with self._update_state():
+            self._execution_deferred = False
 
     def _wait(self):
-        """ Wait atleast until all previous assignments are finished, possibly
+        """ Wait at least until all previous assignments are finished, possibly
         longer
 
         """
         with self._state_lock:
-            while not self._idle:
+            while self._future is not None:
                 self._state_lock.wait()
-
 
     ###########################################################################
     #### Trait defaults
