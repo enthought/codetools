@@ -207,9 +207,8 @@ class AsyncExecutingContext(ExecutingContext):
         longer
 
         """
-        # Wait until we're idle with no tasks pending.
         with self._state_lock:
-            while not (self._idle and not self._pending):
+            while not self._idle:
                 self._state_lock.wait()
 
 
