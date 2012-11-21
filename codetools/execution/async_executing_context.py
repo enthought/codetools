@@ -161,14 +161,16 @@ class AsyncExecutingContext(ExecutingContext):
         """
         with self._state_lock:
             yield
-            if (self._future is None and
-                    self._update_pending and
-                    not self._execution_deferred):
+            submit_new = (
+                self._future is None and self._update_pending and
+                not self._execution_deferred
+            )
+            if submit_new:
                 self._update_pending = False
                 self._future = self.executor.submit(self._worker)
             self._state_lock.notify_all()
 
-        if self._future is not None:
+        if submit_new:
             self._future.add_done_callback(self._callback)
 
     # Transition methods.
