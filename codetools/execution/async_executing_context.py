@@ -45,17 +45,11 @@ class AsyncExecutingContext(ExecutingContext):
     # The cumulative changes in the context since the last successful execution
     _context_delta = Dict
 
-    # Current state of the system
-    _state = Enum('Idle', 'Updating', 'UpdatingWithPendingUpdate')
-
     # Flag used to suppress events when internally modifying subcontext
     _suppress_events = Bool(False)
 
     # A lock for shared data
     _data_lock = Instance(threading.Lock, ())
-
-    # A lock for state changes
-    _state_lock = Instance(threading.Lock, ())
 
     ###########################################################################
     #### AsyncExecutingContext Interface
@@ -66,19 +60,14 @@ class AsyncExecutingContext(ExecutingContext):
         This executes asyncronously.
 
         """
-        # Fill in _context_delta with _context. We're telling _submit_job that
+        # Fill in _context_delta with _context. We're telling _update that
         # everything changed.
         with self._data_lock:
             for key, value in self.subcontext.iteritems():
                 if key not in self._context_delta:
                     self._context_delta[key] = value
 
-        with self._state_lock:
-            if self._state == 'Idle':
-                self._state = 'Updating'
-                self._submit_job()
-            elif self._state == 'Updating':
-                self._state = 'UpdatingWithPendingUpdate'
+        self._update()
 
     ###########################################################################
     #### ExecutingContext Interface
@@ -104,12 +93,13 @@ class AsyncExecutingContext(ExecutingContext):
             with self._data_lock:
                 for key in affected_names:
                     context[key] = self.subcontext[key]
+
             self._wait()  # wait until the delta is empty
-            with self._state_lock:
-                with self._data_lock:
-                    self._context_delta.update(context)
-                self._state = 'Updating'
-                self._submit_job()
+
+            with self._data_lock:
+                self._context_delta.update(context)
+
+            self._update()
 
     def __setitem__(self, name, value):
         """Assign a new value into the namespace.
@@ -138,32 +128,97 @@ class AsyncExecutingContext(ExecutingContext):
             context_copy.update(self._context_delta)
         self._fire_event(added=added, modified=modified, context=context_copy)
 
-        with self._state_lock:
-            if self._state == 'Idle':
-                self._state = 'Updating'
-                self._submit_job()
-            elif self._state == 'Updating':
-                self._state = 'UpdatingWithPendingUpdate'
+        self._update()
 
     def __delitem__(self, name):
         del self.subcontext[name]
 
     ###########################################################################
-    #### Concurrency methods
+    #### Concurrency methods and state machine.
     ###########################################################################
 
-    def _submit_job(self):
-        """Update based on changes in _context_delta"""
+    # A lock for state changes
+    _state_lock = Instance(threading.Condition, ())
 
-        if self.defer_execution:
-            self._state = 'Idle'
-            return
+    # Flag indicating whether we're currently 'deferred' or not.  True
+    # iff execution is not deferred.
+    _running = Bool(True)
 
-        future = self.executor.submit(self._worker)
-        future.add_done_callback(self._callback)
+    # Flag indicating whether there's a currently scheduled task or not.
+    # True iff there's no currently scheduled or executing future, else
+    # True.
+    _idle = Bool(True)
+
+    # Flag indicating whether there's a need to do a new update at
+    # some point.
+    _pending = Bool(False)
+
+    def _dispatch_task(self):
+        """Start executing a pending task if appropriate.
+
+        Return either the future or None if no task started.
+
+        """
+        if self._idle and self._running and self._pending:
+            self._idle = self._pending = False
+            return self.executor.submit(self._worker)
+        else:
+            return None
+
+    def _update(self):
+        """Update based on changes in _context_delta."""
+        with self._state_lock:
+            self._pending = True
+            future = self._dispatch_task()
+            self._state_lock.notify_all()
+
+        if future is not None:
+            future.add_done_callback(self._callback)
+
+    def _callback(self, future):
+        """Callback for the _worker"""
+        with self._state_lock:
+            self._idle = True
+            future = self._dispatch_task()
+            self._state_lock.notify_all()
+
+        if future is not None:
+            future.add_done_callback(self._callback)
+
+    def _resume(self):
+        """Resume execution."""
+        with self._state_lock:
+            self._running = True
+            future = self._dispatch_task()
+            self._state_lock.notify_all()
+
+        if future is not None:
+            future.add_done_callback(self._callback)
+
+    def _pause(self):
+        """Temporarily pause execution."""
+        with self._state_lock:
+            self._running = False
+            # No need to consider dispatching a task in this case.
+            self._state_lock.notify_all()
+
+    def _wait(self):
+        """ Wait atleast until all previous assignments are finished, possibly
+        longer
+
+        """
+        # Wait until we're idle with no tasks pending.
+        with self._state_lock:
+            while not (self._idle and not self._pending):
+                self._state_lock.wait()
+
+
+    ###########################################################################
+    #### Trait defaults
+    ###########################################################################
 
     def _worker(self):
-        """Worker for the _submit_job method. """
+        """Worker for the _update method. """
 
         # Get the current context, apply then delete the delta
         with self._data_lock:
@@ -188,22 +243,6 @@ class AsyncExecutingContext(ExecutingContext):
                 self._context_delta = context_delta
             raise
 
-    def _callback(self, future):
-        """Callback for the _worker"""
-
-        # Check for and report exceptions
-        exception = future.exception()
-        if exception is not None:
-            self.exception = exception
-            return
-
-        with self._state_lock:
-            if self._state == 'Updating':
-                self._state = 'Idle'
-            elif self._state == 'UpdatingWithPendingUpdate':
-                self._state = 'Updating'
-                self._submit_job()
-
     ###########################################################################
     #### Trait defaults
     ###########################################################################
@@ -227,10 +266,11 @@ class AsyncExecutingContext(ExecutingContext):
             return
         self.execute()
 
-    def _defer_execution_changed(self):
-        if not self.defer_execution:
-            self._state = 'Updating'
-            self._submit_job()
+    def _defer_execution_changed(self, new):
+        if new:
+            self._pause()
+        else:
+            self._resume()
 
     @on_trait_change('subcontext.items_modified')
     def subcontext_items_modified(self, event):
@@ -245,20 +285,6 @@ class AsyncExecutingContext(ExecutingContext):
         event.veto = True
         self._fire_event(added=event.added, removed=event.removed,
             modified=event.modified, context=event.context)
-
-    ###########################################################################
-    #### Private Methods
-    ###########################################################################
-
-    def _wait(self):
-        """ Wait atleast until all previous assignments are finished, possibly
-        longer
-
-        """
-
-        while True:
-            if self._state == 'Idle':
-                break
 
 
 if __name__ == '__main__':
