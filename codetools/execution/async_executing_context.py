@@ -141,8 +141,8 @@ class AsyncExecutingContext(ExecutingContext):
     _state_lock = Instance(threading.Condition, ())
 
     # Flag indicating whether we're currently 'deferred' or not.  True
-    # iff execution is not deferred.
-    _running = Bool(True)
+    # iff execution is deferred.
+    _on_hold = Bool(False)
 
     # Flag indicating whether there's a currently scheduled task or not.
     # True iff there's no currently scheduled or executing future, else
@@ -159,7 +159,7 @@ class AsyncExecutingContext(ExecutingContext):
         Return either the future or None if no task started.
 
         """
-        if self._idle and self._running and self._pending:
+        if self._idle and self._pending and not self._on_hold:
             self._idle = self._pending = False
             return self.executor.submit(self._worker)
         else:
@@ -188,7 +188,7 @@ class AsyncExecutingContext(ExecutingContext):
     def _resume(self):
         """Resume execution."""
         with self._state_lock:
-            self._running = True
+            self._on_hold = False
             future = self._dispatch_task()
             self._state_lock.notify_all()
 
@@ -198,7 +198,7 @@ class AsyncExecutingContext(ExecutingContext):
     def _pause(self):
         """Temporarily pause execution."""
         with self._state_lock:
-            self._running = False
+            self._on_hold = True
             # No need to consider dispatching a task in this case.
             self._state_lock.notify_all()
 
