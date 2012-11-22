@@ -93,9 +93,7 @@ class AsyncExecutingContext(ExecutingContext):
             with self._data_lock:
                 for key in affected_names:
                     context[key] = self.subcontext[key]
-
             self._wait()  # wait until the delta is empty
-
             with self._data_lock:
                 self._context_delta.update(context)
 
@@ -183,6 +181,9 @@ class AsyncExecutingContext(ExecutingContext):
     def _callback(self, future):
         """Callback for the _worker"""
         with self._update_state():
+            exception = future.exception()
+            if exception is not None:
+                self.exception = exception
             self._future = None
 
     def _pause(self):
@@ -196,17 +197,10 @@ class AsyncExecutingContext(ExecutingContext):
             self._execution_deferred = False
 
     def _wait(self):
-        """ Wait at least until all previous assignments are finished, possibly
-        longer
-
-        """
+        """Wait until all previous assignments are finished, possibly longer."""
         with self._state_lock:
             while self._future is not None:
                 self._state_lock.wait()
-
-    ###########################################################################
-    #### Trait defaults
-    ###########################################################################
 
     def _worker(self):
         """Worker for the _update method. """
