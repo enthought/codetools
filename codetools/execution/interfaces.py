@@ -28,9 +28,9 @@ class IExecutable(Interface):
 
         Returns
         -------
-        inputs : list of str
+        inputs : set of str
             The inputs of the restricted block
-        outputs : list of str
+        outputs : set of str
             The outputs of the restricted block
 
         """
