@@ -25,6 +25,14 @@ class IExecutable(Interface):
         outputs : list of str, optional
             Names of output variables. These are used to restrict the execution
             to portions of the code that affect the outputs.
+
+        Returns
+        -------
+        inputs : list of str
+            The inputs of the restricted block
+        outputs : list of str
+            The outputs of the restricted block
+
         """
 
 
@@ -41,5 +49,3 @@ class IExecutingContext(IListenableContext):
 
     # Whether to trigger recomputation on 'items_modified' immediately or not.
     defer_execution = Bool(False)
-
-
