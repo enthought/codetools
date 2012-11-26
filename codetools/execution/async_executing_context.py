@@ -1,6 +1,6 @@
+import contextlib
 import threading
-import time
-from concurrent.futures import Executor
+from concurrent.futures import Executor, Future
 from concurrent.futures import ThreadPoolExecutor
 
 from codetools.contexts.data_context import DataContext
@@ -8,8 +8,8 @@ from codetools.execution.executing_context import ExecutingContext
 from codetools.execution.interfaces import IListenableContext
 from codetools.execution.restricting_code_executable import (
         RestrictingCodeExecutable)
-from traits.api import (Instance, Dict, Event, Code, Any, on_trait_change, Bool,
-        Undefined, Enum)
+from traits.api import (Instance, Dict, Event, Code, Any, on_trait_change,
+        Bool, Undefined)
 
 
 class AsyncExecutingContext(ExecutingContext):
@@ -45,17 +45,11 @@ class AsyncExecutingContext(ExecutingContext):
     # The cumulative changes in the context since the last successful execution
     _context_delta = Dict
 
-    # Current state of the system
-    _state = Enum('Idle', 'Updating', 'UpdatingWithPendingUpdate')
-
     # Flag used to suppress events when internally modifying subcontext
     _suppress_events = Bool(False)
 
     # A lock for shared data
     _data_lock = Instance(threading.Lock, ())
-
-    # A lock for state changes
-    _state_lock = Instance(threading.Lock, ())
 
     ###########################################################################
     #### AsyncExecutingContext Interface
@@ -66,19 +60,14 @@ class AsyncExecutingContext(ExecutingContext):
         This executes asyncronously.
 
         """
-        # Fill in _context_delta with _context. We're telling _submit_job that
+        # Fill in _context_delta with _context. We're telling _update that
         # everything changed.
         with self._data_lock:
             for key, value in self.subcontext.iteritems():
                 if key not in self._context_delta:
                     self._context_delta[key] = value
 
-        with self._state_lock:
-            if self._state == 'Idle':
-                self._state = 'Updating'
-                self._submit_job()
-            elif self._state == 'Updating':
-                self._state = 'UpdatingWithPendingUpdate'
+        self._update()
 
     ###########################################################################
     #### ExecutingContext Interface
@@ -105,11 +94,10 @@ class AsyncExecutingContext(ExecutingContext):
                 for key in affected_names:
                     context[key] = self.subcontext[key]
             self._wait()  # wait until the delta is empty
-            with self._state_lock:
-                with self._data_lock:
-                    self._context_delta.update(context)
-                self._state = 'Updating'
-                self._submit_job()
+            with self._data_lock:
+                self._context_delta.update(context)
+
+            self._update()
 
     def __setitem__(self, name, value):
         """Assign a new value into the namespace.
@@ -138,32 +126,84 @@ class AsyncExecutingContext(ExecutingContext):
             context_copy.update(self._context_delta)
         self._fire_event(added=added, modified=modified, context=context_copy)
 
-        with self._state_lock:
-            if self._state == 'Idle':
-                self._state = 'Updating'
-                self._submit_job()
-            elif self._state == 'Updating':
-                self._state = 'UpdatingWithPendingUpdate'
+        self._update()
 
     def __delitem__(self, name):
         del self.subcontext[name]
 
     ###########################################################################
-    #### Concurrency methods
+    #### Concurrency methods and state machine.
     ###########################################################################
 
-    def _submit_job(self):
-        """Update based on changes in _context_delta"""
+    # A lock for state changes.
+    _state_lock = Instance(threading.Condition, ())
 
-        if self.defer_execution:
-            self._state = 'Idle'
-            return
+    # State flag: true iff execution is currently deferred.
+    _execution_deferred = Bool(False)
 
-        future = self.executor.submit(self._worker)
-        future.add_done_callback(self._callback)
+    # Flag indicating whether there's a need to do a new update at
+    # some point.
+    _update_pending = Bool(False)
+
+    # The current Future instance, or None.
+    _future = Instance(Future)
+
+    @contextlib.contextmanager
+    def _update_state(self):
+        """Helper for state updates.
+
+        Applies the state update in the body of the associated with block;
+        starts a new future execution if necessary, and notifies all listeners
+        of the state change.
+
+        """
+        with self._state_lock:
+            yield
+            submit_new = (
+                self._future is None and self._update_pending and
+                not self._execution_deferred
+            )
+            if submit_new:
+                self._update_pending = False
+                self._future = self.executor.submit(self._worker)
+            self._state_lock.notify_all()
+
+        if submit_new:
+            self._future.add_done_callback(self._callback)
+
+    # Transition methods.
+
+    def _update(self):
+        """Update based on changes in _context_delta."""
+        with self._update_state():
+            self._update_pending = True
+
+    def _callback(self, future):
+        """Callback for the _worker"""
+        with self._update_state():
+            exception = future.exception()
+            if exception is not None:
+                self.exception = exception
+            self._future = None
+
+    def _pause(self):
+        """Temporarily pause execution."""
+        with self._update_state():
+            self._execution_deferred = True
+
+    def _resume(self):
+        """Resume execution."""
+        with self._update_state():
+            self._execution_deferred = False
+
+    def _wait(self):
+        """Wait until all previous assignments are finished, possibly longer."""
+        with self._state_lock:
+            while self._future is not None:
+                self._state_lock.wait()
 
     def _worker(self):
-        """Worker for the _submit_job method. """
+        """Worker for the _update method. """
 
         # Get the current context, apply then delete the delta
         with self._data_lock:
@@ -188,22 +228,6 @@ class AsyncExecutingContext(ExecutingContext):
                 self._context_delta = context_delta
             raise
 
-    def _callback(self, future):
-        """Callback for the _worker"""
-
-        # Check for and report exceptions
-        exception = future.exception()
-        if exception is not None:
-            self.exception = exception
-            return
-
-        with self._state_lock:
-            if self._state == 'Updating':
-                self._state = 'Idle'
-            elif self._state == 'UpdatingWithPendingUpdate':
-                self._state = 'Updating'
-                self._submit_job()
-
     ###########################################################################
     #### Trait defaults
     ###########################################################################
@@ -227,10 +251,11 @@ class AsyncExecutingContext(ExecutingContext):
             return
         self.execute()
 
-    def _defer_execution_changed(self):
-        if not self.defer_execution:
-            self._state = 'Updating'
-            self._submit_job()
+    def _defer_execution_changed(self, new):
+        if new:
+            self._pause()
+        else:
+            self._resume()
 
     @on_trait_change('subcontext.items_modified')
     def subcontext_items_modified(self, event):
@@ -245,20 +270,6 @@ class AsyncExecutingContext(ExecutingContext):
         event.veto = True
         self._fire_event(added=event.added, removed=event.removed,
             modified=event.modified, context=event.context)
-
-    ###########################################################################
-    #### Private Methods
-    ###########################################################################
-
-    def _wait(self):
-        """ Wait atleast until all previous assignments are finished, possibly
-        longer
-
-        """
-
-        while True:
-            if self._state == 'Idle':
-                break
 
 
 if __name__ == '__main__':
