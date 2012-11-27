@@ -15,7 +15,7 @@ from traits.api import (Instance, Dict, Event, Code, Any, on_trait_change,
 class AsyncExecutingContext(ExecutingContext):
     """Sequential, threaded pipeline for execution of a Block.
 
-    This uses a (possibly shared) Executor to asyncronously execute a block
+    This uses a (possibly shared) Executor to asynchronously execute a block
     within a context. This will only consume a single worker at a time from the
     Executor. Changes to the context are made with the '__setitem__' method
     (dictionary update) and may trigger an execution of the block, with inputs
@@ -57,7 +57,7 @@ class AsyncExecutingContext(ExecutingContext):
 
     def execute(self):
         """Update the context by executing the full block.
-        This executes asyncronously.
+        This executes asynchronously.
 
         """
         # Fill in _context_delta with _context. We're telling _update that
