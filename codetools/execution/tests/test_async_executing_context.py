@@ -1,4 +1,5 @@
 import unittest
+import time
 
 from codetools.contexts.api import DataContext
 from codetools.execution.executing_context import CodeExecutable
@@ -17,6 +18,7 @@ class TestAsyncExecutingContext(unittest.TestCase):
 
     def setUp(self):
         self.events = []
+        self.exceptions = []
         d = DataContext()
         d['a'] = 1
         d['b'] = 2
@@ -53,8 +55,10 @@ class TestAsyncExecutingContext(unittest.TestCase):
 
         ec.defer_execution = True
         ec['a'] = 1
+        time.sleep(0.1)
         self.assertNotIn('c', ec)
         ec['b'] = 2
+        time.sleep(0.1)
         self.assertNotIn('c', ec)
         ec.defer_execution = False
         ec._wait()
@@ -98,6 +102,18 @@ class TestAsyncExecutingContext(unittest.TestCase):
         ec._wait()
         self.assertEqual(self.events[0].added, ['f'])
 
+    def test_exception(self):
+        ce = CodeExecutable(code="c = a + b")
+        d = DataContext()
+        d['a'] = 1
+        d['b'] = 2
+        ec = AsyncExecutingContext(subcontext=d, executable=ce)
+        ec.on_trait_change(self._handle_exceptions, 'exception')
+        ec.code = '1/0'
+        ec._wait()
+        self.assertEqual(len(self.exceptions), 1)
+        self.assertEqual(ZeroDivisionError, type(self.exceptions[0]))
+
     def test_items_modified_fired(self):
         self.ec.on_trait_change(self._items_modified_fired, 'items_modified')
         self.ec['a'] = 6
@@ -107,6 +123,9 @@ class TestAsyncExecutingContext(unittest.TestCase):
 
     def _items_modified_fired(self, event):
         self.events.append(event)
+
+    def _handle_exceptions(self, exception):
+        self.exceptions.append(exception)
 
 
 if __name__ == "__main__":
