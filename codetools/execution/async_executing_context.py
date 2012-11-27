@@ -233,7 +233,7 @@ class AsyncExecutingContext(ExecutingContext):
     ###########################################################################
 
     def _executor_default(self):
-        return ThreadPoolExecutor(2)
+        return ThreadPoolExecutor(max_workers=2)
 
     def _executable_default(self):
         return RestrictingCodeExecutable(code=self.code)
