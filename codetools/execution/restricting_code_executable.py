@@ -44,13 +44,19 @@ class RestrictingCodeExecutable(HasStrictTraits):
         if globals is None:
             globals = {}
         if inputs is None:
-            inputs = []
+            inputs = set()
         if outputs is None:
-            outputs = []
+            outputs = set()
+
+        # filter out and inputs or outputs that are not in the code
+        in_and_out = self._block.inputs.union(self._block.outputs)
+        filtered_inputs = set(inputs).intersection(in_and_out)
+        filtered_outputs = set(outputs).intersection(in_and_out)
 
         #If called with no inputs or outputs the full block executes
         if inputs or outputs:
-            block = self._block.restrict(inputs=inputs, outputs=outputs)
+            block = self._block.restrict(inputs=filtered_inputs,
+                    outputs=filtered_outputs)
         else:
             block = self._block
         block.execute(icontext, global_context=globals)
