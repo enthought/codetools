@@ -70,4 +70,4 @@ class RestrictingCodeExecutable(HasStrictTraits):
         self._code = new
 
     def _get_code(self, new):
-        self._code = new
+        return self._code
