@@ -51,6 +51,8 @@ class AsyncExecutingContext(ExecutingContext):
     # A lock for shared data
     _data_lock = Instance(threading.Lock, ())
 
+    _full_update = Bool(False)
+
     ###########################################################################
     #### AsyncExecutingContext Interface
     ###########################################################################
@@ -60,13 +62,7 @@ class AsyncExecutingContext(ExecutingContext):
         This executes asynchronously.
 
         """
-        # Fill in _context_delta with _context. We're telling _update that
-        # everything changed.
-        with self._data_lock:
-            for key, value in self.subcontext.iteritems():
-                if key not in self._context_delta:
-                    self._context_delta[key] = value
-
+        self._full_update = True
         self._update()
 
     ###########################################################################
@@ -214,14 +210,22 @@ class AsyncExecutingContext(ExecutingContext):
             context_delta = self._context_delta.copy()
             self._context_delta.clear()
 
-        if not updated_vars:
+        if not updated_vars and not self._full_update:
+            # don't execute if no context delta or full update requested
             return
+
+        if self._full_update:
+            # signal to self.executable that we want the unrestricted block to
+            # be executed and then clear the flag
+            updated_vars = []
+            self._full_update = False
 
         try:
             self.subcontext.defer_events = True
             self.executable.execute(self.subcontext, inputs=updated_vars)
             self.subcontext.defer_events = False
         except Exception:
+            self.subcontext.defer_events = False
             # If we failed to execute, put changes back into _context_delta
             with self._data_lock:
                 context_delta.update(self._context_delta)
@@ -247,7 +251,6 @@ class AsyncExecutingContext(ExecutingContext):
             self.executable.code = new
         except Exception, e:
             self.exception = e
-            self.code = old
             return
         self.execute()
 
