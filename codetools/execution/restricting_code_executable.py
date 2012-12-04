@@ -1,5 +1,5 @@
 from traits.api import (HasStrictTraits, Str, implements, Instance,
-        on_trait_change)
+        Property)
 from traits.protocols.api import adapt
 from codetools.blocks.block import Block
 from codetools.execution.interfaces import IExecutable
@@ -14,8 +14,11 @@ class RestrictingCodeExecutable(HasStrictTraits):
 
     implements(IExecutable)
 
+    # The code to be executed. Read/Write
+    code = Property(depends_on='_code')
+
     # The code to execute.
-    code = Str('pass')
+    _code = Str('pass')
 
     # The block that handles code restriction
     _block = Instance(Block)
@@ -54,7 +57,7 @@ class RestrictingCodeExecutable(HasStrictTraits):
         filtered_outputs = set(outputs).intersection(in_and_out)
 
         #If called with no inputs or outputs the full block executes
-        if inputs or outputs:
+        if filtered_inputs or filtered_outputs:
             block = self._block.restrict(inputs=filtered_inputs,
                     outputs=filtered_outputs)
         else:
@@ -62,6 +65,9 @@ class RestrictingCodeExecutable(HasStrictTraits):
         block.execute(icontext, global_context=globals)
         return block.inputs, block.outputs
 
-    @on_trait_change('code')
-    def _code_changed(self, new):
+    def _set_code(self, new):
         self._block = Block(new)
+        self._code = new
+
+    def _get_code(self, new):
+        self._code = new
