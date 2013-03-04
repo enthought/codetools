@@ -89,7 +89,6 @@ class AsyncExecutingContext(ExecutingContext):
             with self._data_lock:
                 for key in affected_names:
                     context[key] = self.subcontext[key]
-            self._wait()  # wait until the delta is empty
             with self._data_lock:
                 self._context_delta.update(context)
 

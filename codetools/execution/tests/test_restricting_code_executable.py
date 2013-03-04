@@ -49,7 +49,7 @@ class TestRestrictingCodeExecutable(unittest.TestCase):
         executing_context.execute_for_names(None)
         executing_context.on_trait_change(self._change_detect, 'items_modified')
         executing_context['bb'] = 5
-        self.assertEqual(self.events, ['fired'])
+        self.assertEqual(self.events, ['fired', 'fired'])
         expected_context = {'a': 1, 'b': 10, 'aa': 2, 'bb': 5, 'c': 18}
         self.assertEqual(self.context, expected_context)
 
