@@ -11,7 +11,6 @@ from codetools.contexts.i_context import IContext, IListenableContext
 from interfaces import IExecutable, IExecutingContext
 
 
-
 class CodeExecutable(HasTraits):
     """ Simple IExecutable that plainly executes a piece of code.
     """
@@ -24,11 +23,16 @@ class CodeExecutable(HasTraits):
     def execute(self, context, globals=None, inputs=None, outputs=None):
         icontext = adapt(context, IContext)
 
+        if inputs is None:
+            inputs = []
+        if outputs is None:
+            outputs = []
+
         if globals is None:
             globals = {}
 
         exec self.code in globals, icontext
-
+        return set(inputs), set(outputs)
 
 
 class ExecutingContext(DataContext):
@@ -48,7 +52,6 @@ class ExecutingContext(DataContext):
 
     # When execution is deferred, we need to keep a list of these events.
     _deferred_execution_names = List(Str, transient=True)
-
 
     def execute_for_names(self, names):
         """ Possibly execute for a set of names which have been changed.
@@ -73,7 +76,6 @@ class ExecutingContext(DataContext):
         self.executable.execute(self.subcontext, inputs=affected_names)
         self.subcontext.defer_events = False
 
-
     #### IContext interface ####################################################
 
     def __setitem__(self, key, value):
@@ -83,7 +85,6 @@ class ExecutingContext(DataContext):
     def __delitem__(self, key):
         del self.subcontext[key]
         self.execute_for_names([key])
-
 
     #### Trait Event Handlers ##################################################
 
@@ -108,5 +109,3 @@ class ExecutingContext(DataContext):
 
         self._fire_event(added=event.added, removed=event.removed,
             modified=event.modified, context=event.context)
-
-
