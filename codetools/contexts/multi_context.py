@@ -4,7 +4,7 @@
 from itertools import chain
 from UserDict import DictMixin
 
-from traits.api import (Instance, List, Str, Undefined, implements,
+from traits.api import (Bool, Instance, List, Str, Undefined, implements,
     on_trait_change)
 from traits.protocols.api import adapt
 
@@ -21,13 +21,15 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
 
     implements(ICheckpointable, IListenableContext, IPersistableContext, IRestrictedContext)
 
-    # The name of the context.
+    #: The name of the context.
     name = Str("multidummy")
 
-    # The underlying dictionary.
+    #: The underlying dictionary.
     subcontexts = List(Instance(IRestrictedContext, factory=DataContext,
         adapt='yes'))
 
+    #: Suppress subcontext modified events
+    veto_subcontext_modified = Bool(True)
 
     def __init__(self, *subcontexts, **traits):
         subcontexts = list(subcontexts)
@@ -168,7 +170,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
             # Nothing to do.
             return
 
-        event.veto = True
+        event.veto = self.veto_subcontext_modified
 
         self._fire_event(added=event.added, removed=event.removed,
             modified=event.modified, context=event.context)
