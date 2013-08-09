@@ -3,6 +3,7 @@ IRestrictedContext interfaces.
 """
 
 import os
+from contextlib import contextmanager
 from UserDict import DictMixin
 
 from apptools import sweet_pickle
@@ -23,6 +24,22 @@ def cannot_pickle(type):
     global NonPickleable
     if type not in NonPickleable:
         NonPickleable.append(type)
+
+@contextmanager
+def defer_events(data_context):
+    """ Context manager for deferring DataContext events in a with statement.
+    """
+    if defer_events.context_counts.setdefault(data_context, 0) == 0:
+        data_context.defer_events = True
+    defer_events.context_counts[data_context] += 1
+    try:
+        yield
+    finally:
+        defer_events.context_counts[data_context] -= 1
+        if defer_events.context_counts[data_context] == 0:
+            data_context.defer_events = False
+
+defer_events.context_counts = {}
 
 class ListenableMixin(HasTraits):
     """ Mixin to provide much of the standard IListenableContext implementation.

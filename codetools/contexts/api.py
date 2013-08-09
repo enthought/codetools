@@ -1,5 +1,6 @@
 from adapted_data_context import AdaptedDataContext
-from data_context import DataContext, ListenableMixin, PersistableMixin
+from data_context import (DataContext, ListenableMixin, PersistableMixin,
+    defer_events)
 from function_filter_context import FunctionFilterContext
 from geo_context import GeoContext
 from i_context import (IContext, IListenableContext, IRestrictedContext,
