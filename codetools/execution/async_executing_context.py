@@ -1,15 +1,25 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
 import contextlib
 import threading
+
 from concurrent.futures import Executor, Future
 from concurrent.futures import ThreadPoolExecutor
 
-from codetools.contexts.data_context import DataContext
-from codetools.execution.executing_context import ExecutingContext
-from codetools.execution.interfaces import IListenableContext
-from codetools.execution.restricting_code_executable import (
-        RestrictingCodeExecutable)
 from traits.api import (Instance, Dict, Event, Code, Any, on_trait_change,
-        Bool, Undefined)
+        Bool, Undefined, Supports)
+
+from codetools.contexts.data_context import DataContext
+from .executing_context import ExecutingContext
+from .interfaces import IListenableContext
+from .restricting_code_executable import RestrictingCodeExecutable
 
 
 class AsyncExecutingContext(ExecutingContext):
@@ -32,7 +42,7 @@ class AsyncExecutingContext(ExecutingContext):
     executable = Any
 
     # The local execution namespace
-    subcontext = Instance(IListenableContext, factory=DataContext, adapt='yes',
+    subcontext = Supports(IListenableContext, factory=DataContext,
         rich_compare=False)
 
     # Fired when an exception occurs during execution.

@@ -1,18 +1,24 @@
-from traits.api import (HasStrictTraits, Str, implements, Instance,
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
+from traits.api import (HasStrictTraits, Str, provides, Instance,
         on_trait_change)
-from traits.protocols.api import adapt
 from codetools.blocks.block import Block
 from codetools.execution.interfaces import IExecutable
 from codetools.contexts.i_context import IContext
 
-
+@provides(IExecutable)
 class RestrictingCodeExecutable(HasStrictTraits):
     """ IExecutable that executes a piece of code, optionally restricting
     beforehand
 
     """
-
-    implements(IExecutable)
 
     # The code to execute.
     code = Str('pass')
@@ -39,7 +45,7 @@ class RestrictingCodeExecutable(HasStrictTraits):
             the outputs of the restricted block
 
         """
-        icontext = adapt(context, IContext)
+        icontext = IContext(context)
 
         if globals is None:
             globals = {}

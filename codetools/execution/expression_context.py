@@ -1,28 +1,37 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
 # Global imports
 from UserDict import DictMixin
 
 # Enthought library imports
-from traits.api import implements, Str, Dict, Any, List, Instance, on_trait_change
+from traits.api import Str, Dict, Any, List, AdaptsTo, on_trait_change, provides
 
 # Block Canvas imports
 from codetools.blocks.api import Block
-from codetools.contexts.data_context import ListenableMixin, PersistableMixin, DataContext
-from codetools.contexts.i_context import IContext, IListenableContext, ICheckpointable, \
-                                                     IPersistableContext
+from codetools.contexts.data_context import ListenableMixin, PersistableMixin
+from codetools.contexts.i_context import (IContext, IListenableContext,
+        IPersistableContext)
 from codetools.contexts.items_modified_event import ItemsModified
 
+# FIXME: ICheckpointable would be nice
+@provides(IListenableContext, IPersistableContext, IContext)
 class ExpressionContext(ListenableMixin, PersistableMixin, DictMixin):
     """Provide a context wrapper that adds the ability to request expressions on variables
     in the underlying context, and re-evaluate those expressions and fire events when the
     underlying dependencies of the variables in the expression changes"""
-    # FIXME: ICheckpointable would be nice
-    implements(IListenableContext, IPersistableContext, IContext)
 
     name = Str('ExpressionContext')
 
     # The underlying context which contains variables
     # From which the expressions are calculated.
-    underlying_context = Instance(IListenableContext)
+    underlying_context = AdaptsTo(IListenableContext)
 
     # The currently evaluated expressions, mapped to their last cached value.  None means
     # that the value is not cached.

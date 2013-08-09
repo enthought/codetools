@@ -1,21 +1,28 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 """ Define an IContext which will execute code in response to changes in its
 namespace.
 """
+from __future__ import absolute_import
 
-from traits.api import (Bool, HasTraits, Instance, List, Str,
-    Undefined, implements, on_trait_change)
+from traits.api import (Bool, HasTraits, Instance, List, Str, Supports,
+    Undefined, provides, on_trait_change)
 from traits.protocols.api import adapt
 
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.i_context import IContext, IListenableContext
-from interfaces import IExecutable, IExecutingContext
+from .interfaces import IExecutable, IExecutingContext
 
 
+@provides(IExecutable)
 class CodeExecutable(HasTraits):
     """ Simple IExecutable that plainly executes a piece of code.
     """
-
-    implements(IExecutable)
 
     # The code to execute.
     code = Str("pass")
@@ -35,15 +42,14 @@ class CodeExecutable(HasTraits):
         return set(inputs), set(outputs)
 
 
+@provides(IExecutingContext)
 class ExecutingContext(DataContext):
     """ A context which will execute code in response to changes in its
     namespace.
     """
 
-    implements(IExecutingContext)
-
     # Override to provide a more specific requirement.
-    subcontext = Instance(IListenableContext, factory=DataContext, adapt='yes',
+    subcontext = Supports(IListenableContext, factory=DataContext,
         rich_compare=False)
 
     executable = Instance(IExecutable, factory=CodeExecutable, adapt='yes')
