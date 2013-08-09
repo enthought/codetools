@@ -1,10 +1,14 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 """ Remanes tokens in compiler.ast structures.
 
 """
-
-import sys
-import cStringIO
-from compiler.ast import Const, Name, Tuple
+from __future__ import absolute_import
 
 def rename(ast, mode, old, new):
     if mode not in ['variable', 'function']:

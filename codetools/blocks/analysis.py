@@ -1,12 +1,21 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
 import compiler, compiler.ast
 from compiler.ast import (
     AssAttr, Assign, AssName, Const, Dict, Expression, Getattr, List, Name,
     Node, Tuple,
 )
-from compiler_.api import eval_ast
 from copy import copy, deepcopy
 import logging
-logger = logging.getLogger(__name__)
+
+from .compiler_.api import eval_ast
 
 from ..util.dict import map_keys
 from ..util.functional import partial
@@ -17,8 +26,9 @@ from ..util.sequence import \
 from ..util import tree
 
 # Extend compiler.ast.Node with a structure-preserving children query
-import \
-    codetools.blocks.compiler_.ast.get_children_tree
+import codetools.blocks.compiler_.ast.get_children_tree
+
+logger = logging.getLogger(__name__)
 
 
 ###############################################################################

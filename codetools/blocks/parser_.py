@@ -1,3 +1,12 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
 from compiler.ast import Module
 from compiler.transformer import Transformer
 import token
