@@ -1,12 +1,13 @@
 """ Class for masking geo_context with conditions on indices
 """
 
+from __future__ import absolute_import
+
 # Standard imports
-from __future__ import with_statement
 import numpy
 
 # Local imports
-from context_mask import ContextMask
+from .context_mask import ContextMask
 
 #------------------------------------------------------------------------------
 #  IndexContextMask class

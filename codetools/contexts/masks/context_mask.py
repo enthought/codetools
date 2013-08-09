@@ -5,7 +5,7 @@
 #  ContextMask class
 #------------------------------------------------------------------------------
 
-class ContextMask:
+class ContextMask(object):
     """ BaseClass that is used for implementing with-statement
 
         Derived classes of this base class will override the 'get_indices'
