@@ -1,32 +1,39 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
 """ Context holding multiple subcontexts.
 """
+
+from __future__ import absolute_import
 
 from itertools import chain
 from UserDict import DictMixin
 
-from traits.api import (Bool, Instance, List, Str, Undefined, implements,
-    on_trait_change)
-from traits.protocols.api import adapt
+from traits.api import (Bool, Instance, List, Str, Undefined, Supports,
+    provides, on_trait_change)
 
-from data_context import DataContext, ListenableMixin, PersistableMixin
-from i_context import (ICheckpointable, IListenableContext,
+from .data_context import DataContext, ListenableMixin, PersistableMixin
+from .i_context import (ICheckpointable, IListenableContext,
     IPersistableContext, IRestrictedContext)
-from utils import safe_repr
+from .utils import safe_repr
 
 
-
+@provides(ICheckpointable, IListenableContext, IPersistableContext,
+            IRestrictedContext)
 class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
     """ Wrap several subcontexts.
     """
-
-    implements(ICheckpointable, IListenableContext, IPersistableContext, IRestrictedContext)
 
     #: The name of the context.
     name = Str("multidummy")
 
     #: The underlying dictionary.
-    subcontexts = List(Instance(IRestrictedContext, factory=DataContext,
-        adapt='yes'))
+    subcontexts = List(Supports(IRestrictedContext, factory=DataContext))
 
     #: Suppress subcontext modified events
     veto_subcontext_modified = Bool(True)
@@ -216,7 +223,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
         copy = self.clone_traits()
         new_subcontexts = []
         for context in self.subcontexts:
-            checkpointable_subcontext = adapt(context, ICheckpointable)
+            checkpointable_subcontext = ICheckpointable(context)
             new_subcontexts.append(checkpointable_subcontext.checkpoint())
         copy.subcontexts = new_subcontexts
         return copy

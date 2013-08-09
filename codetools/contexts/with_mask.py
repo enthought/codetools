@@ -1,3 +1,10 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 """ Using with statement for masking.
 
 Usage in our code-block-context case:
@@ -103,9 +110,9 @@ local environment; and cling off outside the 'with' block/control.
       to 2.5.1., it works well.
 
 """
+from __future__ import absolute_import
 
 # Standard imports
-from __future__ import with_statement
 from numpy import ndarray
 import sys
 
@@ -117,9 +124,9 @@ from codetools.contexts.adapted_data_context import AdaptedDataContext
 from traits.protocols.api import adapt
 
 # Local imports
-from with_mask_adapter import WithMaskAdapter
+from .with_mask_adapter import WithMaskAdapter
 
-class Mask:
+class Mask(object):
     """ Class that is going to provide the interface between the block and
         context when used with the 'with' keyword.
 

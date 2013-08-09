@@ -1,19 +1,28 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
 """ Basic implementation of the IListenableContext, IPersistableContext, and
 IRestrictedContext interfaces.
 """
+
+from __future__ import absolute_import
 
 import os
 from contextlib import contextmanager
 from UserDict import DictMixin
 
 from apptools import sweet_pickle
-from traits.api import (Bool, Dict, HasTraits, Instance, Str,
-                        implements, on_trait_change)
-from traits.protocols.api import adapt, declareAdapter
+from traits.api import (Bool, Dict, HasTraits, Str, Supports,
+                        adapt, provides, on_trait_change, register_factory)
 
-from i_context import (IContext, ICheckpointable, IListenableContext,
+from .i_context import (IContext, ICheckpointable, IListenableContext,
                        IPersistableContext, IRestrictedContext)
-from items_modified_event import ItemsModifiedEvent, ItemsModified
+from .items_modified_event import ItemsModifiedEvent, ItemsModified
 
 # This is copied from numerical_modeling.numeric_context.constants
 from numpy import ufunc
@@ -226,18 +235,17 @@ class PersistableMixin(HasTraits):
 
 
 
+@provides(ICheckpointable, IListenableContext, IPersistableContext,
+            IRestrictedContext)
 class DataContext(ListenableMixin, PersistableMixin, DictMixin):
     """ A simple context which fires events.
     """
-
-    implements(ICheckpointable, IListenableContext, IPersistableContext,
-        IRestrictedContext)
 
     # The name of the context.
     name = Str()
 
     # The underlying dictionary.
-    subcontext = Instance(IContext, factory=dict, adapt='yes')
+    subcontext = Supports(IContext, factory=dict)
 
 
     #### IContext interface ####################################################
@@ -358,11 +366,12 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         return copy
 
 
-declareAdapter(
-    lambda x: DataContext(subcontext=x),
-    [ICheckpointable, IListenableContext, IPersistableContext,
-        IRestrictedContext],
-    forProtocols=[IContext],
-)
+for interface in [ICheckpointable, IListenableContext, IPersistableContext,
+            IRestrictedContext]:
+    register_factory(
+        lambda x: DataContext(subcontext=x),
+        from_protocol=IContext,
+        to_protocol=interface
+    )
 
 

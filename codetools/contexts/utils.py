@@ -1,10 +1,19 @@
-# Helper methods for the context package.
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+""" Helper methods for the context package.
+"""
 
-from numpy import ndarray
+from __future__ import absolute_import
 
 def compare_objects(object1, object2):
     """ Do a rich comparison of 2 given objects
     """
+    from numpy import ndarray
 
     # Reject objects which are strictly not the same type. This glosses over
     # ints and floats which compare equal and also instances where one is

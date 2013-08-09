@@ -1,11 +1,21 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
 """ A wrapper around IListenableContexts which expose a standard HasTraits
 interface to its contents.
 """
 
-from traits.api import (Any, Bool, HasTraits, Instance, Trait,
+from __future__ import absolute_import
+
+from traits.api import (Any, Bool, HasTraits, Supports, Trait,
     Undefined, on_trait_change)
 
-from i_context import IListenableContext
+from .i_context import IListenableContext
 
 
 class TraitslikeContextWrapper(HasTraits):
@@ -16,7 +26,7 @@ class TraitslikeContextWrapper(HasTraits):
     # that mirror the context.
 
     # The context we are wrapping.
-    _context = Instance(IListenableContext, adapt='yes', rich_compare=False)
+    _context = Supports(IListenableContext, rich_compare=False)
 
     # Whether the communication between traits and context is currently active
     # or not.

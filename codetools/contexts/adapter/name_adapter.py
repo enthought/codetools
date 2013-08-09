@@ -1,15 +1,23 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
+from __future__ import absolute_import
+
 # Enthought library imports
-from traits.api import HasTraits, Dict, Str
+from traits.api import HasTraits, Dict, Str, provides
 
 # Local imports
-from i_adapter import IAdapter
+from .i_adapter import IAdapter
 
-
+@provides(IAdapter)
 class NameAdapter(HasTraits):
     """ Maps more descriptive names provided by the user to names in the context
     """
-
-    __implements__ = [IAdapter]
 
     #########################################################################
     # NameAdapter traits

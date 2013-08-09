@@ -5,7 +5,7 @@ from numpy import ndarray
 from scimath.units.api import UnitArray
 
 # Local imports
-from data_context import DataContext
+from .data_context import DataContext
 
 
 class GeoContext(DataContext):
