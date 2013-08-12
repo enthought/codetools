@@ -10,9 +10,8 @@ namespace.
 """
 from __future__ import absolute_import
 
-from traits.api import (Bool, HasTraits, Instance, List, Str, Supports,
+from traits.api import (Bool, HasTraits, List, Str, Supports,
     Undefined, provides, on_trait_change)
-from traits.protocols.api import adapt
 
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.i_context import IContext, IListenableContext
@@ -28,7 +27,7 @@ class CodeExecutable(HasTraits):
     code = Str("pass")
 
     def execute(self, context, globals=None, inputs=None, outputs=None):
-        icontext = adapt(context, IContext)
+        icontext = IContext(context)
 
         if inputs is None:
             inputs = []
@@ -52,7 +51,7 @@ class ExecutingContext(DataContext):
     subcontext = Supports(IListenableContext, factory=DataContext,
         rich_compare=False)
 
-    executable = Instance(IExecutable, factory=CodeExecutable, adapt='yes')
+    executable = Supports(IExecutable, factory=CodeExecutable)
 
     defer_execution = Bool(False)
 
