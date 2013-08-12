@@ -7,6 +7,7 @@
 #
 from __future__ import absolute_import
 
-from .executing_context import ExecutingContext
+from .interfaces import IExecutable, IExecutingContext
+from .executing_context import ExecutingContext, CodeExecutable
 from .expression_context import ExpressionContext
 
