@@ -14,8 +14,8 @@ from __future__ import absolute_import
 from itertools import chain
 from UserDict import DictMixin
 
-from traits.api import (Bool, Instance, List, Str, Undefined, Supports,
-    provides, on_trait_change)
+from traits.api import (Bool, List, Str, Undefined, Supports,
+    adapt, provides, on_trait_change)
 
 from .data_context import DataContext, ListenableMixin, PersistableMixin
 from .i_context import (ICheckpointable, IListenableContext,
@@ -223,7 +223,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
         copy = self.clone_traits()
         new_subcontexts = []
         for context in self.subcontexts:
-            checkpointable_subcontext = ICheckpointable(context)
+            checkpointable_subcontext = adapt(context, ICheckpointable)
             new_subcontexts.append(checkpointable_subcontext.checkpoint())
         copy.subcontexts = new_subcontexts
         return copy

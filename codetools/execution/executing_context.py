@@ -11,7 +11,7 @@ namespace.
 from __future__ import absolute_import
 
 from traits.api import (Bool, HasTraits, List, Str, Supports,
-    Undefined, provides, on_trait_change)
+    Undefined, adapt, provides, on_trait_change)
 
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.i_context import IContext, IListenableContext
@@ -27,7 +27,7 @@ class CodeExecutable(HasTraits):
     code = Str("pass")
 
     def execute(self, context, globals=None, inputs=None, outputs=None):
-        icontext = IContext(context)
+        icontext = adapt(context, IContext)
 
         if inputs is None:
             inputs = []
