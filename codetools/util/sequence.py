@@ -79,4 +79,4 @@ def disjoint(*sets):
         >>> disjoint()
         True
     '''
-    return len(union(sets)) == len(concat(sets))
+    return len(union(sets)) == sum(len(s) for s in sets)
