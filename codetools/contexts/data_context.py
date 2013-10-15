@@ -12,7 +12,6 @@ IRestrictedContext interfaces.
 
 from __future__ import absolute_import
 
-import os
 from contextlib import contextmanager
 from UserDict import DictMixin
 
@@ -21,7 +20,7 @@ from traits.api import (Bool, Dict, HasTraits, Str, Supports,
                         adapt, provides, on_trait_change, register_factory)
 
 from .i_context import (IContext, ICheckpointable, IListenableContext,
-                       IPersistableContext, IRestrictedContext)
+                       IPersistableContext, IRestrictedContext, defer_events)
 from .items_modified_event import ItemsModifiedEvent, ItemsModified
 
 # This is copied from numerical_modeling.numeric_context.constants
@@ -34,21 +33,6 @@ def cannot_pickle(type):
     if type not in NonPickleable:
         NonPickleable.append(type)
 
-@contextmanager
-def defer_events(data_context):
-    """ Context manager for deferring DataContext events in a with statement.
-    """
-    if defer_events.context_counts.setdefault(data_context, 0) == 0:
-        data_context.defer_events = True
-    defer_events.context_counts[data_context] += 1
-    try:
-        yield
-    finally:
-        defer_events.context_counts[data_context] -= 1
-        if defer_events.context_counts[data_context] == 0:
-            data_context.defer_events = False
-
-defer_events.context_counts = {}
 
 class ListenableMixin(HasTraits):
     """ Mixin to provide much of the standard IListenableContext implementation.
@@ -63,6 +47,16 @@ class ListenableMixin(HasTraits):
     defer_events = Bool(False)
     _deferred_events = Dict(transient=True)
 
+    @contextmanager
+    def deferred_events(self):
+        """ Context manager that sets defer_events to False """
+        # XXX not thread safe!
+        _old_defer_events = self.defer_events
+        self.defer_events = False
+        try:
+            yield
+        finally:
+            self.defer_events = _old_defer_events
 
     #### Trait Event Handlers ##################################################
 

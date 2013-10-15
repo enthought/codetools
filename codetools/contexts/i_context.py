@@ -7,6 +7,8 @@
 #
 from __future__ import absolute_import
 
+from contextlib import contextmanager
+
 from traits.api import Bool, Interface, Str, register_factory
 from traits.adaptation.api import register_provides
 
@@ -92,6 +94,23 @@ class IContext(Interface):
 register_provides(dict, IContext)
 
 
+@contextmanager
+def defer_events(data_context):
+    """ Context manager for deferring DataContext events in a with statement.
+    """
+    if defer_events.context_counts.setdefault(data_context, 0) == 0:
+        data_context.defer_events = True
+    defer_events.context_counts[data_context] += 1
+    try:
+        yield
+    finally:
+        defer_events.context_counts[data_context] -= 1
+        if defer_events.context_counts[data_context] == 0:
+            data_context.defer_events = False
+
+defer_events.context_counts = {}
+
+
 class IListenableContext(IContext):
     """ A context that fires events when it is modified.
     """
@@ -106,6 +125,11 @@ class IListenableContext(IContext):
     # and when reverted to false, one single event fires that represents the net
     # change since 'defer_events' was set.
     defer_events = Bool(False)
+    
+    @contextmanager
+    def events_deferred(self):
+        """ Context manager that sets defer_events to False """
+        raise NotImplementedError
 
 
 class IRestrictedContext(IContext):
