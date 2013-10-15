@@ -8,7 +8,7 @@
 from __future__ import absolute_import
 
 from traits.api import (HasStrictTraits, Str, provides, Instance,
-        on_trait_change)
+        adapt, on_trait_change)
 from codetools.blocks.block import Block
 from codetools.execution.interfaces import IExecutable
 from codetools.contexts.i_context import IContext
@@ -45,7 +45,7 @@ class RestrictingCodeExecutable(HasStrictTraits):
             the outputs of the restricted block
 
         """
-        icontext = IContext(context)
+        icontext = adapt(context, IContext)
 
         if globals is None:
             globals = {}
