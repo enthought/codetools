@@ -1,0 +1,28 @@
+Codetools Changelog
+===================
+
+Changes since 4.1.0
+
+New Features
+
+ * a defer_events context manager on IListenableContexts that sets the
+   defer_events trait to True and ensures that it will be set back to False
+   on exit of the block.
+
+ * use the new Traits adaptation mechanism throughout.
+
+Enhancements
+
+ * use a context manager for trait synchronization internally in
+   TraitslikeContextWrappers
+
+ * use defer_events context manager where appropriate through out code
+ 
+ * use absolute_imports future import and dotted relative imports throughout
+ 
+ * modernization of code
+
+Fixes
+
+ * a couple of old-style classes fixed
+
