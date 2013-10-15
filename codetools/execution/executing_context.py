@@ -77,9 +77,8 @@ class ExecutingContext(DataContext):
             affected_names = None
         else:
             affected_names = list(set(names))
-        self.subcontext.defer_events = True
-        self.executable.execute(self.subcontext, inputs=affected_names)
-        self.subcontext.defer_events = False
+        with self.subcontext.events_deferred():
+            self.executable.execute(self.subcontext, inputs=affected_names)
 
     #### IContext interface ####################################################
 

@@ -115,39 +115,28 @@ class FormulaExecutingContext(DataContext):
             return
 
         self._executing = True
-        self.data_context.defer_events=True
-
-        if self._composite_block is None:
-            self._regenerate_composite_block()
-        if inputs !=() or outputs != ():
-            block = self._composite_block.restrict(inputs=inputs, outputs=outputs)
-        else:
-            block = self._composite_block
-
-        old_defer_events = self.data_context.defer_events
-
+        with self.data_context.events_deferred():    
+            if self._composite_block is None:
+                self._regenerate_composite_block()
+            if inputs !=() or outputs != ():
+                block = self._composite_block.restrict(inputs=inputs, outputs=outputs)
+            else:
+                block = self._composite_block
 
         if self.swallow_exceptions:
-            try:
-                self.data_context.defer_events = True
-                block.execute(self.data_context, self._globals_context,
-                              continue_on_errors=self.continue_on_errors)
-                self.data_context.defer_events = old_defer_events
-            except:
-                self.data_context.defer_events = old_defer_events
+            with self.data_context.events_deferred():
+                try:
+                    block.execute(self.data_context, self._globals_context,
+                            continue_on_errors=self.continue_on_errors)
+                except Exception:
+                    pass
 
         else:
-            try:
-                self.data_context.defer_events = True
+            with self.data_context.events_deferred():
                 block.execute(self.data_context, self._globals_context,
                               continue_on_errors=self.continue_on_errors)
-                self.data_context.defer_events = old_defer_events
-            except Exception, ex:
-                self.data_context.defer_events = old_defer_events
-                raise ex
 
         self._executing = False
-        self.data_context.defer_events=False
 
         execution_needed=False
         return
