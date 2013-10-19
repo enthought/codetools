@@ -127,7 +127,7 @@ class IListenableContext(IContext):
     defer_events = Bool(False)
     
     @contextmanager
-    def events_deferred(self):
+    def deferred_events(self):
         """ Context manager that sets defer_events to False """
         raise NotImplementedError
 
