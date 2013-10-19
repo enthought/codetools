@@ -1,0 +1,18 @@
+language: python
+python:
+  - 2.7
+  - 2.6
+install:
+  # nose is already installed
+  - pip install unittest2
+  - sudo apt-get install python-numpy
+  # Test against the current master of traits
+  - pip install git+http://github.com/enthought/traits.git#egg=traits
+  - python setup.py develop
+script:
+  - nosetests codetools.blocks
+  - nosetests codetools.contexts
+  - nosetests codetools.execution
+notifications:
+  email:
+    - travis-ci@enthought.com
