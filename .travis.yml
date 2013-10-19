@@ -8,6 +8,7 @@ install:
   - sudo apt-get install python-numpy
   # Test against the current master of traits
   - pip install git+http://github.com/enthought/traits.git#egg=traits
+  - pip install git+http://github.com/enthought/apptools.git#egg=apptools
   - python setup.py develop
 script:
   - nosetests --with-coverage --cover-package=codetools
