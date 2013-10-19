@@ -115,7 +115,7 @@ class FormulaExecutingContext(DataContext):
             return
 
         self._executing = True
-        with self.data_context.events_deferred():    
+        with self.data_context.deferred_events():
             if self._composite_block is None:
                 self._regenerate_composite_block()
             if inputs !=() or outputs != ():
@@ -124,7 +124,7 @@ class FormulaExecutingContext(DataContext):
                 block = self._composite_block
 
         if self.swallow_exceptions:
-            with self.data_context.events_deferred():
+            with self.data_context.deferred_events():
                 try:
                     block.execute(self.data_context, self._globals_context,
                             continue_on_errors=self.continue_on_errors)
@@ -132,7 +132,7 @@ class FormulaExecutingContext(DataContext):
                     pass
 
         else:
-            with self.data_context.events_deferred():
+            with self.data_context.deferred_events():
                 block.execute(self.data_context, self._globals_context,
                               continue_on_errors=self.continue_on_errors)
 
