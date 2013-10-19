@@ -10,9 +10,7 @@ install:
   - pip install git+http://github.com/enthought/traits.git#egg=traits
   - python setup.py develop
 script:
-  - nosetests codetools.blocks.tests
-  - nosetests codetools.contexts.tests
-  - nosetests codetools.execution.tests
+  - nosetests --with-coverage --cover-package=codetools
 notifications:
   email:
     - travis-ci@enthought.com

@@ -6,6 +6,7 @@ from nose.plugins.skip import Skip, SkipTest
 from codetools.blocks2.block import Block
 from codetools.contexts.api import DataContext
 
+raise SkipTest()
 
 def test_basic_01():
     """Test basic use of a Block."""
