@@ -1,6 +1,11 @@
+try:
+    import tables
+except ImportError:
+    from nose.plugins.skip import Skip, SkipTest    
+    raise SkipTest("PyTables not installed")
+
 from codetools.contexts.hdf5_context import Hdf5Context
 
-import tables
 import numpy as np
 
 import os
