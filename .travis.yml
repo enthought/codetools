@@ -6,6 +6,7 @@ install:
   # nose is already installed
   - pip install unittest2 coverage futures
   - sudo apt-get install python-numpy
+  - sudo apt-get install swig
   # Test against the current master of traits
   - pip install git+http://github.com/enthought/traits.git#egg=traits
   - pip install git+http://github.com/enthought/scimath.git#egg=scimath
