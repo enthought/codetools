@@ -9,7 +9,7 @@ from opcode import *
 import _ast
 import sys
 
-from meta.utils import py3, py3op
+from codetools.py_ops import py3, py3op
 
 if py3:
     class _ast_Print: pass

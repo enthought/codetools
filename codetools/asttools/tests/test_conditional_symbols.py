@@ -4,9 +4,10 @@ Created on Aug 9, 2011
 @author: sean
 '''
 import unittest
-from meta.asttools.visitors.cond_symbol_visitor import conditional_symbols
 import ast
-from meta.testing import py2only
+
+from codetools.asttools.visitors.cond_symbol_visitor import conditional_symbols
+from codetools.testing import py2only
 
 class Test(unittest.TestCase):
 

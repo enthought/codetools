@@ -6,8 +6,8 @@ Created on Aug 2, 2011
 from __future__ import print_function
 
 from StringIO import StringIO
-from meta.asttools import lhs, make_graph, python_source
-from meta.asttools.mutators.prune_mutator import PruneVisitor
+from codetools.asttools import lhs, make_graph, python_source
+from codetools.asttools.mutators.prune_mutator import PruneVisitor
 from copy import deepcopy
 from networkx.algorithms.traversal.breadth_first_search import bfs_edges
 from os.path import exists

@@ -4,7 +4,8 @@ Created on Nov 6, 2011
 @author: sean
 '''
 import unittest
-from meta.decompile.tests import Base
+
+from codetools.decompile.tests import Base
 
 class ListComprehension(Base):
     

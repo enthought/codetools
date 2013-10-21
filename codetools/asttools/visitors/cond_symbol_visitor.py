@@ -5,8 +5,8 @@ Created on Aug 4, 2011
 '''
 from __future__ import print_function
 
-from meta.asttools.visitors import Visitor, visit_children
-from meta.asttools.visitors.symbol_visitor import get_symbols
+from codetools.asttools.visitors import Visitor, visit_children
+from codetools.asttools.visitors.symbol_visitor import get_symbols
 import ast
 
 class ConditionalSymbolVisitor(Visitor):

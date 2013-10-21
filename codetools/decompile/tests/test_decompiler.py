@@ -6,10 +6,11 @@ Created on Jul 14, 2011
 import unittest
 import sys
 import _ast
-from meta.decompile import make_module
-from meta.asttools import cmp_ast, print_ast
-from meta.testing import py2, py2only
-from meta.decompile.tests import Base
+
+from codetools.decompile import make_module
+from codetools.asttools import cmp_ast, print_ast
+from codetools.testing import py2, py2only
+from codetools.decompile.tests import Base
 
 
 if py2:

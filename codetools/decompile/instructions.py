@@ -5,11 +5,12 @@ Created on Jul 14, 2011
 '''
 from __future__ import print_function
 
-from meta.decompile.simple_instructions import SimpleInstructions
-from meta.decompile.control_flow_instructions import CtrlFlowInstructions
 import _ast
-from meta.asttools import print_ast
-from meta.utils import py3, py3op, py2op
+
+from codetools.decompile.simple_instructions import SimpleInstructions
+from codetools.decompile.control_flow_instructions import CtrlFlowInstructions
+from codetools.asttools import print_ast
+from codetools.py_ops import py3, py3op, py2op
 
 function_ops = ['CALL_FUNCTION', 'CALL_FUNCTION_KW', 'CALL_FUNCTION_VAR', 'CALL_FUNCTION_VAR_KW']
 
@@ -45,7 +46,7 @@ def pop_return(stmnts):
 
 
 def make_module(code):
-        from meta.decompile.disassemble import disassemble
+        from codetools.decompile.disassemble import disassemble
         instructions = Instructions(disassemble(code))
         stmnts = instructions.stmnt()
 
@@ -63,7 +64,7 @@ def make_module(code):
 
 @py2op
 def make_function(code, defaults=None, lineno=0):
-        from meta.decompile.disassemble import disassemble
+        from codetools.decompile.disassemble import disassemble
 
         instructions = Instructions(disassemble(code))
 
@@ -113,7 +114,7 @@ def make_function(code, defaults=None, lineno=0):
 
 @make_function.py3op
 def make_function(code, defaults=None, annotations=(), kw_defaults=(), lineno=0):
-        from meta.decompile.disassemble import disassemble
+        from codetools.decompile.disassemble import disassemble
 
         instructions = Instructions(disassemble(code))
 

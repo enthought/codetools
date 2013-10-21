@@ -5,10 +5,11 @@ Created on Aug 5, 2011
 '''
 from __future__ import print_function
 
-import unittest
-from meta.asttools.mutators.replace_mutator import replace_nodes
 import ast
-from meta.asttools.tests import assert_ast_eq
+import unittest
+
+from codetools.asttools.mutators.replace_mutator import replace_nodes
+from codetools.asttools.tests import assert_ast_eq
 
 
 replace_nodes

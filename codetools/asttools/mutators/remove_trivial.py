@@ -7,11 +7,11 @@ from __future__ import print_function
 import _ast
 import ast
 
-from meta.asttools.visitors.graph_visitor import GraphGen
-from meta.asttools import Visitor, dont_visit, visit_children
-from meta.asttools.mutators.replace_mutator import replace_nodes
-from meta.asttools.visitors.symbol_visitor import get_symbols
-from meta.asttools.visitors.cond_symbol_visitor import conditional_lhs
+from codetools.asttools.visitors.graph_visitor import GraphGen
+from codetools.asttools import Visitor, dont_visit, visit_children
+from codetools.asttools.mutators.replace_mutator import replace_nodes
+from codetools.asttools.visitors.symbol_visitor import get_symbols
+from codetools.asttools.visitors.cond_symbol_visitor import conditional_lhs
 
 class Assignment(object):
 

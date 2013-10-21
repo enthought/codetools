@@ -1,27 +1,27 @@
-:mod:`meta.asttools` - operate on python ast nodes
+:mod:`codetools.asttools` - operate on python ast nodes
 ==================================================
 
 
-.. automodule:: meta.asttools
+.. automodule:: codetools.asttools
     :members:
     :undoc-members:
     :member-order: bysource
 
-.. autofunction:: meta.asttools.print_ast
+.. autofunction:: codetools.asttools.print_ast
 
-.. autofunction:: meta.asttools.str_ast
+.. autofunction:: codetools.asttools.str_ast
 
-.. autofunction:: meta.asttools.python_source
+.. autofunction:: codetools.asttools.python_source
 
-.. autofunction:: meta.asttools.dump_python_source
+.. autofunction:: codetools.asttools.dump_python_source
 
-.. autofunction:: meta.asttools.lhs
+.. autofunction:: codetools.asttools.lhs
 
-.. autofunction:: meta.asttools.rhs
+.. autofunction:: codetools.asttools.rhs
 
-.. autofunction:: meta.asttools.conditional_lhs
+.. autofunction:: codetools.asttools.conditional_lhs
 
-.. autofunction:: meta.asttools.conditional_symbols
+.. autofunction:: codetools.asttools.conditional_symbols
 
 .. autofunction:: get_symbols
 

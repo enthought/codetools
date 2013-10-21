@@ -7,8 +7,9 @@ from __future__ import print_function
 
 import unittest
 import ast
-from meta.asttools.mutators.remove_trivial import remove_trivial
-from meta.asttools.tests import assert_ast_eq
+
+from codetools.asttools.mutators.remove_trivial import remove_trivial
+from codetools.asttools.tests import assert_ast_eq
 
 
 def simple_case(self, toremove, expected):

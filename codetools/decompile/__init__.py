@@ -4,7 +4,7 @@ Decompiler module.
 This module can decompile arbitrary code objects into a python ast. 
 '''
 
-from meta.decompile.instructions import make_module, make_function
+from codetools.decompile.instructions import make_module, make_function
 
 import _ast
 import struct
@@ -71,7 +71,7 @@ def decompile_pyc(bin_pyc, output=sys.stdout):
     :param output: output file objects
     '''
     
-    from meta.asttools import python_source
+    from codetools.asttools import python_source
     
     bin = bin_pyc.read()
     

@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import unittest
 import ast
-from meta.asttools.visitors.symbol_visitor import get_symbols
+from codetools.asttools.visitors.symbol_visitor import get_symbols
 
 
 class Test(unittest.TestCase):

@@ -7,7 +7,7 @@ import unittest
 import ast
 from os.path import exists
 from codetools.blocks.smart_code import SmartCode
-from meta.asttools.tests import assert_ast_eq
+from codetools.asttools.tests import assert_ast_eq
 from codetools.blocks.tests import assert_block_eq
 
 class Test(unittest.TestCase):

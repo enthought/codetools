@@ -7,9 +7,9 @@ from __future__ import print_function
 
 import unittest
 import ast
-from meta.asttools.visitors.pysourcegen import SourceGen
-from meta.asttools.tests import AllTypesTested
-from meta.testing import py2only, py3only
+from codetools.asttools.visitors.pysourcegen import SourceGen
+from codetools.asttools.tests import AllTypesTested
+from codetools.testing import py2only, py3only
 
 tested = AllTypesTested()
 

@@ -4,16 +4,18 @@ Created on Jul 15, 2011
 @author: sean
 '''
 from __future__ import print_function
+
 import _ast
-from meta.asttools import Visitor
 from string import Formatter
 import sys
-from meta.utils import py3op, py2op
 
 if sys.version_info.major < 3:
     from StringIO import StringIO
 else:
     from io import StringIO
+
+from codetools.asttools import Visitor
+from codetools.py_ops import py3op, py2op
 
 
 class ASTFormatter(Formatter):

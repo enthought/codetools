@@ -1,7 +1,8 @@
 import unittest
 import ast
 import inspect
-from meta.asttools import Visitor, cmp_ast, str_ast
+
+from codetools.asttools import Visitor, cmp_ast, str_ast
 
 class NodeRecorder(Visitor):
     def __init__(self):

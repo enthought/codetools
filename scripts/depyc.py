@@ -16,10 +16,10 @@ import marshal
 import ast
 from py_compile import MAGIC
 
-from meta.decompile.instructions import make_module
-from meta.asttools import print_ast, python_source
-from meta.decompile.disassemble import print_code
-from meta.decompile.recompile import create_pyc
+from codetools.decompile.instructions import make_module
+from codetools.asttools import print_ast, python_source
+from codetools.decompile.disassemble import print_code
+from codetools.decompile.recompile import create_pyc
 import os
 
 py3 = sys.version_info.major >= 3

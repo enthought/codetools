@@ -4,7 +4,7 @@ Created on Aug 4, 2011
 @author: sean
 '''
 from codetools.blocks.smart_code import SmartCode
-from meta.asttools import conditional_symbols, cmp_ast
+from codetools.asttools import conditional_symbols, cmp_ast
 from traits.api import HasTraits, Instance, List, Property
 from traceback import format_exc
 
@@ -15,9 +15,9 @@ except:
     
 import types
 import _ast
-from meta.asttools.visitors import Visitor, visit_children
-from meta.asttools.visitors.symbol_visitor import get_symbols
-from meta.asttools.mutators.remove_trivial import remove_unused_assign
+from codetools.asttools.visitors import Visitor, visit_children
+from codetools.asttools.visitors.symbol_visitor import get_symbols
+from codetools.asttools.mutators.remove_trivial import remove_unused_assign
 from copy import deepcopy
 
 class CompositeException(Exception):

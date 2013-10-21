@@ -5,11 +5,12 @@ Created on Aug 2, 2011
 '''
 from __future__ import print_function
 
-from meta.asttools.tests import AllTypesTested, assert_ast_eq
-import unittest
-from meta.asttools.mutators.prune_mutator import PruneVisitor
 import ast
-from meta.testing import py2only
+import unittest
+
+from codetools.asttools.tests import AllTypesTested, assert_ast_eq
+from codetools.asttools.mutators.prune_mutator import PruneVisitor
+from codetools.testing import py2only
 
 tested = AllTypesTested()
 

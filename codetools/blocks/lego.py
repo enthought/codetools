@@ -3,9 +3,9 @@ Created on Aug 5, 2011
 
 @author: sean
 '''
-from meta.asttools.mutators.remove_trivial import \
+from codetools.asttools.mutators.remove_trivial import \
     remove_trivial as remove_trivial_ast
-from meta.asttools import lhs, rhs, dump_python_source
+from codetools.asttools import lhs, rhs, dump_python_source
 from codetools.blocks.smart_code import SmartCode
 from copy import deepcopy
 #from pygraph.algorithms.cycles import find_cycle #@UnresolvedImport
