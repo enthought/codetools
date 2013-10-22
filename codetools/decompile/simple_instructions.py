@@ -1,9 +1,16 @@
+#
+# (C) Copyright 2011-13 Enthought, Inc., Austin, TX
+# All rights reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 '''
 Created on Jul 14, 2011
 
 @author: sean
 '''
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 
 from opcode import *
 import _ast

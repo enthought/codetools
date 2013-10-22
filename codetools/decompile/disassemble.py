@@ -1,7 +1,20 @@
+#
+# (C) Copyright 2011-13 Enthought, Inc., Austin, TX
+# All rights reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 '''
+Disassemble
+===========
+
+Python bytecode disassembler.
+
 Created on Jul 14, 2011
 
-@author: sean
+Author: Sean Ross-Ross
+
 '''
 from __future__ import print_function
 
@@ -15,6 +28,8 @@ py3 = sys.version_info.major >= 3
 co_ord = (lambda c:c) if py3 else ord
 
 class Instruction(object):
+    """ Representation of a Python bytecode object
+    """
 
     def __init__(self, i= -1, op=None, lineno=None):
         self.i = i
@@ -28,6 +43,7 @@ class Instruction(object):
     @property
     def opname(self):
         return opname[self.op]
+
     @property
     def to(self):
         if self.op in hasjrel:
@@ -87,7 +103,7 @@ class Instruction(object):
 
 
 def disassemble(co, lasti= -1):
-    """Disassemble a code object."""
+    """ Disassemble a code object into a list of Instruction objects """
 
     instructions = []
     code = co.co_code
@@ -101,9 +117,7 @@ def disassemble(co, lasti= -1):
     while i < n:
         c = code[i]
         op = co_ord(c)
-    
-        
-    
+
         if i in linestarts:
             lineno = linestarts[i]
 
@@ -149,7 +163,7 @@ def disassemble(co, lasti= -1):
 
 
 def print_code(co, lasti= -1, level=0):
-    """Disassemble a code object."""
+    """ Disassemble a code object , printing to std.out. """
     code = co.co_code
     
     for constant in co.co_consts:
@@ -195,7 +209,6 @@ def print_code(co, lasti= -1, level=0):
                 print( '(' + repr(co.co_consts[oparg]) + ')', end=' ')
                 if type(co.co_consts[oparg]) == types.CodeType:
                     have_inner = co.co_consts[oparg]
-
 
             elif op in hasname:
                 print( '(' + co.co_names[oparg] + ')',end=' ')
