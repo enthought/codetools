@@ -71,7 +71,7 @@ adding:
 
 * improved branching analysis tools --- what variables depend on what other
   variables
-* common AST manipulation routines in the spirit of enthought.blocks.rename
+* common AST manipulation routines in the spirit of codetools.blocks.rename
 
 
 Contexts
@@ -101,6 +101,6 @@ this sort of manipulation is in the :mod:`context_function` module, and there th
 bytecode substitution is fairly simple.
 
 For example, there may be a more efficient way to provide the functionality of
-:mod:`enthought.blocks.rename` by manipulating code objects and bytecode rather
+:mod:`codetools.blocks.rename` by manipulating code objects and bytecode rather
 than AST.
 

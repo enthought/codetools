@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Adapted Data Contexts &mdash; CodeTools v3.2.1 documentation</title>
+    <title>Adapted Data Contexts &mdash; codetools 4.2.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.1',
+        VERSION:     '4.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/et.ico"/>
-    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="top" title="codetools 4.2.0 documentation" href="index.html" />
     <link rel="up" title="CodeTools Tutorial" href="tutorial.html" />
     <link rel="next" title="Context Functions" href="tut_cxt_functions.html" />
     <link rel="prev" title="MultiContexts" href="tut_multicontext.html" /> 
@@ -41,7 +44,7 @@
         <li class="right" >
           <a href="tut_multicontext.html" title="MultiContexts"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">codetools 4.2.0 documentation</a> &raquo;</li>
           <li><a href="tutorial.html" accesskey="U">CodeTools Tutorial</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,11 +80,11 @@ by providing at least one of the <tt class="xref py py-meth docutils literal"><s
 <tt class="xref py py-meth docutils literal"><span class="pre">adapt_setitem()</span></tt> methods.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">numpy.fft</span> <span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">ifft</span>
-<span class="kn">from</span> <span class="nn">enthought.traits.api</span> <span class="kn">import</span> <span class="n">HasTraits</span>
-<span class="kn">from</span> <span class="nn">enthought.contexts.api</span> <span class="kn">import</span> <span class="n">IAdapter</span>
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">HasTraits</span><span class="p">,</span> <span class="n">provides</span>
+<span class="kn">from</span> <span class="nn">codetools.contexts.api</span> <span class="kn">import</span> <span class="n">IAdapter</span>
 
+<span class="nd">@provides</span><span class="p">(</span><span class="n">IAdapter</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">FFTAdapter</span><span class="p">(</span><span class="n">HasTraits</span><span class="p">):</span>
-    <span class="n">implements</span><span class="p">(</span><span class="n">IAdapter</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">adapt_getitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Take Fourier transform of 1-D Numpy arrays in the context.&quot;&quot;&quot;</span>
@@ -95,7 +98,7 @@ by providing at least one of the <tt class="xref py py-meth docutils literal"><s
             <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">ifft</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <tt class="xref py py-mod docutils literal"><span class="pre">enthought.contexts</span></tt> package contains a number of adapters to perform
+<p>The <tt class="xref py py-mod docutils literal"><span class="pre">codetools.contexts</span></tt> package contains a number of adapters to perform
 operations like masking, unit conversion, and name translation.</p>
 </div>
 
@@ -122,7 +125,7 @@ operations like masking, unit conversion, and name translation.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -148,14 +151,14 @@ operations like masking, unit conversion, and name translation.</p>
         <li class="right" >
           <a href="tut_multicontext.html" title="MultiContexts"
              >previous</a> |</li>
-        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">codetools 4.2.0 documentation</a> &raquo;</li>
           <li><a href="tutorial.html" >CodeTools Tutorial</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2008, Enthought.
-      Last updated on Jan 28, 2011.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+        &copy; Copyright 2008-2013, Enthought.
+      Last updated on Oct 25, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
     </div>
   </body>
 </html>

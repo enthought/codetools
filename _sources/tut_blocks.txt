@@ -6,7 +6,7 @@ Blocks
 Creating a :class:`Block` object is as simple as invoking it on a string
 containing some Python code::
 
-    >>> from enthought.blocks.api import Block
+    >>> from codetools.blocks.api import Block
     >>>
     >>> b = Block("""# my calculations
     ... velocity = distance/time
@@ -72,7 +72,7 @@ reconstruct the Python source::
 
     >>> restricted_block.ast
     Assign([AssName('momentum', 'OP_ASSIGN')], Mul((Name('mass'), Name('velocity'))))
-    >>> from enthought.blocks.api import unparse
+    >>> from codetools.blocks.api import unparse
     >>> unparse(restricted_block.ast)
     'momentum = mass*velocity'
 
@@ -183,7 +183,7 @@ inputs and then inspecting it::
        668.27798918   743.42546606   820.37061225   899.2015473    980.01303322
       1062.90715923  1147.9941173   1235.39308291  1325.23321898  1417.65482395]
     >>> 
-    >>> from enthought.chaco.shell import *
+    >>> from chaco.shell import *
     >>> plot(local_namespace['t'], local_namespace["displacement"], "b-")
     >>> show()
 
