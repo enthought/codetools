@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Blocks &mdash; CodeTools v3.2.1 documentation</title>
+    <title>Blocks &mdash; codetools 4.2.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.1',
+        VERSION:     '4.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/et.ico"/>
-    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="top" title="codetools 4.2.0 documentation" href="index.html" />
     <link rel="up" title="CodeTools Tutorial" href="tutorial.html" />
     <link rel="next" title="DataContexts" href="tut_datacontexts.html" />
     <link rel="prev" title="CodeTools Tutorial" href="tutorial.html" /> 
@@ -41,7 +44,7 @@
         <li class="right" >
           <a href="tutorial.html" title="CodeTools Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">codetools 4.2.0 documentation</a> &raquo;</li>
           <li><a href="tutorial.html" accesskey="U">CodeTools Tutorial</a> &raquo;</li> 
       </ul>
     </div>  
@@ -55,7 +58,7 @@
 <span id="codetools-tutorial-blocks"></span><h1>Blocks<a class="headerlink" href="#blocks" title="Permalink to this headline">¶</a></h1>
 <p>Creating a <tt class="xref py py-class docutils literal"><span class="pre">Block</span></tt> object is as simple as invoking it on a string
 containing some Python code:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.blocks.api</span> <span class="kn">import</span> <span class="n">Block</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">codetools.blocks.api</span> <span class="kn">import</span> <span class="n">Block</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s">&quot;&quot;&quot;# my calculations</span>
 <span class="gp">... </span><span class="s">velocity = distance/time</span>
@@ -118,7 +121,7 @@ is not particularly human-friendly, but the <tt class="xref py py-func docutils 
 reconstruct the Python source:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">restricted_block</span><span class="o">.</span><span class="n">ast</span>
 <span class="go">Assign([AssName(&#39;momentum&#39;, &#39;OP_ASSIGN&#39;)], Mul((Name(&#39;mass&#39;), Name(&#39;velocity&#39;))))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.blocks.api</span> <span class="kn">import</span> <span class="n">unparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">codetools.blocks.api</span> <span class="kn">import</span> <span class="n">unparse</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">unparse</span><span class="p">(</span><span class="n">restricted_block</span><span class="o">.</span><span class="n">ast</span><span class="p">)</span>
 <span class="go">&#39;momentum = mass*velocity&#39;</span>
 </pre></div>
@@ -228,7 +231,7 @@ inputs and then inspecting it:</p>
 <span class="go">   668.27798918   743.42546606   820.37061225   899.2015473    980.01303322</span>
 <span class="go">  1062.90715923  1147.9941173   1235.39308291  1325.23321898  1417.65482395]</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.chaco.shell</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">chaco.shell</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">(</span><span class="n">local_namespace</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">],</span> <span class="n">local_namespace</span><span class="p">[</span><span class="s">&quot;displacement&quot;</span><span class="p">],</span> <span class="s">&quot;b-&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -355,7 +358,7 @@ class.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -381,14 +384,14 @@ class.</p>
         <li class="right" >
           <a href="tutorial.html" title="CodeTools Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">codetools 4.2.0 documentation</a> &raquo;</li>
           <li><a href="tutorial.html" >CodeTools Tutorial</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2008, Enthought.
-      Last updated on Jan 28, 2011.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+        &copy; Copyright 2008-2013, Enthought.
+      Last updated on Oct 25, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
     </div>
   </body>
 </html>

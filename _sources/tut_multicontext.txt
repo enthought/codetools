@@ -63,7 +63,7 @@ is a DataContext, but allowing any variable to be set otherwise.
 Let's say that we want to have a context available which contains only
 variables whose values are floats.  That would be done like this::
 
-    >>> from enthought.contexts.api import MultiContext
+    >>> from codetools.contexts.api import MultiContext
     >>> class FloatContext(DataContext):
     ...     def allows(key, value):
     ...         return isinstance(value, float)

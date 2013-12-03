@@ -68,7 +68,7 @@ It is worth noting that the roles do not have to be kept completely separate.
 There are situations where bundling together the Execution Manager with the
 Block (to make a smart block that re-executes whenever it needs to) or a
 DataContext (to make a smart data set) makes sense.  The ExecutingContext
-class in :mod:`enthought.execution.api` is precisely such an example: it 
+class in :mod:`codetools.execution.api` is precisely such an example: it 
 combines a DataContext and a listener to automatically execute.
 
 

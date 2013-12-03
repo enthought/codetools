@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TraitslikeContextWrapper &mdash; CodeTools v3.2.1 documentation</title>
+    <title>TraitslikeContextWrapper &mdash; codetools 4.2.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.2.1',
+        VERSION:     '4.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/et.ico"/>
-    <link rel="top" title="CodeTools v3.2.1 documentation" href="index.html" />
+    <link rel="top" title="codetools 4.2.0 documentation" href="index.html" />
     <link rel="up" title="CodeTools Tutorial" href="tutorial.html" />
     <link rel="next" title="MultiContexts" href="tut_multicontext.html" />
     <link rel="prev" title="The Block-Context-Execution Manager Pattern" href="tut_bcem_pattern.html" /> 
@@ -41,7 +44,7 @@
         <li class="right" >
           <a href="tut_bcem_pattern.html" title="The Block-Context-Execution Manager Pattern"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">codetools 4.2.0 documentation</a> &raquo;</li>
           <li><a href="tutorial.html" accesskey="U">CodeTools Tutorial</a> &raquo;</li> 
       </ul>
     </div>  
@@ -67,10 +70,10 @@ synchronised with it.  This pattern is sufficiently common and useful that the
 TraitslikeContextWrapper class is available to simplify this procedure.</p>
 <p>To use the TraitslikeContextWrapper, you need to use the <tt class="xref py py-meth docutils literal"><span class="pre">add_traits()</span></tt>
 method to tell it which names in the Context should appear as traits:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.traits.api</span> <span class="kn">import</span> <span class="n">Int</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.traits.ui.api</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">Item</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.traits.ui.menu</span> <span class="kn">import</span> <span class="n">OKButton</span><span class="p">,</span> <span class="n">CancelButton</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">enthought.contexts.api</span> <span class="kn">import</span> <span class="n">DataContext</span><span class="p">,</span> <span class="n">TraitslikeContextWrapper</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Int</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">traitsui.api</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">Item</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">traitsui.menu</span> <span class="kn">import</span> <span class="n">OKButton</span><span class="p">,</span> <span class="n">CancelButton</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">codetools.contexts.api</span> <span class="kn">import</span> <span class="n">DataContext</span><span class="p">,</span> <span class="n">TraitslikeContextWrapper</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">DataContext</span><span class="p">(</span><span class="n">subcontext</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tcw</span> <span class="o">=</span> <span class="n">TraitslikeContextWrapper</span><span class="p">(</span><span class="n">_context</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tcw</span><span class="o">.</span><span class="n">add_traits</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">Int</span><span class="p">)</span>
@@ -99,13 +102,13 @@ in the CodeTools examples:</p>
 <span class="sd">pattern, together with using a TraitslikeContextWrapper to make items inside a</span>
 <span class="sd">data context appear like traits so that they can be used in a TraitsUI app.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">enthought.traits.api</span> <span class="kn">import</span> <span class="n">HasTraits</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">HasTraits</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> \
     <span class="n">on_trait_change</span><span class="p">,</span> <span class="n">cached_property</span>
-<span class="kn">from</span> <span class="nn">enthought.traits.ui.api</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">Group</span><span class="p">,</span> <span class="n">Item</span>
+<span class="kn">from</span> <span class="nn">traitsui.api</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">Group</span><span class="p">,</span> <span class="n">Item</span>
 
-<span class="kn">from</span> <span class="nn">enthought.contexts.api</span> <span class="kn">import</span> <span class="n">DataContext</span><span class="p">,</span> <span class="n">TraitslikeContextWrapper</span>
-<span class="kn">from</span> <span class="nn">enthought.contexts.items_modified_event</span> <span class="kn">import</span> <span class="n">ItemsModified</span>
-<span class="kn">from</span> <span class="nn">enthought.blocks.api</span> <span class="kn">import</span> <span class="n">Block</span>
+<span class="kn">from</span> <span class="nn">codetools.contexts.api</span> <span class="kn">import</span> <span class="n">DataContext</span><span class="p">,</span> <span class="n">TraitslikeContextWrapper</span>
+<span class="kn">from</span> <span class="nn">codetools.contexts.items_modified_event</span> <span class="kn">import</span> <span class="n">ItemsModified</span>
+<span class="kn">from</span> <span class="nn">codetools.blocks.api</span> <span class="kn">import</span> <span class="n">Block</span>
 
 <span class="n">code</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;# my calculations</span>
 <span class="s">velocity = distance/time</span>
@@ -210,7 +213,7 @@ code block, the code would work just as well.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -236,14 +239,14 @@ code block, the code would work just as well.</p>
         <li class="right" >
           <a href="tut_bcem_pattern.html" title="The Block-Context-Execution Manager Pattern"
              >previous</a> |</li>
-        <li><a href="index.html">CodeTools v3.2.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">codetools 4.2.0 documentation</a> &raquo;</li>
           <li><a href="tutorial.html" >CodeTools Tutorial</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2008, Enthought.
-      Last updated on Jan 28, 2011.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+        &copy; Copyright 2008-2013, Enthought.
+      Last updated on Oct 25, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
     </div>
   </body>
 </html>
