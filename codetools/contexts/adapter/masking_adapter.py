@@ -1,15 +1,24 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
 """ Mask values going in and out of a context.
 """
+from __future__ import absolute_import
 
 # Standard library imports
 from copy import copy
-from numpy import NaN, array, empty, float64, iscomplex, isreal, ndarray
+from numpy import NaN, empty, float64, iscomplex, isreal, ndarray
 
 # Enthought library imports
 from traits.api import Any, HasTraits
 
 # Local imports
-from i_adapter import IAdapter
+from .i_adapter import IAdapter
 
 # TODO Generalize to any slice object (eventually)
 

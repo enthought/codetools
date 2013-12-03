@@ -30,11 +30,11 @@ by providing at least one of the :meth:`adapt_name`, :meth:`adapt_getitem`, or
 
     from numpy import ndarray
     from numpy.fft import fft, ifft
-    from traits.api import HasTraits
+    from traits.api import HasTraits, provides
     from codetools.contexts.api import IAdapter
     
+    @provides(IAdapter)
     class FFTAdapter(HasTraits):
-        implements(IAdapter)
         
         def adapt_getitem(self, context, key, value):
             """Take Fourier transform of 1-D Numpy arrays in the context."""

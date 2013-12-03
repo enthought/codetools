@@ -1,33 +1,42 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
 """ Context holding multiple subcontexts.
 """
+
+from __future__ import absolute_import
 
 from itertools import chain
 from UserDict import DictMixin
 
-from traits.api import (Instance, List, Str, Undefined, implements,
-    on_trait_change)
-from traits.protocols.api import adapt
+from traits.api import (Bool, List, Str, Undefined, Supports,
+    adapt, provides, on_trait_change)
 
-from data_context import DataContext, ListenableMixin, PersistableMixin
-from i_context import (ICheckpointable, IListenableContext,
+from .data_context import DataContext, ListenableMixin, PersistableMixin
+from .i_context import (ICheckpointable, IListenableContext,
     IPersistableContext, IRestrictedContext)
-from utils import safe_repr
+from .utils import safe_repr
 
 
-
+@provides(ICheckpointable, IListenableContext, IPersistableContext,
+            IRestrictedContext)
 class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
     """ Wrap several subcontexts.
     """
 
-    implements(ICheckpointable, IListenableContext, IPersistableContext, IRestrictedContext)
-
-    # The name of the context.
+    #: The name of the context.
     name = Str("multidummy")
 
-    # The underlying dictionary.
-    subcontexts = List(Instance(IRestrictedContext, factory=DataContext,
-        adapt='yes'))
+    #: The underlying dictionary.
+    subcontexts = List(Supports(IRestrictedContext, factory=DataContext))
 
+    #: Suppress subcontext modified events
+    veto_subcontext_modified = Bool(True)
 
     def __init__(self, *subcontexts, **traits):
         subcontexts = list(subcontexts)
@@ -168,7 +177,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
             # Nothing to do.
             return
 
-        event.veto = True
+        event.veto = self.veto_subcontext_modified
 
         self._fire_event(added=event.added, removed=event.removed,
             modified=event.modified, context=event.context)

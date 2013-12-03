@@ -1,11 +1,20 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
 # Numeric libary imports
 from numpy import ndarray
 
 from traits.api import Dict
 
 # Local imports
-from unit_manipulation_adapter import UnitManipulationAdapter
-from unit_converter_functions import array_to_unit_array_converter
+from .unit_manipulation_adapter import UnitManipulationAdapter
+from .unit_converter_functions import array_to_unit_array_converter
 
 
 unit_apply_converters = {ndarray: array_to_unit_array_converter}

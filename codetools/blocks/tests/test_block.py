@@ -12,6 +12,7 @@ def test_basic_01():
     b = Block(code)
     assert_equal(b.inputs, set([]))
     assert_equal(b.outputs, set(['x','y']))
+    assert_equal(b.const_assign, (set(['x']), ['x = 100']))
 
     names = dict()
     b.execute(names)

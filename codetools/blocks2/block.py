@@ -11,6 +11,7 @@ from ast import AST, Module, stmt
 
 from traceback import format_exc
 import types
+from uuid import UUID, uuid4
 
 from traits.api import (Bool, Dict, Either, HasTraits,
                                   Instance, List, Property, Str,
@@ -24,7 +25,6 @@ from analysis import NameFinder
 
 from block_transformer import BlockTransformer
 from codetools.blocks.compiler_unparse import unparse
-from codetools.blocks.util.uuid import UUID, uuid4
 
 ###############################################################################
 # TODO:

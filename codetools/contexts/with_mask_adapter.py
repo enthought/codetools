@@ -1,21 +1,30 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
+from __future__ import absolute_import
+
 # Standard imports
 from numpy import ndarray, ones, NaN
 
 # Enthought library imports
-from traits.api import Any, HasTraits
+from traits.api import Any, HasTraits, provides
 
 # Local imports
-from adapter.i_adapter import IAdapter
+from .adapter.i_adapter import IAdapter
 
 # TODO Generalize to any slice object (eventually)
 
+@provides(IAdapter)
 class WithMaskAdapter(HasTraits):
     """ Apply a mask to values in a context that are compatible.
     """
 
-    __implements__ = [IAdapter]
     mask = Any
-
 
     def __init__(self, mask, **traits):
         """ If mask is not an array, ensure it is an array

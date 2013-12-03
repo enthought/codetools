@@ -1,15 +1,24 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
 """ Primary adapter implementation for many unit manipulation tasks
     such as conversion, correcting units, or adding units to an item.
 
     See unit_conversion_adapter.py for a concrete example.
 """
 
+from __future__ import absolute_import
+
 #Enthought Library imports
-from traits.api import Dict, Any, implements, HasTraits
+from traits.api import Dict, Any, provides, HasTraits
 
 # Local imports
-from i_adapter import IAdapter
-
+from .i_adapter import IAdapter
 
 
 class ConversionError(Exception):
@@ -18,6 +27,7 @@ class ConversionError(Exception):
     pass
 
 
+@provides(IAdapter)
 class UnitManipulationAdapter(HasTraits):
     """ Bi-directional unit conversion of values.
 
@@ -36,10 +46,9 @@ class UnitManipulationAdapter(HasTraits):
         unit conversion.
 
     """
-        #fixme: I can imagine places where we don't want name lookup to silently
-        #       pass.  A flag like 'fail_on_name_not_found' or something like
-        #       that might be useful.
-    implements(IAdapter)
+    #fixme: I can imagine places where we don't want name lookup to silently
+    #       pass.  A flag like 'fail_on_name_not_found' or something like
+    #       that might be useful.
 
     ############################################################################
     # UnitConversionContextAdapter traits

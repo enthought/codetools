@@ -1,8 +1,18 @@
-from traits.api import HasTraits, List, Str, Property, Any, implements
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
+from traits.api import HasTraits, List, Str, Property, Any, provides
 from codetools.contexts.api import IRestrictedContext
 
 import tables
 
+@provides(IRestrictedContext)
 class Hdf5Context(HasTraits):
     """ Provide a "context" (partial dictionary interface) into an HDF5
         file.  It allows multiple paths, specified by the path list, within
@@ -16,10 +26,6 @@ class Hdf5Context(HasTraits):
         <fixme>
 
     """
-
-    # We have to implement this to be used in a MutliContext...
-    # fixme: Do we really want this restriction?
-    implements(IRestrictedContext)
 
     # The HDF file with the data available through this context.
     file_object = Any

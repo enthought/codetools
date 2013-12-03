@@ -1,8 +1,16 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
 
 import sys
 import linecache
 
-from block import Block
+from .block import Block
 
 def _detect_indentation_level(source):
     # Detect the indentation level

@@ -1,8 +1,17 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
 # Enthought imports
 from traits.api import HasTraits, List, implements
 
 # Local imports
-from i_adapter_manager import IAdapterManager
+from .i_adapter_manager import IAdapterManager
 
 
 class AdapterManagerMixin(HasTraits):

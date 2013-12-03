@@ -1,9 +1,19 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
 """ A collection of unit manipulation functions that are used as converters
     for UnitManipulationAdapter instantiations.
 
     See unit_manipulation_adapter_factories.py for concrete examples of how
     they are used.
 """
+
+from __future__ import absolute_import
 
 import numpy
 

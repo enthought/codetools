@@ -1,9 +1,19 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 'Simple blocks of python code with dependency analysis.'
+
+from __future__ import absolute_import
 
 import compiler
 from compiler.ast import Module, Node, Stmt
 from traceback import format_exc
 import types
+from uuid import UUID, uuid4
 
 from traits.api import (Bool, Dict, Either, HasTraits,
                                   Instance, List, Property, Str,
@@ -13,12 +23,10 @@ from ..util.dict import map_keys, map_values
 from ..util import graph
 from ..util.sequence import is_sequence
 
-from codetools.blocks.analysis import NameFinder
-from codetools.blocks.compiler_.api \
-    import compile_ast, parse
-from codetools.blocks.parser_ import BlockTransformer
-from codetools.blocks.compiler_unparse import unparse
-from codetools.blocks.util.uuid import UUID, uuid4
+from .analysis import NameFinder
+from .compiler_.api import compile_ast, parse
+from .parser_ import BlockTransformer
+from .compiler_unparse import unparse
 
 ###############################################################################
 # TODO:

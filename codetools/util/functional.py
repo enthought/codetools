@@ -1,12 +1,13 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All rights reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 'Non-standard higher-order functions'
 
-def partial(f, *a, **k): # (2.5 provides this)
-    # Don't mutate 'a' or 'k' since each call to 'g' shares them
-    def g(*b, **l):
-        m = k.copy()
-        m.update(l)
-        return f(*(a + b), **m)
-    return g
+from functools import partial
 
 def compose(*fs):
     ''' ``compose(f,g,...,h)(*args, **kw) == f(g(...(h(*args, **kw))))``

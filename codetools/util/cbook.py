@@ -1,3 +1,10 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All rights reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 """
 A collection of utility functions and classes FROM MATPLOTLIB.
 
@@ -50,7 +57,7 @@ class Bunch(object):
 
 def unique(x):
    'Return a list of unique elements of x'
-   return dict([ (val, 1) for val in x]).keys()
+   return list(set(x))
 
 def iterable(obj):
     try: len(obj)
@@ -100,50 +107,51 @@ def flatten(seq, scalarp=is_scalar):
 
 
 class Sorter(object):
-   """
+    """
 
-   Sort by attribute or item
+    Sort by attribute or item
 
-   Example usage:
-   sort = Sorter()
+    Example usage:
+    sort = Sorter()
 
-   list = [(1, 2), (4, 8), (0, 3)]
-   dict = [{'a': 3, 'b': 4}, {'a': 5, 'b': 2}, {'a': 0, 'b': 0},
-   {'a': 9, 'b': 9}]
+    list = [(1, 2), (4, 8), (0, 3)]
+    dict = [{'a': 3, 'b': 4}, {'a': 5, 'b': 2}, {'a': 0, 'b': 0},
+    {'a': 9, 'b': 9}]
 
 
-   sort(list)       # default sort
-   sort(list, 1)    # sort by index 1
-   sort(dict, 'a')  # sort a list of dicts by key 'a'
+    sort(list)       # default sort
+    sort(list, 1)    # sort by index 1
+    sort(dict, 'a')  # sort a list of dicts by key 'a'
 
-   """
+    """
 
-   def _helper(self, data, aux, inplace):
-      aux.sort()
-      result = [data[i] for junk, i in aux]
-      if inplace: data[:] = result
-      return result
+    def _helper(self, data, aux, inplace):
+        aux.sort()
+        result = [data[i] for junk, i in aux]
+        if inplace:
+            data[:] = result
+        return result
 
-   def byItem(self, data, itemindex=None, inplace=1):
-      if itemindex is None:
-         if inplace:
-            data.sort()
-            result = data
-         else:
-            result = data[:]
-            result.sort()
-         return result
-      else:
-         aux = [(data[i][itemindex], i) for i in range(len(data))]
-         return self._helper(data, aux, inplace)
+    def byItem(self, data, itemindex=None, inplace=True):
+        if itemindex is None:
+            if inplace:
+                data.sort()
+                result = data
+            else:
+                result = sorted(data)
+            return result
+        else:
+          
+            aux = [(data[i][itemindex], i) for i in range(len(data))]
+            return self._helper(data, aux, inplace)
 
-   def byAttribute(self, data, attributename, inplace=1):
-      aux = [(getattr(data[i],attributename),i) for i in range(len(data))]
-      return self._helper(data, aux, inplace)
+    def byAttribute(self, data, attributename, inplace=True):
+        aux = [(getattr(data[i],attributename),i) for i in range(len(data))]
+        return self._helper(data, aux, inplace)
 
-   # a couple of handy synonyms
-   sort = byItem
-   __call__ = byItem
+    # a couple of handy synonyms
+    sort = byItem
+    __call__ = byItem
 
 
 
@@ -438,35 +446,6 @@ def allpairs(x):
         http://groups.google.com/groups?q=all+pairs+group:*python*&hl=en&lr=&ie=UTF-8&selm=mailman.4028.1096403649.5135.python-list%40python.org&rnum=1
     """
     return [ (s, f) for i, f in enumerate(x) for s in x[i+1:] ]
-
-
-
-
-# python 2.2 dicts don't have pop
-def popd(d, *args):
-    """
-    Should behave like python2.3 pop method; d is a dict
-
-    # returns value for key and deletes item; raises a KeyError if key
-    # is not in dict
-    val = popd(d, key)
-
-    # returns value for key if key exists, else default.  Delete key,
-    # val item if it exists.  Will not raise a KeyError
-    val = popd(d, key, default)
-    """
-    if len(args)==1:
-        key = args[0]
-        val = d[key]
-        del d[key]
-    elif len(args)==2:
-        key, default = args
-        val = d.get(key, default)
-        try: del d[key]
-        except KeyError: pass
-    return val
-
-
 
 
 class Stack(object):

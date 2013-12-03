@@ -1,7 +1,18 @@
-from traits.api import Bool, Interface, Str
-from traits.protocols.api import declareAdapter, declareImplementation
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
 
-from items_modified_event import ItemsModifiedEvent
+from contextlib import contextmanager
+
+from traits.api import Bool, Interface, Str, register_factory
+from traits.adaptation.api import register_provides
+
+from .items_modified_event import ItemsModifiedEvent
 
 
 class IContext(Interface):
@@ -80,7 +91,24 @@ class IContext(Interface):
     # XXX: The dotted forms for handling sub-contexts?
 
 # Python dictionaries satisfy the interface.
-declareImplementation(dict, [IContext])
+register_provides(dict, IContext)
+
+
+@contextmanager
+def defer_events(data_context):
+    """ Context manager for deferring DataContext events in a with statement.
+    """
+    if defer_events.context_counts.setdefault(data_context, 0) == 0:
+        data_context.defer_events = True
+    defer_events.context_counts[data_context] += 1
+    try:
+        yield
+    finally:
+        defer_events.context_counts[data_context] -= 1
+        if defer_events.context_counts[data_context] == 0:
+            data_context.defer_events = False
+
+defer_events.context_counts = {}
 
 
 class IListenableContext(IContext):
@@ -97,6 +125,11 @@ class IListenableContext(IContext):
     # and when reverted to false, one single event fires that represents the net
     # change since 'defer_events' was set.
     defer_events = Bool(False)
+    
+    @contextmanager
+    def deferred_events(self):
+        """ Context manager that sets defer_events to False """
+        raise NotImplementedError
 
 
 class IRestrictedContext(IContext):
@@ -200,10 +233,10 @@ class CheckPointableDictAdapter(object):
     def checkpoint(self):
         return self.dict.copy()
 
-declareAdapter(
+register_factory(
     CheckPointableDictAdapter,
-    [ICheckpointable],
-    forTypes=[dict],
+    to_protocol=ICheckpointable,
+    from_protocol=dict,
 )
 
 

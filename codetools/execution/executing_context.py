@@ -1,21 +1,27 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 """ Define an IContext which will execute code in response to changes in its
 namespace.
 """
+from __future__ import absolute_import
 
-from traits.api import (Bool, HasTraits, Instance, List, Str,
-    Undefined, implements, on_trait_change)
-from traits.protocols.api import adapt
+from traits.api import (Bool, HasTraits, List, Str, Supports,
+    Undefined, adapt, provides, on_trait_change)
 
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.i_context import IContext, IListenableContext
-from interfaces import IExecutable, IExecutingContext
+from .interfaces import IExecutable, IExecutingContext
 
 
+@provides(IExecutable)
 class CodeExecutable(HasTraits):
     """ Simple IExecutable that plainly executes a piece of code.
     """
-
-    implements(IExecutable)
 
     # The code to execute.
     code = Str("pass")
@@ -35,18 +41,17 @@ class CodeExecutable(HasTraits):
         return set(inputs), set(outputs)
 
 
+@provides(IExecutingContext)
 class ExecutingContext(DataContext):
     """ A context which will execute code in response to changes in its
     namespace.
     """
 
-    implements(IExecutingContext)
-
     # Override to provide a more specific requirement.
-    subcontext = Instance(IListenableContext, factory=DataContext, adapt='yes',
+    subcontext = Supports(IListenableContext, factory=DataContext,
         rich_compare=False)
 
-    executable = Instance(IExecutable, factory=CodeExecutable, adapt='yes')
+    executable = Supports(IExecutable, factory=CodeExecutable)
 
     defer_execution = Bool(False)
 
@@ -72,9 +77,8 @@ class ExecutingContext(DataContext):
             affected_names = None
         else:
             affected_names = list(set(names))
-        self.subcontext.defer_events = True
-        self.executable.execute(self.subcontext, inputs=affected_names)
-        self.subcontext.defer_events = False
+        with self.subcontext.deferred_events():
+            self.executable.execute(self.subcontext, inputs=affected_names)
 
     #### IContext interface ####################################################
 

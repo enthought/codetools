@@ -1,12 +1,23 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+
+from __future__ import absolute_import
+
 # Enthought library imports
-from traits.api import implements
+from traits.api import provides
 
 # Local imports
-from i_adapted_data_context import IAdaptedDataContext
-from adapter.adapter_manager_mixin import AdapterManagerMixin
-from data_context import DataContext
+from .i_adapted_data_context import IAdaptedDataContext
+from .adapter.adapter_manager_mixin import AdapterManagerMixin
+from .data_context import DataContext
 
 
+@provides(IAdaptedDataContext)
 class AdaptedDataContext(DataContext, AdapterManagerMixin):
     """ A Context (namespace) that supports a list of adapters that can
     adapt key names or the process of getting/setting values in the context.
@@ -17,8 +28,6 @@ class AdaptedDataContext(DataContext, AdapterManagerMixin):
     namespace (even if they are scalars) are retreived as arrays of a certain
     size, etc.
     """
-
-    implements(IAdaptedDataContext)
 
     ### Type compatibility #####################################################
 

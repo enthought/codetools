@@ -1,8 +1,17 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
+from __future__ import absolute_import
+
 # python standard library imports
 from UserDict import DictMixin
 
 # Enthought library imports
-from codetools.contexts.api import AdaptedDataContext
+from .adapted_data_context import AdaptedDataContext
 
 class IterableAdaptedDataContext(AdaptedDataContext):
     """ An AdaptedDataContext whose iteration includes any key mapped

@@ -1,8 +1,17 @@
+#
+# (C) Copyright 2013 Enthought, Inc., Austin, TX
+# All right reserved.
+#
+# This file is open source software distributed according to the terms in
+# LICENSE.txt
+#
 """ Provides tools for organizing objects into namespaces:
     namespace: decorator
     namespace_from_keywords: function
 """
-from codetools.blocks.decorators import func2str
+from __future__ import absolute_import
+
+from .decorators import func2str
 
 ##############################################################################
 # Public Interface
