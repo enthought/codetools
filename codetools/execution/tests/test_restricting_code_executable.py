@@ -1,4 +1,8 @@
-import unittest2 as unittest
+import sys
+if sys.version_info[:2] < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 from codetools.execution.executing_context import ExecutingContext
 from codetools.execution.restricting_code_executable import (

@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from codetools.execution.formula_executing_context import *
+from codetools.execution.formula_executing_context import \
+    FormulaExecutingContext
 from codetools.contexts.data_context import DataContext
-from traits.util.refresh import refresh
 
 
 class FormulaExecutingContextTest(TestCase):
