@@ -9,6 +9,7 @@ install:
   - sudo apt-get install swig
   - pip install PIL --allow-external PIL --allow-unverified PIL
   # Test against the current master of traits
+  - pip install git+http://github.com/enthought/etsdevtools.git#egg=etsdevtools
   - pip install git+http://github.com/enthought/traits.git#egg=traits
   - pip install git+http://github.com/enthought/traitsui.git#egg=traitsui
   - pip install git+http://github.com/enthought/enable.git#egg=enable
