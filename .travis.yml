@@ -2,24 +2,20 @@ language: python
 python:
   - 2.7
   - 2.6
-install:
-  # nose is already installed
-  - pip install unittest2 coverage futures
-  - sudo apt-get install python-numpy
+before_install:
+  - sudo apt-get update
   - sudo apt-get install swig
-  - pip install PIL --allow-external PIL --allow-unverified PIL
-  # Test against the current master of traits
-  - pip install git+http://github.com/enthought/etsdevtools.git#egg=etsdevtools
-  - pip install git+http://github.com/enthought/traits.git#egg=traits
-  - pip install git+http://github.com/enthought/traitsui.git#egg=traitsui
-  - pip install git+http://github.com/enthought/enable.git#egg=enable
-  - pip install git+http://github.com/enthought/chaco.git#egg=chaco
-  - pip install git+http://github.com/enthought/scimath.git#egg=scimath
-  - pip install git+http://github.com/enthought/apptools.git#egg=apptools
-  - pip install git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
+install:
+  - pip install cython
+  - pip install -r dev_requirements.txt
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
   - python setup.py develop
+  # there is a circular dependency with codetools
+  - pip install -e git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
 script:
-  - nosetests --with-coverage --cover-package=codetools
+  - coverage run -m nose.core
 notifications:
   email:
     - travis-ci@enthought.com
+after_success:
+  coveralls
