@@ -1,7 +1,5 @@
 --allow-external PIL
 --allow-unverified PIL
---allow-external scimath
---allow-unverified scimath
 numpy
 coverage
 futures
@@ -11,3 +9,4 @@ coveralls
 -e git+http://github.com/enthought/traitsui.git#egg=traitsui
 -e git+http://github.com/enthought/pyface.git#egg=pyface
 -e git+http://github.com/enthought/apptools.git#egg=apptools
+-e git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
