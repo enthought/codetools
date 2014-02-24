@@ -9,4 +9,5 @@ coveralls
 -e git+http://github.com/enthought/traitsui.git#egg=traitsui
 -e git+http://github.com/enthought/pyface.git#egg=pyface
 -e git+http://github.com/enthought/apptools.git#egg=apptools
+-e git+http://github.com/enthought/etsdevtools.git#egg=etsdevtools
 -e git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
