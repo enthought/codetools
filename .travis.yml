@@ -6,6 +6,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install swig
 install:
+  - pip install cython
   - pip install -r dev_requirements.txt
   - if [[ $PYTHON == '2.6' ]]; then pip install unittest2; fi
   - python setup.py develop
