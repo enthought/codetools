@@ -9,6 +9,8 @@ install:
   - pip install -r dev_requirements.txt
   - if [[ $PYTHON == '2.6' ]]; then pip install unittest2; fi
   - python setup.py develop
+  # there is a circular dependency with codetools
+  - pip install -e git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
 script:
   - coverage run -m nose.core
 notifications:
