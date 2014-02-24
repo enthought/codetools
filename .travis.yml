@@ -6,7 +6,6 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install swig
 install:
-  - pip install cython
   - pip install -r dev_requirements.txt
   - python setup.py develop
 script:
