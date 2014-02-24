@@ -16,11 +16,13 @@ from contextlib import contextmanager
 from UserDict import DictMixin
 
 from apptools import sweet_pickle
+from traits.adaptation.api import AdaptationOffer, \
+    get_global_adaptation_manager
 from traits.api import (Bool, Dict, HasTraits, Str, Supports,
-                        adapt, provides, on_trait_change, register_factory)
+                        adapt, provides, on_trait_change)
 
 from .i_context import (IContext, ICheckpointable, IListenableContext,
-                       IPersistableContext, IRestrictedContext, defer_events)
+                       IPersistableContext, IRestrictedContext)
 from .items_modified_event import ItemsModifiedEvent, ItemsModified
 
 # This is copied from numerical_modeling.numeric_context.constants
@@ -360,12 +362,31 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         return copy
 
 
+# Define adaptation offers from IContext to other context protocols using
+# DataContext.
+
+i_context_adaptation_offers = []
 for interface in [ICheckpointable, IListenableContext, IPersistableContext,
-            IRestrictedContext]:
-    register_factory(
-        lambda x: DataContext(subcontext=x),
+                  IRestrictedContext]:
+    offer = AdaptationOffer(
+        factory=lambda x: DataContext(subcontext=x),
         from_protocol=IContext,
         to_protocol=interface
     )
+    i_context_adaptation_offers.append(offer)
 
 
+def register_i_context_adapter_offers(adaptation_manager):
+    """ Register adapters from the `dict` object to `codetools` protocols.
+
+    1) `dict` provides the `IContext` interface
+    2) `dict` can be adapted to `ICheckpointable`
+    """
+
+    for offer in i_context_adaptation_offers:
+        adaptation_manager.register_offer(offer)
+
+
+# For backward compatibility, we register the adapters from `dict` globally
+# at import time.
+register_i_context_adapter_offers(get_global_adaptation_manager())
