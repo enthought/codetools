@@ -9,8 +9,10 @@ from __future__ import absolute_import
 
 from contextlib import contextmanager
 
-from traits.api import Bool, Interface, Str, register_factory
-from traits.adaptation.api import register_provides
+from traits.adaptation.api import AdaptationOffer, \
+    get_global_adaptation_manager
+from traits.adaptation.adaptation_manager import no_adapter_necessary
+from traits.api import Bool, Interface, Str
 
 from .items_modified_event import ItemsModifiedEvent
 
@@ -89,9 +91,6 @@ class IContext(Interface):
         """
 
     # XXX: The dotted forms for handling sub-contexts?
-
-# Python dictionaries satisfy the interface.
-register_provides(dict, IContext)
 
 
 @contextmanager
@@ -224,6 +223,8 @@ class ICheckpointable(Interface):
         # here.
 
 
+#### Adaptation ###############################################################
+
 class CheckPointableDictAdapter(object):
     """ Adapt a dictionary to the ICheckpointable interface.
     """
@@ -233,10 +234,33 @@ class CheckPointableDictAdapter(object):
     def checkpoint(self):
         return self.dict.copy()
 
-register_factory(
-    CheckPointableDictAdapter,
-    to_protocol=ICheckpointable,
+
+# Python dictionaries satisfy the IContext interface.
+dict_to_i_context_offer = AdaptationOffer(
+    factory=no_adapter_necessary,
     from_protocol=dict,
+    to_protocol=IContext
 )
 
 
+dict_to_i_checkpointable_offer = AdaptationOffer(
+    factory=CheckPointableDictAdapter,
+    from_protocol=dict,
+    to_protocol=ICheckpointable,
+)
+
+
+def register_dict_to_context_adapter_offers(adaptation_manager):
+    """ Register adapters from the `dict` object to `codetools` protocols.
+
+    1) `dict` provides the `IContext` interface
+    2) `dict` can be adapted to `ICheckpointable`
+    """
+
+    adaptation_manager.register_offer(dict_to_i_context_offer)
+    adaptation_manager.register_offer(dict_to_i_checkpointable_offer)
+
+
+# For backward compatibility, we register the adapters from `dict` globally
+# at import time.
+register_dict_to_context_adapter_offers(get_global_adaptation_manager())
