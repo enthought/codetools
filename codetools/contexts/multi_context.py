@@ -18,13 +18,11 @@ from traits.api import (Bool, List, Str, Undefined, Supports,
     adapt, provides, on_trait_change)
 
 from .data_context import DataContext, ListenableMixin, PersistableMixin
-from .i_context import (ICheckpointable, IListenableContext,
-    IPersistableContext, IRestrictedContext)
+from .i_context import ICheckpointable, IDataContext, IRestrictedContext
 from .utils import safe_repr
 
 
-@provides(ICheckpointable, IListenableContext, IPersistableContext,
-            IRestrictedContext)
+@provides(IDataContext)
 class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
     """ Wrap several subcontexts.
     """
