@@ -223,6 +223,11 @@ class ICheckpointable(Interface):
         # here.
 
 
+class IDataContext(ICheckpointable, IListenableContext, IPersistableContext,
+                   IRestrictedContext):
+    """ Interface for full-featured contexts. """
+
+
 #### Adaptation ###############################################################
 
 class CheckPointableDictAdapter(object):

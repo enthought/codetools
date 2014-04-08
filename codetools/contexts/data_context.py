@@ -21,8 +21,7 @@ from traits.adaptation.api import AdaptationOffer, \
 from traits.api import (Bool, Dict, HasTraits, Str, Supports,
                         adapt, provides, on_trait_change)
 
-from .i_context import (IContext, ICheckpointable, IListenableContext,
-                       IPersistableContext, IRestrictedContext)
+from .i_context import IContext, ICheckpointable, IDataContext
 from .items_modified_event import ItemsModifiedEvent, ItemsModified
 
 # This is copied from numerical_modeling.numeric_context.constants
@@ -230,9 +229,7 @@ class PersistableMixin(HasTraits):
                 file_object.close()
 
 
-
-@provides(ICheckpointable, IListenableContext, IPersistableContext,
-            IRestrictedContext)
+@provides(IDataContext)
 class DataContext(ListenableMixin, PersistableMixin, DictMixin):
     """ A simple context which fires events.
     """
@@ -365,15 +362,11 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
 # Define adaptation offers from IContext to other context protocols using
 # DataContext.
 
-i_context_adaptation_offers = []
-for interface in [ICheckpointable, IListenableContext, IPersistableContext,
-                  IRestrictedContext]:
-    offer = AdaptationOffer(
-        factory=lambda x: DataContext(subcontext=x),
-        from_protocol=IContext,
-        to_protocol=interface
-    )
-    i_context_adaptation_offers.append(offer)
+data_context_offer = AdaptationOffer(
+    factory=lambda x: DataContext(subcontext=x),
+    from_protocol=IContext,
+    to_protocol=IDataContext
+)
 
 
 def register_i_context_adapter_offers(adaptation_manager):
@@ -383,8 +376,7 @@ def register_i_context_adapter_offers(adaptation_manager):
     2) `dict` can be adapted to `ICheckpointable`
     """
 
-    for offer in i_context_adaptation_offers:
-        adaptation_manager.register_offer(offer)
+    adaptation_manager.register_offer(data_context_offer)
 
 
 # For backward compatibility, we register the adapters from `dict` globally

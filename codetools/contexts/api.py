@@ -4,8 +4,8 @@ from .adapted_data_context import AdaptedDataContext
 from .data_context import DataContext, ListenableMixin, PersistableMixin
 from .function_filter_context import FunctionFilterContext
 from .geo_context import GeoContext
-from .i_context import (IContext, IListenableContext, IRestrictedContext,
-    IPersistableContext, ICheckpointable, defer_events)
+from .i_context import (ICheckpointable, IContext, IDataContext,
+    IListenableContext, IPersistableContext, IRestrictedContext, defer_events)
 from .iterable_adapted_data_context import IterableAdaptedDataContext
 from .multi_context import MultiContext
 from .traitslike_context_wrapper import TraitslikeContextWrapper
