@@ -14,17 +14,17 @@ from __future__ import absolute_import
 from itertools import chain
 from UserDict import DictMixin
 
-from traits.api import (Bool, List, Str, Undefined, Supports,
-    adapt, provides, on_trait_change)
+from traits.api import (Bool, List, Str, Undefined, Supports, adapt, provides,
+                        on_trait_change)
 
 from .data_context import DataContext, ListenableMixin, PersistableMixin
-from .i_context import (ICheckpointable, IListenableContext,
-    IPersistableContext, IRestrictedContext)
+from .i_context import (ICheckpointable, IContext, IListenableContext,
+                        IPersistableContext, IRestrictedContext)
 from .utils import safe_repr
 
 
-@provides(ICheckpointable, IListenableContext, IPersistableContext,
-            IRestrictedContext)
+@provides(ICheckpointable, IContext, IListenableContext, IPersistableContext,
+          IRestrictedContext)
 class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
     """ Wrap several subcontexts.
     """

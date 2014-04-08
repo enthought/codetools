@@ -10,8 +10,8 @@ namespace.
 """
 from __future__ import absolute_import
 
-from traits.api import (Bool, HasTraits, List, Str, Supports,
-    Undefined, adapt, provides, on_trait_change)
+from traits.api import (Bool, HasTraits, List, Str, Supports, Undefined,
+                        adapt, provides, on_trait_change)
 
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.i_context import IContext, IListenableContext
@@ -41,7 +41,7 @@ class CodeExecutable(HasTraits):
         return set(inputs), set(outputs)
 
 
-@provides(IExecutingContext)
+@provides(IContext, IExecutingContext, IListenableContext)
 class ExecutingContext(DataContext):
     """ A context which will execute code in response to changes in its
     namespace.

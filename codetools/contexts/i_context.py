@@ -110,7 +110,7 @@ def defer_events(data_context):
 defer_events.context_counts = {}
 
 
-class IListenableContext(IContext):
+class IListenableContext(Interface):
     """ A context that fires events when it is modified.
     """
 
@@ -131,7 +131,7 @@ class IListenableContext(IContext):
         raise NotImplementedError
 
 
-class IRestrictedContext(IContext):
+class IRestrictedContext(Interface):
     """ A context that has certain restrictions on the values it is allowed to
     contain.
     """
@@ -155,7 +155,7 @@ class IRestrictedContext(IContext):
         """
 
 
-class IPersistableContext(IContext):
+class IPersistableContext(Interface):
     """ Add loading and saving to the interface.
     """
 

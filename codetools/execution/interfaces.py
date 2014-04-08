@@ -44,7 +44,7 @@ class IExecutable(Interface):
         """
 
 
-class IExecutingContext(IListenableContext):
+class IExecutingContext(Interface):
     """ A context that manages the execution of a piece of code for another
     context.
     """

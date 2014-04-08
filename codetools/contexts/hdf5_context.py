@@ -7,12 +7,13 @@
 #
 from __future__ import absolute_import
 
-from traits.api import HasTraits, List, Str, Property, Any, provides
-from codetools.contexts.api import IRestrictedContext
+from codetools.contexts.i_context import IContext, IRestrictedContext
+from traits.api import HasTraits, List, Str, Any, provides
 
 import tables
 
-@provides(IRestrictedContext)
+
+@provides(IContext, IRestrictedContext)
 class Hdf5Context(HasTraits):
     """ Provide a "context" (partial dictionary interface) into an HDF5
         file.  It allows multiple paths, specified by the path list, within
