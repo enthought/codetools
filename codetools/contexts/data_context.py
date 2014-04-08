@@ -22,7 +22,7 @@ from traits.api import (Bool, Dict, HasTraits, Str, Supports,
                         adapt, provides, on_trait_change)
 
 from .i_context import (IContext, ICheckpointable, IListenableContext,
-                       IPersistableContext, IRestrictedContext)
+                        IPersistableContext, IRestrictedContext)
 from .items_modified_event import ItemsModifiedEvent, ItemsModified
 
 # This is copied from numerical_modeling.numeric_context.constants
@@ -231,8 +231,8 @@ class PersistableMixin(HasTraits):
 
 
 
-@provides(ICheckpointable, IListenableContext, IPersistableContext,
-            IRestrictedContext)
+@provides(ICheckpointable, IContext, IListenableContext, IPersistableContext,
+          IRestrictedContext)
 class DataContext(ListenableMixin, PersistableMixin, DictMixin):
     """ A simple context which fires events.
     """
@@ -244,7 +244,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
     subcontext = Supports(IContext, factory=dict)
 
 
-    #### IContext interface ####################################################
+    #### IContext interface ###################################################
 
     def __contains__(self, key):
         return key in self.subcontext
@@ -310,7 +310,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
             return cls_cmp
         return DictMixin.__cmp__(self, other)
 
-    #### IRestrictedContext interface ##########################################
+    #### IRestrictedContext interface #########################################
 
     def allows(self, value, name=None):
         """ Determines whether this value is allowed in this context. Only
