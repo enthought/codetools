@@ -1,7 +1,10 @@
 # Copyright (c) 2007-2013 by Enthought, Inc.
 # All rights reserved.
 
-__version__ = '4.3.0.dev'
+try:
+    from ._version import full_version as __version__
+except ImportError:
+    __version__ = 'no-built'
 
 __requires__ = [
     'traits',

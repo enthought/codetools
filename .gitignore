@@ -11,3 +11,5 @@
 build/
 dist/
 docs/build/
+
+codetools/_version.py
