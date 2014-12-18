@@ -2,6 +2,7 @@
 # All rights reserved.
 
 import os
+import re
 import subprocess
 
 from setuptools import setup, find_packages
@@ -35,16 +36,17 @@ def git_version():
         return out
 
     try:
-        out = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
-        git_revision = out.strip().decode('ascii')
+        out = _minimal_ext_cmd(['git', 'describe', '--tags'])
     except OSError:
-        git_revision = "Unknown"
+        out = ''
 
-    try:
-        out = _minimal_ext_cmd(['git', 'rev-list', '--count', 'HEAD'])
-        git_count = out.strip().decode('ascii')
-    except OSError:
-        git_count = '0'
+    git_description = out.strip().decode('ascii')
+    expr = r'.*?\-(?P<count>\d+)-g(?P<hash>[a-fA-F0-9]+)'
+    match = re.match(expr, git_description)
+    if match is None:
+        git_revision, git_count = 'Unknown', '0'
+    else:
+        git_revision, git_count = match.group('hash'), match.group('count')
 
     return git_revision, git_count
 
@@ -75,14 +77,14 @@ if not is_released:
             raise ImportError("Unable to import git_revision. Try removing "
                               "codetools/_version.py and the build directory "
                               "before building.")
-        import re
+
         match = re.match(r'.*?\.dev(?P<dev_num>\d+)', full_v)
         if match is None:
             dev_num = '0'
         else:
             dev_num = match.group('dev_num')
     else:
-        git_rev = "Unknown"
+        git_rev = 'Unknown'
         dev_num = '0'
 
     if not IS_RELEASED:

@@ -4,7 +4,7 @@
 try:
     from ._version import full_version as __version__
 except ImportError:
-    __version__ = 'no-built'
+    __version__ = 'not-built'
 
 __requires__ = [
     'traits',
