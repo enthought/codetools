@@ -2,7 +2,7 @@
 # All rights reserved.
 
 try:
-    from ._version import full_version as __version__
+    from codetools._version import full_version as __version__
 except ImportError:
     __version__ = 'not-built'
 
