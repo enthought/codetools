@@ -13,10 +13,15 @@ matrix:
  allow_failures:
     - python: 3.4
 cache:
-  - pip
-  - ccache
-install:
+  apt: true
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.ccache
+before_install:
+  - ccache -s
   - pip install --upgrade pip
+  - export PATH=/usr/lib/ccache:${PATH}
+install:
   - pip install cython
   - pip install -r travis-ci-requirements.txt
   - python setup.py develop
