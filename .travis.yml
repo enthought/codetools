@@ -23,8 +23,8 @@ install:
   # there is a circular dependency with codetools
   - pip install git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
 before_script:
+  - cp .coveragerc integrationtests
   - cd integrationtests
-  - cp .coveragerc integrationtests/
 script:
   - coverage run -m nose.core -v
   # Do not run the integration tests (see issue #21)
