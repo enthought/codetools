@@ -31,7 +31,7 @@ before_script:
   - cp .coveragerc integrationtests
   - cd integrationtests
 script:
-  - coverage run -m nose.core -v
+  - coverage run -m nose.core codetools -v
   # Do not run the integration tests (see issue #21)
   # - coverage run -a -m nose.core integrationtests/ -v
 after_success:
