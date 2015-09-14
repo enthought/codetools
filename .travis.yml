@@ -20,6 +20,7 @@ install:
   - pip install git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
 script:
   - coverage run -m nose.core -v
+  - coverage run -a -m nose.core integrationtests -v
 after_success:
   - pip instal codecov
   - codecov
