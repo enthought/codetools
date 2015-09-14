@@ -1,21 +1,24 @@
 language: python
+sudo: false
 python:
   - 2.7
   - 2.6
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install swig
+addons:
+  apt:
+    packages:
+    - ccache
+    - swig
+cache:
+  - pip
+  - ccache
 install:
   - pip install cython
-  - pip install -r dev_requirements.txt
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
+  - pip install -r travis-ci-requirements.txt
   - python setup.py develop
   # there is a circular dependency with codetools
-  - pip install -e git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
+  - pip install git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
 script:
-  - coverage run -m nose.core
-notifications:
-  email:
-    - travis-ci@enthought.com
+  - coverage run -m nose.core -v
 after_success:
-  coveralls
+  - pip instal codecov
+  - codecov
