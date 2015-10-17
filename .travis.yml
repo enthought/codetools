@@ -1,21 +1,39 @@
 language: python
+sudo: false
 python:
   - 2.7
   - 2.6
+  - 3.4
+addons:
+  apt:
+    packages:
+    - ccache
+    - swig
+matrix:
+ allow_failures:
+    - python: 3.4
+cache:
+  apt: true
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.ccache
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install swig
+  - ccache -s
+  - pip install --upgrade pip
+  - export PATH=/usr/lib/ccache:${PATH}
 install:
   - pip install cython
-  - pip install -r dev_requirements.txt
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
+  - pip install -r travis-ci-requirements.txt
   - python setup.py develop
   # there is a circular dependency with codetools
-  - pip install -e git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
+  - pip install git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
+before_script:
+  - cp .coveragerc integrationtests
+  - cd integrationtests
 script:
-  - coverage run -m nose.core
-notifications:
-  email:
-    - travis-ci@enthought.com
+  - coverage run -m nose.core codetools -v
+  # Do not run the integration tests (see issue #21)
+  # - coverage run -a -m nose.core integrationtests/ -v
 after_success:
-  coveralls
+  - pip install codecov
+  - codecov
