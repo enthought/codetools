@@ -75,10 +75,10 @@ class BasicTestMappingProtocol(unittest.TestCase):
         self.assertEqual(len(d), len(self.reference))
         #has_key
         for k in self.reference:
-            self.assert_(d.has_key(k))
+            self.assert_(k in d)
             self.assert_(k in d)
         for k in self.other:
-            self.failIf(d.has_key(k))
+            self.failIf(k in d)
             self.failIf(k in d)
         #cmp
         self.assertEqual(cmp(p,p), 0)
@@ -370,7 +370,7 @@ class TestMappingProtocol(BasicTestMappingProtocol):
 
     def test_has_key(self):
         d = self._empty_mapping()
-        self.assert_(not d.has_key('a'))
+        self.assert_('a' not in d)
         d = self._full_mapping({'a': 1, 'b': 2})
         k = d.keys()
         k.sort()

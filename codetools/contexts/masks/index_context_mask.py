@@ -36,7 +36,7 @@ class IndexContextMask(ContextMask):
         index = None
         if hasattr(context, 'get_index'):
             index = context.get_index()
-        elif context.has_key('index'):
+        elif 'index' in context:
             index = context['index']
 
         if index is not None and isinstance(index, numpy.ndarray):

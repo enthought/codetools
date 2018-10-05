@@ -179,7 +179,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
         input, output = self.matched_input_output_pair()
 
         context[key_name] = input
-        self.assertTrue(context.has_key(key_name))
+        self.assertTrue(key_name in context)
 
         return
 
@@ -189,7 +189,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
         context = self.context_factory()
         key_name = self.key_name()
 
-        self.assertFalse(context.has_key(key_name))
+        self.assertFalse(key_name in context)
 
         return
 
@@ -261,7 +261,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
         """
         context[key_name] = input
         del context[key_name]
-        self.assertFalse(context.has_key(key_name))
+        self.assertFalse(key_name in context)
 
         return
 

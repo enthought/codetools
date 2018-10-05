@@ -42,7 +42,7 @@ class ContextMask(object):
 
         if len(self.indices):
             for name in self.context.keys():
-                if self.value_dict.has_key(name):
+                if name in self.value_dict:
                     self.context[name][self.indices] = self.value_dict[name]
 
         return self.context
@@ -59,7 +59,7 @@ class ContextMask(object):
         # Revert all the changes done in __enter__ method.
         if len(self.indices):
             for name in self.context.keys():
-                if self.value_dict.has_key(name):
+                if name in self.value_dict:
                     self.context[name][self.indices] = \
                                     self.init_value_dict[name]
 

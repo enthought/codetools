@@ -66,7 +66,7 @@ class WithMaskAdapter(HasTraits):
         """
 
         # Condition for keeping the old array value
-        cond_keep_array = context.has_key(name) and \
+        cond_keep_array = name in context and \
                              isinstance(context[name], ndarray) and \
                              context[name].shape == self.mask.shape
 
@@ -82,7 +82,7 @@ class WithMaskAdapter(HasTraits):
 
             return name, context[name]
         else:
-            if context.has_key(name):
+            if name in context:
                 old_value = context[name]
                 if isinstance(old_value, ndarray):
                     old_value = old_value[0]

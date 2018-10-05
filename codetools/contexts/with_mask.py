@@ -152,7 +152,7 @@ class Mask(object):
         """ Enter method.
         """
         locals_val = sys._getframe().f_back.f_locals
-        if locals_val.has_key('context') and isinstance(locals_val['context'],
+        if 'context' in locals_val and isinstance(locals_val['context'],
                                                         dict):
             locals_val = locals_val['context']
 
@@ -170,7 +170,7 @@ class Mask(object):
         """ Exit method.
         """
         locals_val = sys._getframe().f_back.f_locals
-        if locals_val.has_key('context') and isinstance(locals_val['context'],
+        if 'context' in locals_val and isinstance(locals_val['context'],
                                                         dict):
             locals_val = locals_val['context']
 
