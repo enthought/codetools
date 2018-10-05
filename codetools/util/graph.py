@@ -20,7 +20,6 @@ A graph is represented by a dictionary which represents the adjacency relation,
 where node ``a`` has an arc to node ``b`` if and only if ``b in d[a]``.
 """
 
-import __builtin__
 from itertools import chain
 
 # Expose the topological sort function from traits.util here too.
@@ -28,6 +27,8 @@ from traits.util.toposort import CyclicGraph, topological_sort
 
 from .cbook import flatten
 from .dict import map_items, map_values
+
+from six.moves import builtins
 
 
 def closure(graph, sorted=True):
@@ -91,7 +92,7 @@ def map(f, graph):
         >>> map(str, { 1:[2,3] })
         {'1': ['2', '3']}
     '''
-    return map_items(lambda k,v: (f(k), __builtin__.map(f,v)), graph)
+    return map_items(lambda k,v: (f(k), [f(x) for x in v]), graph)
 
 # FIXME Implement graphs with sets of values instead of lists of values
 def eq(g1, g2):
@@ -119,7 +120,7 @@ if __name__ == "__main__":
          2:[3,4],
          6:[3],
          4:[6]}
-    print topological_sort(g)
-    print closure(g)
+    print(topological_sort(g))
+    print(closure(g))
 
 #### EOF ######################################################################

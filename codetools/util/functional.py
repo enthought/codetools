@@ -9,6 +9,9 @@
 
 from functools import partial
 
+from six.moves import reduce
+
+
 def compose(*fs):
     ''' ``compose(f,g,...,h)(*args, **kw) == f(g(...(h(*args, **kw))))``
 
@@ -18,7 +21,7 @@ def compose(*fs):
         2
         >>> compose()(1)
         1
-        >>> map(compose(sum, range, len), ['foo', 'asdf', 'wibble'])
+        >>> list(map(compose(sum, range, len), ['foo', 'asdf', 'wibble']))
         [3, 6, 15]
     '''
 

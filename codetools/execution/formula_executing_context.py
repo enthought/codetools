@@ -7,10 +7,10 @@
 #
 from __future__ import absolute_import
 
-# Global imports
 from copy import copy
 
-# Enthought library imports
+import six
+
 from traits.api import Str, Instance, Dict, on_trait_change, Bool, Supports
 from codetools.blocks.api import Block
 from codetools.contexts.data_context import DataContext
@@ -58,7 +58,7 @@ class FormulaExecutingContext(DataContext):
     # Dict interface
     def __setitem__(self, key, value):
         # FIXME this heuristic of looking for an = is somewhat brittle, but will work for our application
-        if isinstance(value, basestring) and '=' in value:
+        if isinstance(value, six.string_types) and '=' in value:
             #This is a formula
             self._expressions[key] = value.split('=')[1]
             self._regenerate_expression_block()

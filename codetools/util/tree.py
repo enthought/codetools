@@ -1,7 +1,14 @@
-'Functions on trees, that is, nested sequences.'
+"""Functions on trees, that is, nested sequences.
+"""
+
+import six
 
 from .functional import partial
-from .sequence import all, any, concat, is_sequence
+from .sequence import concat, is_sequence
+
+
+basestring = six.string_types[0]
+
 
 def is_fork(x, leaves=()):
     'Test whether a tree is a fork (instead of a leaf).'

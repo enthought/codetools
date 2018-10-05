@@ -7,5 +7,6 @@ except ImportError:
     __version__ = 'not-built'
 
 __requires__ = [
+    'six',
     'traits',
 ]

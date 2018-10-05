@@ -11,7 +11,9 @@ A collection of utility functions and classes FROM MATPLOTLIB.
 Many (but not all) from the Python Cookbook -- hence the name cbook.
 """
 from __future__ import generators
-import re, os, errno, sys, StringIO, traceback
+import re, os, errno, sys, traceback
+
+from six import StringIO
 
 
 major, minor1, minor2, s, tmp = sys.version_info
@@ -234,9 +236,9 @@ class Null(object):
 
 
 
-def mkdirs(newdir, mode=0777):
+def mkdirs(newdir, mode=0o777):
    try: os.makedirs(newdir, mode)
-   except OSError, err:
+   except OSError as err:
       # Reraise the error unless it's about an already existing directory
       if err.errno != errno.EEXIST or not os.path.isdir(newdir):
          raise
