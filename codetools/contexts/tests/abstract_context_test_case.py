@@ -77,8 +77,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
            We've overloaded this here to handle arrays.
         """
         if not all(first == second):
-            raise self.failureException, \
-                  (msg or '%r != %r' % (first, second))
+            raise self.failureException(msg or '%r != %r' % (first, second))
 
     ############################################################################
     # BasicTestMappingProtocol interface
