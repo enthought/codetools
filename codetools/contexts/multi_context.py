@@ -12,7 +12,7 @@
 from __future__ import absolute_import
 
 from itertools import chain
-from UserDict import DictMixin
+from collections import MutableMapping as DictMixin
 
 from traits.api import (Bool, List, Str, Undefined, Supports,
     adapt, provides, on_trait_change)

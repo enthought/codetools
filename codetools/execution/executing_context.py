@@ -17,6 +17,8 @@ from codetools.contexts.data_context import DataContext
 from codetools.contexts.i_context import IContext, IListenableContext
 from .interfaces import IExecutable, IExecutingContext
 
+from six import exec_
+
 
 @provides(IExecutable)
 class CodeExecutable(HasTraits):
@@ -37,7 +39,7 @@ class CodeExecutable(HasTraits):
         if globals is None:
             globals = {}
 
-        exec self.code in globals, icontext
+        exec_(self.code, globals, icontext)
         return set(inputs), set(outputs)
 
 

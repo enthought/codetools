@@ -55,12 +55,12 @@ class TraitslikeContextWrapper(HasTraits):
         >>> tcw.add_traits('a', 'b', c=Int)
         """
         if self._context is not None:
-            keys = self._context.keys()
+            keys = list(self._context.keys())
         else:
             keys = []
 
         with self._synch_off():
-            for name, trait in [(x, Any()) for x in args] + kwds.items():
+            for name, trait in [(x, Any()) for x in args] + list(kwds.items()):
                 self.add_trait(name, Trait(trait, in_context=True))
                 # Set the value to that in the context.
                 if name in keys:

@@ -8,18 +8,16 @@
 from __future__ import absolute_import
 
 # Enthought imports
-from traits.api import HasTraits, List, implements
+from traits.api import HasTraits, List, provides
 
 # Local imports
 from .i_adapter_manager import IAdapterManager
 
 
-class AdapterManagerMixin(HasTraits):
+class AdapterManagerMixin(IAdapterManager):
     """ Handles management of an adapter stack for objects that implement
         IContext.
     """
-
-    implements(IAdapterManager)
 
     ### Private AdapterManagerMixin traits #####################################
 

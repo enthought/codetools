@@ -11,6 +11,9 @@ from compiler.ast import Module
 from compiler.transformer import Transformer
 import token
 
+from six import exec_
+
+
 class BlockTransformer(Transformer, object):
     'Specialize how code parses into ASTs for Blocks.'
 
@@ -21,9 +24,10 @@ class BlockTransformer(Transformer, object):
     # What we rewrite 'from %s import *' into
     _rewrite_wildcard_into = '''
 import %s as __module
+import six as __six
 for name in dir(__module):
-    exec '%%s = __module.%%s' %% (name, name)
-del __module
+    __six.exec_('%%s = __module.%%s' %% (name, name))
+del __module, __six
 '''
 
     ###########################################################################

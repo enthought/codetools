@@ -8,10 +8,11 @@
 from __future__ import absolute_import
 
 # python standard library imports
-from UserDict import DictMixin
+from collections import MutableMapping as DictMixin
 
 # Enthought library imports
 from .adapted_data_context import AdaptedDataContext
+
 
 class IterableAdaptedDataContext(AdaptedDataContext):
     """ An AdaptedDataContext whose iteration includes any key mapped

@@ -1,4 +1,5 @@
-# Enthought library imports
+from six import exec_
+
 from traits.api import Code, HasTraits, Instance, Str, Button
 from traitsui.api import View, Group, Item
 from traitsui.wx.constants import WindowColor
@@ -47,7 +48,7 @@ class ExpressionContextDemo(HasTraits):
         return
 
     def _execute_fired(self):
-        exec self.code in {}, self.data_context
+        exec_(self.code, {}, self.data_context)
         return
 
 if __name__ == '__main__':

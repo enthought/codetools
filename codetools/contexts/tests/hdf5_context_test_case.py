@@ -1,7 +1,7 @@
 try:
     import tables
 except ImportError:
-    from nose.plugins.skip import Skip, SkipTest    
+    from nose.plugins.skip import Skip, SkipTest
     raise SkipTest("PyTables not installed")
 
 from codetools.contexts.hdf5_context import Hdf5Context
@@ -11,6 +11,9 @@ import numpy as np
 import os
 import unittest
 from nose.tools import assert_equal, assert_not_equal
+
+from six import exec_
+
 
 class Particle(tables.IsDescription):
     identity = tables.StringCol(itemsize=22, dflt=" ", pos=0)  # character String
@@ -124,6 +127,6 @@ class Hdf5ContextTest(unittest.TestCase):
                           path=['root', 'root.group1', 'root.group2'])
         results = DataContext()
         context = MultiContext(results, hdf_context)
-        exec 'array2_plus_one = [a2 + 1 for a2 in array2]' in {}, context
+        exec_('array2_plus_one = [a2 + 1 for a2 in array2]', {}, context)
         assert_equal(context['array2_plus_one'], [2, 3, 4, 5])
         table.close()

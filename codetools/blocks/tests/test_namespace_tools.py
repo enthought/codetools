@@ -1,5 +1,8 @@
 import os
+
 from numpy.testing import assert_equal, assert_
+from six import exec_
+
 from codetools.blocks.namespace_tools import *
 
 def test_Namespace_class():
@@ -89,7 +92,7 @@ def test_namespace_in_execfile():
 def test_namespace_in_exec():
     # Verify that namespace decorator does *NOT* work in exec'd code.
     dic = {'a':2, 'namespace':namespace}
-    exec code_to_exec in dic
+    exec_(code_to_exec, dic, dic)
     assert_equal(set(dic.keys()), set(['a', '__builtins__', 'namespace',
                                        'f', 'ns']))
     ns = dic['ns']

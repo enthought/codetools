@@ -9,7 +9,7 @@ import types
 import numpy
 
 # Local imports
-from data_context import DataContext
+from .data_context import DataContext
 
 
 class FunctionFilterContext(DataContext):

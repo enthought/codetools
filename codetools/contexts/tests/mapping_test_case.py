@@ -571,13 +571,6 @@ class TestMappingProtocol(BasicTestMappingProtocol):
         d = self._empty_mapping()
         k, v = 'abc', 'def'
 
-        # verify longs/ints get same value when key > 32 bits (for 64-bit archs)
-        # see SF bug #689659
-        x = 4503599627370496L
-        y = 4503599627370496
-        h = self._full_mapping({x: 'anything', y: 'something else'})
-        self.assertEqual(h[x], h[y])
-
         self.assertEqual(d.pop(k, v), v)
         d[k] = v
         self.assertEqual(d.pop(k, 1), v)
@@ -685,7 +678,6 @@ class TestHashMappingProtocol(TestMappingProtocol):
 
     def test_le(self):
         self.assert_(not (self._empty_mapping() < self._empty_mapping()))
-        self.assert_(not (self._full_mapping({1: 2}) < self._full_mapping({1L: 2L})))
 
         class Exc(Exception): pass
 

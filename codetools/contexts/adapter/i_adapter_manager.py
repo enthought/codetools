@@ -8,9 +8,10 @@
 
 from __future__ import absolute_import
 
-from traits.api import Interface
+from traits.api import ABCHasTraits
 
-class IAdapterManager(Interface):
+
+class IAdapterManager(ABCHasTraits):
     """ Handles management of an adapter stack for objects that implement
     IContext.
     """

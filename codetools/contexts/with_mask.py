@@ -238,7 +238,7 @@ if __name__ == '__main__':
 
     b = Block(code)
     b.execute(context)
-    print 'vp', context['vp']
-    print 'vs', context['vs']
+    print('vp', context['vp'])
+    print('vs', context['vs'])
 
 ### EOF ------------------------------------------------------------------------

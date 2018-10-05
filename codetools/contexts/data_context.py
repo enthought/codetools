@@ -12,14 +12,15 @@ IRestrictedContext interfaces.
 
 from __future__ import absolute_import
 
+from collections import MutableMapping as DictMixin
 from contextlib import contextmanager
-from UserDict import DictMixin
 
 from apptools import sweet_pickle
-from traits.adaptation.api import AdaptationOffer, \
-    get_global_adaptation_manager
-from traits.api import (Bool, Dict, HasTraits, Str, Supports,
-                        adapt, provides, on_trait_change)
+from traits.adaptation.api import (
+    AdaptationOffer, get_global_adaptation_manager)
+from traits.api import (
+    ABCHasTraits, Bool, Dict, HasTraits, Str, Supports, adapt, on_trait_change,
+    provides)
 
 from .i_context import IContext, ICheckpointable, IDataContext
 from .items_modified_event import ItemsModifiedEvent, ItemsModified
@@ -35,7 +36,7 @@ def cannot_pickle(type):
         NonPickleable.append(type)
 
 
-class ListenableMixin(HasTraits):
+class ListenableMixin(ABCHasTraits):
     """ Mixin to provide much of the standard IListenableContext implementation.
     """
 
@@ -163,7 +164,7 @@ class ListenableMixin(HasTraits):
 
 
 
-class PersistableMixin(HasTraits):
+class PersistableMixin(ABCHasTraits):
     """ Provide the persistence method implementations for contexts.
     """
 
@@ -207,7 +208,7 @@ class PersistableMixin(HasTraits):
 
         # Check if there is a key called 'context' that references to its
         # bindings
-        if self.has_key('context') and self['context'] == self._bindings:
+        if 'context' in self and self['context'] == self._bindings:
             self.pop('context')
 
         if hasattr(file_or_path, 'write'):
@@ -242,6 +243,12 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
 
 
     #### IContext interface ####################################################
+
+    def __iter__(self):
+        return iter(self.subcontext)
+
+    def __len__(self):
+        return len(self.subcontext)
 
     def __contains__(self, key):
         return key in self.subcontext
@@ -295,6 +302,8 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
     #### DictMixin interface ##################################################
 
     def __cmp__(self, other):
+        # FIXME: Implement __eq__ and __ne__ instead.
+        #
         # Dont allow objects of different inherited classes to be equal.
         # This WILL ALLOW different instances with different names but the
         # same keys and values to be equal

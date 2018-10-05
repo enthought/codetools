@@ -15,6 +15,8 @@ from traceback import format_exc
 import types
 from uuid import UUID, uuid4
 
+from six import exec_
+
 from traits.api import (Bool, Dict, Either, HasTraits,
                                   Instance, List, Property, Str,
                                   cached_property, Event)
@@ -295,7 +297,7 @@ class Block(HasTraits):
                not continue_on_errors:
             if self.filename:
                 local_context['__file__'] = self.filename
-            exec self._code in global_context, local_context
+            exec_(self._code, global_context, local_context)
         else:
             if continue_on_errors:
                 exceptions = []

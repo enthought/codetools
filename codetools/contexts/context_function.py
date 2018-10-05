@@ -66,7 +66,7 @@ def patch_load_and_store(ops, argcount, nglobals, ncellandfreevars):
             op = 'STORE_NAME'
             arg += nglobals
         elif op == "LOAD_CLOSURE":
-            raise ContextFunctionError, "can't create context_function for function containing closure"
+            raise ContextFunctionError("can't create context_function for function containing closure")
         elif op in dis.hasname:
             arg += argcount
         yield op, arg
