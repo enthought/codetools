@@ -6,11 +6,11 @@ import os, unittest
 
 # Major library imports
 from numpy import arange, zeros
+import six
 
 # ETS imports
 from codetools.contexts.with_mask import Mask
 from codetools.contexts.data_context import DataContext
-from codetools.blocks.api import Block
 
 
 class WithMaskTestCase(unittest.TestCase):
@@ -45,8 +45,7 @@ class WithMaskTestCase(unittest.TestCase):
         code = file_object.read()
         file_object.close()
 
-        b = Block(code)
-        b.execute(self.context)
+        six.exec_(code, {}, self.context)
 
         depth = arange(0., 10000., 1000.)
         desired_vp = zeros(depth.shape)
@@ -67,8 +66,7 @@ class WithMaskTestCase(unittest.TestCase):
         code = file_object.read()
         file_object.close()
 
-        b = Block(code)
-        b.execute(self.context)
+        six.exec_(code, {}, self.context)
 
         depth = arange(0., 10000., 1000.)
         desired_vp = zeros(depth.shape)
@@ -89,8 +87,7 @@ class WithMaskTestCase(unittest.TestCase):
         code = file_object.read()
         file_object.close()
 
-        b = Block(code)
-        b.execute(self.context)
+        six.exec_(code, {}, self.context)
 
         desired_vp = arange(0., 10., 1.)
         desired_vs = arange(0., 100., 10.)

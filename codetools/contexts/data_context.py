@@ -245,7 +245,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
     #### IContext interface ####################################################
 
     def __iter__(self):
-        return iter(self.subcontext)
+        return iter(self.keys())
 
     def __len__(self):
         return len(self.subcontext)

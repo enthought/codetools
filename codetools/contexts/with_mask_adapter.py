@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 # Standard imports
 from numpy import ndarray, ones, NaN
+import six
 
 # Enthought library imports
 from traits.api import Any, HasTraits, provides
@@ -77,7 +78,7 @@ class WithMaskAdapter(HasTraits):
 
             # If the new value is a singleton that has to be applied to the
             # masked values alone.
-            elif type(value) in [float, int, str, unicode]:
+            elif isinstance(value, (float, int, bytes) + six.string_types):
                 context[name][self.mask] = value
 
             return name, context[name]
