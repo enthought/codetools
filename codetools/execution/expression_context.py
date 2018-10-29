@@ -8,7 +8,7 @@
 from __future__ import absolute_import
 
 # Global imports
-from UserDict import DictMixin
+from collections import MutableMapping as DictMixin
 
 # Enthought library imports
 from traits.api import Str, Dict, Any, List, AdaptsTo, on_trait_change, provides
@@ -41,6 +41,12 @@ class ExpressionContext(ListenableMixin, PersistableMixin, DictMixin):
 
     def __init__(self, underlying_context, **traits):
         super(ExpressionContext, self).__init__(underlying_context=underlying_context)
+
+    def __iter__(self):
+        return iter(list(self.keys()))
+
+    def __len__(self):
+        return len(list(self.keys()))
 
     def __delitem__(self, key):
         """Delete an item from the ExpressionContext -- either in the underlying context,

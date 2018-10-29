@@ -7,7 +7,7 @@
 #
 'Simple blocks of python code with dependency analysis.'
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import compiler
 from compiler.ast import Module, Node, Stmt
@@ -252,15 +252,15 @@ class Block(HasTraits):
         """ Only to be used for debugging- prints each node of the graph
             with its immediate dependents following
         """
-        print "--------------------------------------"
+        print("--------------------------------------")
         for k in graph.keys():
             if isinstance(k, Block):
-                print k.ast
+                print(k.ast)
                 for dep in graph[k]:
                     if isinstance(dep, Block):
-                        print "    %s" % dep.ast
+                        print("    %s" % dep.ast)
                     else:
-                        print "    '%s'" % dep[0]
+                        print("    '%s'" % dep[0])
 
     ###########################################################################
     # Block public interface
@@ -304,7 +304,7 @@ class Block(HasTraits):
                 for block in self.sub_blocks:
                     try:
                         block.execute(local_context, global_context)
-                    except Exception, e:
+                    except Exception as e:
                         # save the current traceback
                         e.traceback = format_exc()
                         exceptions.append(e)
@@ -583,7 +583,7 @@ class Block(HasTraits):
         leno = len(outputs)
         def simplefunc(*args):
             if len(args) != leni:
-                raise ValueError, "Must have %d inputs" % leni
+                raise ValueError("Must have %d inputs" % leni)
             namespace = {}
             for i, arg in enumerate(args):
                 namespace[inputs[i]] = arg

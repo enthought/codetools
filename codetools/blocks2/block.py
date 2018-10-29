@@ -4,6 +4,8 @@ Updated to use Python's new version of the Abstract Syntax Tree
 from the old compiler.ast module.  -Anthony Scopatz
 """
 
+from __future__ import print_function
+
 import ast
 #from ast import mod, stmt, expr, expr_context, slice, boolop, operator, \
 #    unaryop, cmpop, comprehension, excepthandler, arguments, keyword, alias
@@ -254,15 +256,15 @@ class Block(HasTraits):
         """ Only to be used for debugging- prints each node of the graph
             with its immediate dependents following
         """
-        print "--------------------------------------"
+        print("--------------------------------------")
         for k in graph.keys():
             if isinstance(k, Block):
-                print k.ast
+                print(k.ast)
                 for dep in graph[k]:
                     if isinstance(dep, Block):
-                        print "    %s" % dep.ast
+                        print("    %s" % dep.ast)
                     else:
-                        print "    '%s'" % dep[0]
+                        print("    '%s'" % dep[0])
 
     ###########################################################################
     # Block public interface
@@ -306,7 +308,7 @@ class Block(HasTraits):
                 for block in self.sub_blocks:
                     try:
                         block.execute(local_context, global_context)
-                    except Exception, e:
+                    except Exception as e:
                         # save the current traceback
                         e.traceback = format_exc()
                         exceptions.append(e)
@@ -586,7 +588,7 @@ class Block(HasTraits):
         leno = len(outputs)
         def simplefunc(*args):
             if len(args) != leni:
-                raise ValueError, "Must have %d inputs" % leni
+                raise ValueError("Must have %d inputs" % leni)
             namespace = {}
             for i, arg in enumerate(args):
                 namespace[inputs[i]] = arg

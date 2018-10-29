@@ -28,7 +28,7 @@ class ErrorContinueTest(unittest.TestCase):
         try:
             b.execute(ctx, continue_on_errors=True)
             assert False #We should have thrown
-        except Exception, e:
+        except Exception as e:
             assert isinstance(e, ValueError)
             assert ctx.has_key('d')
         return
@@ -39,7 +39,7 @@ class ErrorContinueTest(unittest.TestCase):
         try:
             b.execute(ctx, continue_on_errors=True)
             assert False #We should have thrown
-        except Exception, e:
+        except Exception as e:
             assert isinstance(e, CompositeException)
             assert len(e.exceptions) == 2
         return
