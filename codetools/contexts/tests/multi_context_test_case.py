@@ -1,5 +1,5 @@
 # Standard library imports
-from cStringIO import StringIO
+from io import BytesIO
 import os
 import sys
 import unittest
@@ -95,21 +95,21 @@ class MultiContextTestCase(AbstractContextTestCase):
         d2 = DataContext(name = 'test_context2')
 
         m = MultiContext(*[d1,d2], **{'name': 'test_mc'})
-        self.assertTrue(len(m.keys()) == 2)
+        self.assertTrue(len(list(m.keys())) == 2)
 
         # Add another context
         d3 = DataContext(name = 'test_context3',
                          subcontext = {'c':3, 'd':4})
         m.subcontexts.append(d3)
-        self.assertTrue(len(m.keys()) == 4)
+        self.assertTrue(len(list(m.keys())) == 4)
 
         # Modify an existing context
         m.subcontexts[1].subcontext = {'cc': 5}
-        self.assertTrue(len(m.keys()) == 5)
+        self.assertTrue(len(list(m.keys())) == 5)
 
         # Remove a context
         m.subcontexts.pop(0)
-        self.assertTrue(len(m.keys()) == 3)
+        self.assertTrue(len(list(m.keys())) == 3)
 
 
 def test_persistence():
@@ -121,7 +121,7 @@ def test_persistence():
                      subcontext = {'foo':100, 'bar':200, 'baz':300})
     m = MultiContext(d1, d2, name='test_mc')
 
-    f = StringIO()
+    f = BytesIO()
     m.save(f)
     f.seek(0, 0)
     new_m = MultiContext.load(f)

@@ -174,8 +174,8 @@ class Mask(object):
                                                         dict):
             locals_val = locals_val['context']
 
-        for k in locals_val.keys():
-            if k in self.context.keys() and isinstance(self.context[k],
+        for k in list(locals_val.keys()):
+            if k in list(self.context.keys()) and isinstance(self.context[k],
                                                        ndarray):
                 equal_values = self.context[k] == locals_val[k]
                 if isinstance(equal_values, ndarray):

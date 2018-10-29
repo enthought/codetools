@@ -68,7 +68,7 @@ class ListenableMixin(ABCHasTraits):
 
     def _defer_events_changed_refire(self, new, event_attribute='items_modified'):
         if not new:
-            for key, event in self._deferred_events.items():
+            for key, event in list(self._deferred_events.items()):
 
                 added = event.added
                 removed = event.removed
@@ -262,7 +262,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         # Figure out if the item was added or modified
         added = []
         modified = []
-        if key in self.subcontext.keys():
+        if key in self.subcontext:
             modified = [key]
         else:
             added = [key]
@@ -286,7 +286,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         -------
         keys : list of str
         """
-        return self.subcontext.keys()
+        return list(self.subcontext.keys())
 
     # Expose DictMixin's get method over HasTraits'.
     get = DictMixin.get
@@ -301,20 +301,19 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
 
     #### DictMixin interface ##################################################
 
-    def __cmp__(self, other):
-        # FIXME: Implement __eq__ and __ne__ instead.
-        #
-        # Dont allow objects of different inherited classes to be equal.
-        # This WILL ALLOW different instances with different names but the
-        # same keys and values to be equal
-        #
-        # Subclasses may wish to override this to compare different attributes
-        #
+    def __eq__(self, other):
+        """ Don't allow objects of different classes to be equal.
 
-        cls_cmp = cmp(self.__class__, other.__class__)
-        if cls_cmp != 0:
-            return cls_cmp
-        return DictMixin.__cmp__(self, other)
+        This will allow different instances with different names but the same
+        keys and values to be equal. Subclasses may wish to override this to
+        compare different attributes.
+        """
+        if type(other) is not type(self):
+            return False
+        return DictMixin.__eq__(self, other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     #### IRestrictedContext interface ##########################################
 

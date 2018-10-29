@@ -3,7 +3,9 @@ import unittest
 
 # Geo library imports
 from codetools.contexts.function_filter_context import FunctionFilterContext
-from blockcanvas.debug.my_operator import add, mul, div, sub
+
+def add(x, y):
+    return x + y
 
 class FunctionFilterContextTestCase(unittest.TestCase):
     """ Test whether the context filters values by their type appropriately.
@@ -44,6 +46,3 @@ class FunctionFilterContextTestCase(unittest.TestCase):
 
         context['add'] = add
         self.assertEqual(context['add'], add)
-
-
-### EOF ------------------------------------------------------------------------

@@ -72,7 +72,7 @@ class Hdf5Context(HasTraits):
             node_str = '.'.join(['self.file_object', dir])
             try:
                 node = eval(node_str)
-                if name in node._v_children.keys():
+                if name in list(node._v_children.keys()):
                     location = dir
                     break
             except tables.NoSuchNodeError:
@@ -105,7 +105,7 @@ class Hdf5Context(HasTraits):
             node_str = '.'.join(['self.file_object', dir])
             try:
                 node = eval(node_str)
-                all_names.update(node._v_leaves.keys())
+                all_names.update(list(node._v_leaves.keys()))
             except tables.NoSuchNodeError:
                 continue
 
@@ -118,8 +118,14 @@ class Hdf5Context(HasTraits):
         # Fixme: Extract and share (and improve) tree-walking code in keys()
         return ((k, self.__getitem__(k)) for k in self.keys())
 
+    def __len__(self):
+        return len(self.keys())
+
+    def __iter__(self):
+        return iter(self.keys())
+
     def __contains__(self, name):
-        return name in self.keys()
+        return name in list(self.keys())
 
     def __getitem__(self, name):
         """
@@ -133,7 +139,7 @@ class Hdf5Context(HasTraits):
             # Convert a dir such as 'root.foo.bar' to '/foo/bar'.
             slash_dir = '/' + '/'.join(dir.split('.')[1:])
             try:
-                node = self.file_object.getNode(slash_dir, name)
+                node = self.file_object.get_node(slash_dir, name)
             except tables.NoSuchNodeError:
                 continue
 
@@ -166,7 +172,6 @@ class Hdf5Context(HasTraits):
         """
         raise NotImplementedError
 
-
     def __delitem__(self, name):
         """ Delete an item from the context.
 
@@ -176,4 +181,3 @@ class Hdf5Context(HasTraits):
             this one.
         """
         raise NotImplementedError
-

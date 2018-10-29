@@ -1,8 +1,7 @@
 # Standard Library Imports
-from itertools import imap
+from collections import MutableMapping as DictMixin
 import timeit
 import unittest
-from UserDict import DictMixin
 
 # Numeric library imports
 from numpy import all
@@ -39,8 +38,12 @@ def adapt_keys(context):
             self._m[to_str(x)] = value
         def __delitem__(self, x):
             del self._m[to_str(x)]
+        def __iter__(self):
+            return iter(list(self.keys()))
+        def __len__(self):
+            return len(self._m)
         def keys(self):
-            return map(from_str, self._m.keys())
+            return map(from_str, list(self._m.keys()))
 
     return KeyAdapter(context)
 

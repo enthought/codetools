@@ -1,4 +1,7 @@
 import unittest
+from unittest import SkipTest
+
+import six
 
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.multi_context import MultiContext
@@ -101,6 +104,8 @@ class Events2TestCase(unittest.TestCase):
         self.assertEqual(self.last_event.removed, ['a'])
 
     def test_block_events(self):
+        if six.PY3:
+            raise SkipTest("skipping Block-using tests on Python 3")
         import numpy
         from codetools.blocks.api import Block
 
