@@ -120,7 +120,7 @@ if __name__ == "__main__":
          2:[3,4],
          6:[3],
          4:[6]}
-    print(topological_sort(g))
-    print(closure(g))
+    print((topological_sort(g)))
+    print((closure(g)))
 
 #### EOF ######################################################################

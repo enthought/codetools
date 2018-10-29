@@ -60,12 +60,9 @@ if __name__ == '__main__':
     # Usage
     with IndexContextMask(g, 'index < threshold', {'vp': 1.5, 'vs':1e-5}):
         # These should be the new values.
-        print g['vp']
-        print g['vs']
+        print(g['vp'])
+        print(g['vs'])
 
     # These should be the original values.
-    print g['vp']
-    print g['vs']
-
-
-### EOF ------------------------------------------------------------------------
+    print(g['vp'])
+    print(g['vs'])

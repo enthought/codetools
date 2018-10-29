@@ -10,7 +10,7 @@ A collection of utility functions and classes FROM MATPLOTLIB.
 
 Many (but not all) from the Python Cookbook -- hence the name cbook.
 """
-from __future__ import generators
+from __future__ import generators, print_function
 import re, os, errno, sys, traceback
 
 from six import StringIO
@@ -408,7 +408,7 @@ def pieces(seq, num=2):
 def exception_to_str(s = None):
 
    sh = StringIO.StringIO()
-   if s is not None: print >>sh, s
+   if s is not None: print(s, file=sh)
    traceback.print_exc(file=sh)
    return sh.getvalue()
 
