@@ -8,7 +8,7 @@
 from __future__ import absolute_import
 
 # Enthought imports
-from traits.api import HasTraits, List, provides
+from traits.api import HasTraits, List
 
 # Local imports
 from .i_adapter_manager import IAdapterManager

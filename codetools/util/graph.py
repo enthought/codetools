@@ -28,8 +28,6 @@ from traits.util.toposort import CyclicGraph, topological_sort
 from .cbook import flatten
 from .dict import map_items, map_values
 
-from six.moves import builtins
-
 
 def closure(graph, sorted=True):
     """
