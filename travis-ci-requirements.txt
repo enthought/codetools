@@ -1,6 +1,5 @@
 numpy
 coverage
-unittest2 ; python_version <= "2.6"
 futures
 pillow
 git+http://github.com/enthought/scimath.git#egg=scimath

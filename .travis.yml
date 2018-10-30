@@ -2,8 +2,9 @@ language: python
 sudo: false
 python:
   - 2.7
-  - 2.6
   - 3.4
+  - 3.5
+  - 3.6
 addons:
   apt:
     packages:
@@ -25,8 +26,6 @@ install:
   - pip install cython
   - pip install -r travis-ci-requirements.txt
   - python setup.py develop
-  # there is a circular dependency with codetools
-  - pip install git+http://github.com/enthought/blockcanvas.git#egg=blockcanvas
 before_script:
   - cp .coveragerc integrationtests
   - cd integrationtests
