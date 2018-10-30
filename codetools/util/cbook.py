@@ -286,34 +286,6 @@ class RingBuffer(object):
        return self.data[i % len(self.data)]
 
 
-# use enumerate builtin if available, else use python version
-try:
-    import __builtin__
-    enumerate = __builtin__.enumerate
-except:
-    def enumerate(seq):
-        """Python equivalent to the enumerate builtin function
-        enumerate() is new in Python 2.3
-        """
-        for i in range(len(seq)):
-            yield i, seq[i]
-
-
-# use itertools.izip if available, else use python version
-try:
-    import itertools
-    izip = itertools.izip
-except:
-    def izip(*iterables):
-        """Python equivalent to itertools.izip
-        itertools module - new in Python 2.3
-        """
-        iterables = list(map(iter, iterables))
-        while iterables:
-            result = [next(i) for i in iterables]
-            yield tuple(result)
-
-
 def get_split_ind(seq, N):
    """seq is a list of words.  Return the index into seq such that
    len(' '.join(seq[:ind])<=N
