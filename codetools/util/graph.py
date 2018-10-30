@@ -99,8 +99,8 @@ def eq(g1, g2):
 def reachable_graph(graph, nodes):
     ''' Return the subgraph of the given graph reachable from the given nodes.
 
-        >>> reachable_graph({'a':'bc', 'b':'c' }, 'a')
-        {'a': 'bc', 'b': 'c'}
+        >>> sorted(reachable_graph({'a':'bc', 'b':'c' }, 'a').items())
+        [('a', 'bc'), ('b', 'c')]
         >>> reachable_graph({'a':'bc', 'b':'c' }, 'b')
         {'b': 'c'}
         >>> reachable_graph({'a':'bc', 'b':'c' }, 'c')
