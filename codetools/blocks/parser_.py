@@ -11,8 +11,6 @@ from compiler.ast import Module
 from compiler.transformer import Transformer
 import token
 
-from six import exec_
-
 
 class BlockTransformer(Transformer, object):
     'Specialize how code parses into ASTs for Blocks.'
