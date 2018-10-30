@@ -6,6 +6,7 @@ import unittest
 
 import six
 from six.moves import UserDict
+from six.moves import range
 
 
 class BasicTestMappingProtocol(unittest.TestCase):

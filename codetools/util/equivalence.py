@@ -2,6 +2,7 @@ from copy import copy
 
 from traits.api import HasTraits, Instance, List, Property
 from .sequence import union
+from six.moves import map
 
 # Our representation of equivalence classes can be optimized. It looks like all
 # of our methods are linear in the number of classes; liberal use of hashes
@@ -71,7 +72,7 @@ class Equivalence(HasTraits):
     ### Properties ############################################################
 
     def _get_classes(self):
-        return map(frozenset, self._classes)
+        return list(map(frozenset, self._classes))
 
     ### object interface ######################################################
 

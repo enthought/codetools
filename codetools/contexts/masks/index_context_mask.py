@@ -1,7 +1,7 @@
 """ Class for masking geo_context with conditions on indices
 """
 
-from __future__ import absolute_import
+from __future__ import print_function
 
 # Standard imports
 import numpy

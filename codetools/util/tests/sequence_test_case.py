@@ -1,13 +1,14 @@
 import unittest
 
 from codetools.util.sequence import concat, disjoint, intersect, union
+from six.moves import range
 
 
 class SequenceTestCase(unittest.TestCase):
 
     def test_concat(self):
         self.assertEqual(
-            concat(range(i) for i in range(5)),
+            concat(list(range(i)) for i in range(5)),
             [0, 0, 1, 0, 1, 2, 0, 1, 2, 3],
         )
         self.assertEqual(

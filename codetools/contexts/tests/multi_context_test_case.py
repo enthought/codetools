@@ -13,6 +13,7 @@ from traits.api import Any
 from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.multi_context import MultiContext
+from six.moves import zip
 
 
 class MultiContextTestCase(AbstractContextTestCase):

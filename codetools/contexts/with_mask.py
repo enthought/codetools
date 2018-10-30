@@ -110,7 +110,7 @@ local environment; and cling off outside the 'with' block/control.
       to 2.5.1., it works well.
 
 """
-from __future__ import absolute_import
+from __future__ import print_function
 
 # Standard imports
 from numpy import ndarray

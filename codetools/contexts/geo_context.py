@@ -1,10 +1,9 @@
-# Numeric imports
+from __future__ import print_function
+
 from numpy import ndarray
 
-# ETS imports
 from scimath.units.api import UnitArray
 
-# Local imports
 from .data_context import DataContext
 
 

@@ -13,6 +13,7 @@ import unittest
 from nose.tools import assert_equal, assert_not_equal
 
 from six import exec_
+from six.moves import range
 
 
 class Particle(tables.IsDescription):
@@ -44,7 +45,7 @@ def create_sample_hdf5_file(filename):
         # Get the record object associated with the table:
         row = table.row
         # Fill the table with 10 records
-        for i in xrange(10):
+        for i in range(10):
             # First, assign the values to the Particle record
             row['identity']  = 'This is particle: %2d' % (i)
             row['idnumber'] = i

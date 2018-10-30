@@ -4,6 +4,7 @@ import dis, inspect, pprint
 
 import numpy
 import six
+from six.moves import range
 
 if six.PY2:
     from codetools.contexts.context_function import (

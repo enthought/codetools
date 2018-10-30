@@ -188,7 +188,7 @@ class PersistableMixin(ABCHasTraits):
         else:
             # Open the file.
             should_close = True
-            file_object = file(file_or_path, 'rb')
+            file_object = open(file_or_path, 'rb')
 
         try:
             data_context = sweet_pickle.load(file_object)

@@ -14,6 +14,9 @@ from __future__ import generators, print_function
 import re, os, errno, sys, traceback
 
 from six import StringIO
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 
 
 major, minor1, minor2, s, tmp = sys.version_info
@@ -305,9 +308,9 @@ except:
         """Python equivalent to itertools.izip
         itertools module - new in Python 2.3
         """
-        iterables = map(iter, iterables)
+        iterables = list(map(iter, iterables))
         while iterables:
-            result = [i.next() for i in iterables]
+            result = [next(i) for i in iterables]
             yield tuple(result)
 
 
@@ -420,7 +423,7 @@ def allequal(seq):
     """
     if len(seq)<2: return True
     val = seq[0]
-    for i in xrange(1, len(seq)):
+    for i in range(1, len(seq)):
         thisval = seq[i]
         if thisval != val: return False
     return True
@@ -526,7 +529,7 @@ class Stack(object):
 
 def popall(seq):
     'empty a list'
-    for i in xrange(len(seq)): seq.pop()
+    for i in range(len(seq)): seq.pop()
 
 def finddir(o, match, case=False):
     """

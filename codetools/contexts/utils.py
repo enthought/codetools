@@ -9,6 +9,7 @@
 """
 
 from __future__ import absolute_import
+from six.moves import range
 
 def compare_objects(object1, object2):
     """ Do a rich comparison of 2 given objects

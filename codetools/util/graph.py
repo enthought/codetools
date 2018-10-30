@@ -20,6 +20,7 @@ A graph is represented by a dictionary which represents the adjacency relation,
 where node ``a`` has an arc to node ``b`` if and only if ``b in d[a]``.
 """
 
+from __future__ import print_function
 from itertools import chain
 
 # Expose the topological sort function from traits.util here too.
@@ -27,6 +28,7 @@ from traits.util.toposort import CyclicGraph, topological_sort
 
 from .cbook import flatten
 from .dict import map_items, map_values
+from six.moves import range
 
 
 def closure(graph, sorted=True):
@@ -57,12 +59,12 @@ def closure(graph, sorted=True):
     retval = {}
     for node, node_reachable in reachable.items():
         if not sorted:
-            retval[node] = node_reachable.keys()
+            retval[node] = list(node_reachable.keys())
         else:
             # Create a tuple list so the faster built-in sort
             # comparator can be used.
             tmp = []
-            reachable_list = node_reachable.keys()
+            reachable_list = list(node_reachable.keys())
             for n in reachable_list:
                 tmp.append((idxorder[n], n))
             tmp.sort()
@@ -109,7 +111,7 @@ def reachable_graph(graph, nodes):
     ret = {}
     closed = closure(graph)
     for n in chain(nodes, flatten([ closed[n] for n in nodes ])):
-        if n in graph.keys():
+        if n in list(graph.keys()):
             ret[n] = graph[n]
     return ret
 

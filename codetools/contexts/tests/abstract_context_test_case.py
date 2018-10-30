@@ -8,6 +8,7 @@ from numpy import all
 
 # Geo library imports
 from codetools.contexts.tests.mapping_test_case import BasicTestMappingProtocol
+from six.moves import map
 
 def adapt_keys(context):
     ''' Wrap a context so that it accepts all key types used by

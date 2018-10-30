@@ -4,6 +4,7 @@ import dis
 from functools import wraps
 import struct
 import types
+from six.moves import zip
 
 ##############################################################################
 # Implementation Notes
