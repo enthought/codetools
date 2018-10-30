@@ -133,5 +133,4 @@ if __name__ == "__main__":
           packages=find_packages(),
           platforms=["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
           zip_safe=False,
-          use2to3=True,
           )

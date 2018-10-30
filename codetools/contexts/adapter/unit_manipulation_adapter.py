@@ -133,7 +133,7 @@ class UnitManipulationAdapter(HasTraits):
             # Conversion requested (new_units exist), but a converter
             # wasn't found.
             msg = "Unable to find converter for type %s" % type(value)
-            raise ConversionError, msg
+            raise ConversionError(msg)
 
         return value
 

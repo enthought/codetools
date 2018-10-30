@@ -12,14 +12,15 @@ IRestrictedContext interfaces.
 
 from __future__ import absolute_import
 
+from collections import MutableMapping as DictMixin
 from contextlib import contextmanager
-from UserDict import DictMixin
 
 from apptools import sweet_pickle
-from traits.adaptation.api import AdaptationOffer, \
-    get_global_adaptation_manager
-from traits.api import (Bool, Dict, HasTraits, Str, Supports,
-                        adapt, provides, on_trait_change)
+from traits.adaptation.api import (
+    AdaptationOffer, get_global_adaptation_manager)
+from traits.api import (
+    ABCHasTraits, Bool, Dict, HasTraits, Str, Supports, adapt, on_trait_change,
+    provides)
 
 from .i_context import IContext, ICheckpointable, IDataContext
 from .items_modified_event import ItemsModifiedEvent, ItemsModified
@@ -35,7 +36,7 @@ def cannot_pickle(type):
         NonPickleable.append(type)
 
 
-class ListenableMixin(HasTraits):
+class ListenableMixin(ABCHasTraits):
     """ Mixin to provide much of the standard IListenableContext implementation.
     """
 
@@ -67,7 +68,7 @@ class ListenableMixin(HasTraits):
 
     def _defer_events_changed_refire(self, new, event_attribute='items_modified'):
         if not new:
-            for key, event in self._deferred_events.items():
+            for key, event in list(self._deferred_events.items()):
 
                 added = event.added
                 removed = event.removed
@@ -163,7 +164,7 @@ class ListenableMixin(HasTraits):
 
 
 
-class PersistableMixin(HasTraits):
+class PersistableMixin(ABCHasTraits):
     """ Provide the persistence method implementations for contexts.
     """
 
@@ -187,7 +188,7 @@ class PersistableMixin(HasTraits):
         else:
             # Open the file.
             should_close = True
-            file_object = file(file_or_path, 'rb')
+            file_object = open(file_or_path, 'rb')
 
         try:
             data_context = sweet_pickle.load(file_object)
@@ -207,7 +208,7 @@ class PersistableMixin(HasTraits):
 
         # Check if there is a key called 'context' that references to its
         # bindings
-        if self.has_key('context') and self['context'] == self._bindings:
+        if 'context' in self and self['context'] == self._bindings:
             self.pop('context')
 
         if hasattr(file_or_path, 'write'):
@@ -243,6 +244,12 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
 
     #### IContext interface ####################################################
 
+    def __iter__(self):
+        return iter(self.keys())
+
+    def __len__(self):
+        return len(self.subcontext)
+
     def __contains__(self, key):
         return key in self.subcontext
 
@@ -255,7 +262,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         # Figure out if the item was added or modified
         added = []
         modified = []
-        if key in self.subcontext.keys():
+        if key in self.subcontext:
             modified = [key]
         else:
             added = [key]
@@ -279,7 +286,7 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
         -------
         keys : list of str
         """
-        return self.subcontext.keys()
+        return list(self.subcontext.keys())
 
     # Expose DictMixin's get method over HasTraits'.
     get = DictMixin.get
@@ -294,18 +301,19 @@ class DataContext(ListenableMixin, PersistableMixin, DictMixin):
 
     #### DictMixin interface ##################################################
 
-    def __cmp__(self, other):
-        # Dont allow objects of different inherited classes to be equal.
-        # This WILL ALLOW different instances with different names but the
-        # same keys and values to be equal
-        #
-        # Subclasses may wish to override this to compare different attributes
-        #
+    def __eq__(self, other):
+        """ Don't allow objects of different classes to be equal.
 
-        cls_cmp = cmp(self.__class__, other.__class__)
-        if cls_cmp != 0:
-            return cls_cmp
-        return DictMixin.__cmp__(self, other)
+        This will allow different instances with different names but the same
+        keys and values to be equal. Subclasses may wish to override this to
+        compare different attributes.
+        """
+        if type(other) is not type(self):
+            return False
+        return DictMixin.__eq__(self, other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     #### IRestrictedContext interface ##########################################
 

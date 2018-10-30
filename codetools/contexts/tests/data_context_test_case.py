@@ -1,6 +1,6 @@
 
 # Standard Library Imports
-from cStringIO import StringIO
+from io import BytesIO
 import sys
 
 import nose
@@ -32,7 +32,7 @@ def test_persistence():
     d['a'] = 1
     d['b'] = 2
 
-    f = StringIO()
+    f = BytesIO()
     d.save(f)
     f.seek(0, 0)
     d2 = DataContext.load(f)

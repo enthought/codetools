@@ -110,7 +110,7 @@ local environment; and cling off outside the 'with' block/control.
       to 2.5.1., it works well.
 
 """
-from __future__ import absolute_import
+from __future__ import print_function
 
 # Standard imports
 from numpy import ndarray
@@ -152,7 +152,7 @@ class Mask(object):
         """ Enter method.
         """
         locals_val = sys._getframe().f_back.f_locals
-        if locals_val.has_key('context') and isinstance(locals_val['context'],
+        if 'context' in locals_val and isinstance(locals_val['context'],
                                                         dict):
             locals_val = locals_val['context']
 
@@ -170,12 +170,12 @@ class Mask(object):
         """ Exit method.
         """
         locals_val = sys._getframe().f_back.f_locals
-        if locals_val.has_key('context') and isinstance(locals_val['context'],
+        if 'context' in locals_val and isinstance(locals_val['context'],
                                                         dict):
             locals_val = locals_val['context']
 
-        for k in locals_val.keys():
-            if k in self.context.keys() and isinstance(self.context[k],
+        for k in list(locals_val.keys()):
+            if k in list(self.context.keys()) and isinstance(self.context[k],
                                                        ndarray):
                 equal_values = self.context[k] == locals_val[k]
                 if isinstance(equal_values, ndarray):
@@ -238,7 +238,7 @@ if __name__ == '__main__':
 
     b = Block(code)
     b.execute(context)
-    print 'vp', context['vp']
-    print 'vs', context['vs']
+    print('vp', context['vp'])
+    print('vs', context['vs'])
 
 ### EOF ------------------------------------------------------------------------

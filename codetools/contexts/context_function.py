@@ -1,7 +1,10 @@
 """ Allows a function to execute as if locals are a context
 """
-import dis, struct, new
+import dis
 from functools import wraps
+import struct
+import types
+from six.moves import zip
 
 ##############################################################################
 # Implementation Notes
@@ -66,7 +69,7 @@ def patch_load_and_store(ops, argcount, nglobals, ncellandfreevars):
             op = 'STORE_NAME'
             arg += nglobals
         elif op == "LOAD_CLOSURE":
-            raise ContextFunctionError, "can't create context_function for function containing closure"
+            raise ContextFunctionError("can't create context_function for function containing closure")
         elif op in dis.hasname:
             arg += argcount
         yield op, arg
@@ -80,7 +83,7 @@ def args_to_locals(co):
     co_code = compile_bytecode(patch_load_and_store(parse_bytecode(co.co_code),
                                    co.co_argcount, nglobals,
                                    nfreevars+ncellvars))
-    return new.code(0, co.co_nlocals+len(co.co_varnames)+nfreevars+ncellvars,
+    return types.CodeType(0, co.co_nlocals+len(co.co_varnames)+nfreevars+ncellvars,
         co.co_stacksize, co.co_flags & ~15,
         co_code, co.co_consts, co.co_names + co.co_cellvars + co.co_freevars
         + co.co_varnames, (),
@@ -153,10 +156,10 @@ def context_function(f, context_factory):
     """
 
     # values that we may as well pre-calculate
-    code = args_to_locals(f.func_code)
-    if f.func_closure:
-        free_var_dict = dict(zip(f.func_code.co_freevars[-len(f.func_closure):],
-                             (cell.cell_contents for cell in f.func_closure)))
+    code = args_to_locals(f.__code__)
+    if f.__closure__:
+        free_var_dict = dict(zip(f.__code__.co_freevars[-len(f.__closure__):],
+                             (cell.cell_contents for cell in f.__closure__)))
     else:
         free_var_dict = {}
 
@@ -165,25 +168,25 @@ def context_function(f, context_factory):
         loc = context_factory()
         for key, value in free_var_dict.items():
             loc[key] = value
-        arg_len = f.func_code.co_argcount
-        named_args = f.func_code.co_varnames[:arg_len]
-        if f.func_defaults:
-            defaults = dict(zip(named_args[-len(f.func_defaults):], f.func_defaults))
+        arg_len = f.__code__.co_argcount
+        named_args = f.__code__.co_varnames[:arg_len]
+        if f.__defaults__:
+            defaults = dict(zip(named_args[-len(f.__defaults__):], f.__defaults__))
         else:
             defaults = {}
         if arg_len < len(args):
-            if f.func_code.co_flags & 4:
+            if f.__code__.co_flags & 4:
                 loc.update(dict(zip(named_args, args[:arg_len])))
-                loc[f.func_code.co_varnames[arg_len]] = args[arg_len:]
-                if f.func_code.co_flags & 8:
-                    loc[f.func_code.co_varnames[arg_len+1]] = kwargs
+                loc[f.__code__.co_varnames[arg_len]] = args[arg_len:]
+                if f.__code__.co_flags & 8:
+                    loc[f.__code__.co_varnames[arg_len+1]] = kwargs
             else:
                 # too many args
                 raise TypeError
         else:
             loc.update(dict(zip(named_args[:len(args)], args)))
-            if f.func_code.co_flags & 4:
-                loc[f.func_code.co_varnames[arg_len]] = ()
+            if f.__code__.co_flags & 4:
+                loc[f.__code__.co_varnames[arg_len]] = ()
             for arg in named_args[len(args):]:
                 if arg in kwargs:
                     loc[arg] = kwargs[arg]
@@ -196,16 +199,16 @@ def context_function(f, context_factory):
                 if arg in kwargs:
                     del kwargs[arg]
             if kwargs:
-                if f.func_code.co_flags & 8:
-                    if f.func_code.co_flags & 4:
+                if f.__code__.co_flags & 8:
+                    if f.__code__.co_flags & 4:
                         kwarg_no = arg_len + 1
                     else:
                         kwarg_no = arg_len
-                    loc[f.func_code.co_varnames[kwarg_no]] = kwargs
+                    loc[f.__code__.co_varnames[kwarg_no]] = kwargs
                 else:
                     # incorrect kwargs
                     raise TypeError
-        return eval(code, f.func_globals, loc)
+        return eval(code, f.__globals__, loc)
 
     return new_f
 

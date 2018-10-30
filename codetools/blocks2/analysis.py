@@ -12,7 +12,7 @@ from ..util.functional import partial
 from ..util import graph
 from ..util.graph import closure
 from ..util.sequence import \
-    all, disjoint, intersect, is_sequence, union
+    disjoint, intersect, is_sequence, union
 from ..util import tree
 
 # Extend compiler.ast.Node with a structure-preserving children query

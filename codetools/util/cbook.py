@@ -10,8 +10,13 @@ A collection of utility functions and classes FROM MATPLOTLIB.
 
 Many (but not all) from the Python Cookbook -- hence the name cbook.
 """
-from __future__ import generators
-import re, os, errno, sys, StringIO, traceback
+from __future__ import generators, print_function
+import re, os, errno, sys, traceback
+
+from six import StringIO
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 
 
 major, minor1, minor2, s, tmp = sys.version_info
@@ -234,9 +239,9 @@ class Null(object):
 
 
 
-def mkdirs(newdir, mode=0777):
+def mkdirs(newdir, mode=0o777):
    try: os.makedirs(newdir, mode)
-   except OSError, err:
+   except OSError as err:
       # Reraise the error unless it's about an already existing directory
       if err.errno != errno.EEXIST or not os.path.isdir(newdir):
          raise
@@ -279,34 +284,6 @@ class RingBuffer(object):
 
     def __getitem__(self, i):
        return self.data[i % len(self.data)]
-
-
-# use enumerate builtin if available, else use python version
-try:
-    import __builtin__
-    enumerate = __builtin__.enumerate
-except:
-    def enumerate(seq):
-        """Python equivalent to the enumerate builtin function
-        enumerate() is new in Python 2.3
-        """
-        for i in range(len(seq)):
-            yield i, seq[i]
-
-
-# use itertools.izip if available, else use python version
-try:
-    import itertools
-    izip = itertools.izip
-except:
-    def izip(*iterables):
-        """Python equivalent to itertools.izip
-        itertools module - new in Python 2.3
-        """
-        iterables = map(iter, iterables)
-        while iterables:
-            result = [i.next() for i in iterables]
-            yield tuple(result)
 
 
 def get_split_ind(seq, N):
@@ -406,7 +383,7 @@ def pieces(seq, num=2):
 def exception_to_str(s = None):
 
    sh = StringIO.StringIO()
-   if s is not None: print >>sh, s
+   if s is not None: print(s, file=sh)
    traceback.print_exc(file=sh)
    return sh.getvalue()
 
@@ -418,7 +395,7 @@ def allequal(seq):
     """
     if len(seq)<2: return True
     val = seq[0]
-    for i in xrange(1, len(seq)):
+    for i in range(1, len(seq)):
         thisval = seq[i]
         if thisval != val: return False
     return True
@@ -524,7 +501,7 @@ class Stack(object):
 
 def popall(seq):
     'empty a list'
-    for i in xrange(len(seq)): seq.pop()
+    for i in range(len(seq)): seq.pop()
 
 def finddir(o, match, case=False):
     """

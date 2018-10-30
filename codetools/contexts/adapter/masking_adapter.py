@@ -16,6 +16,7 @@ from numpy import NaN, empty, float64, iscomplex, isreal, ndarray
 
 # Enthought library imports
 from traits.api import Any, HasTraits
+from scimath.units.api import UnitArray
 
 # Local imports
 from .i_adapter import IAdapter
@@ -91,6 +92,9 @@ class MaskingAdapter(HasTraits):
             default_value, dtype = get_default_value_and_dtype(name, value)
             new = self._empty_of_local_shape(context, dtype=dtype)
             new.fill(default_value)
+            if isinstance(value, UnitArray):
+                new = new.view(UnitArray)
+                new.units = value.units
             ###new[self.mask] = value
             ###return name, new
 

@@ -1,14 +1,14 @@
 # Standard Library Imports
-from itertools import imap
+from collections import MutableMapping as DictMixin
 import timeit
 import unittest
-from UserDict import DictMixin
 
 # Numeric library imports
 from numpy import all
 
 # Geo library imports
 from codetools.contexts.tests.mapping_test_case import BasicTestMappingProtocol
+from six.moves import map
 
 def adapt_keys(context):
     ''' Wrap a context so that it accepts all key types used by
@@ -39,8 +39,12 @@ def adapt_keys(context):
             self._m[to_str(x)] = value
         def __delitem__(self, x):
             del self._m[to_str(x)]
+        def __iter__(self):
+            return iter(list(self.keys()))
+        def __len__(self):
+            return len(self._m)
         def keys(self):
-            return map(from_str, self._m.keys())
+            return map(from_str, list(self._m.keys()))
 
     return KeyAdapter(context)
 
@@ -77,8 +81,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
            We've overloaded this here to handle arrays.
         """
         if not all(first == second):
-            raise self.failureException, \
-                  (msg or '%r != %r' % (first, second))
+            raise self.failureException(msg or '%r != %r' % (first, second))
 
     ############################################################################
     # BasicTestMappingProtocol interface
@@ -179,7 +182,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
         input, output = self.matched_input_output_pair()
 
         context[key_name] = input
-        self.assertTrue(context.has_key(key_name))
+        self.assertTrue(key_name in context)
 
         return
 
@@ -189,7 +192,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
         context = self.context_factory()
         key_name = self.key_name()
 
-        self.assertFalse(context.has_key(key_name))
+        self.assertFalse(key_name in context)
 
         return
 
@@ -261,7 +264,7 @@ class AbstractContextTestCase(BasicTestMappingProtocol):
         """
         context[key_name] = input
         del context[key_name]
-        self.assertFalse(context.has_key(key_name))
+        self.assertFalse(key_name in context)
 
         return
 

@@ -3,9 +3,12 @@ import math
 import dis, inspect, pprint
 
 import numpy
+import six
+from six.moves import range
 
-from codetools.contexts.context_function import context_function, \
-        ContextFunctionError, local_context
+if six.PY2:
+    from codetools.contexts.context_function import (
+        ContextFunctionError, context_function, local_context)
 
 c = 5.0
 
@@ -80,6 +83,10 @@ def internal_from(a):
 
 
 class ContextFunctionTestCase(unittest.TestCase):
+
+    def setUp(self):
+        if six.PY3:
+            raise unittest.SkipTest("context_function is not ported to Python 3")
 
     def test_func_attributes(self):
         c = 5.0
@@ -206,6 +213,10 @@ class ContextDecoratorTestCase(unittest.TestCase):
     We assume that if the basic functionality works, and context_function
     passes all tests, then local_context should be fine.
     """
+
+    def setUp(self):
+        if six.PY3:
+            raise unittest.SkipTest("context_function is not ported to Python 3")
 
     def test_basic_functionality(self):
         c = 5.0

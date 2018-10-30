@@ -11,9 +11,10 @@ class BlockTransformer(NodeTransformer, object):
 
     # What we rewrite 'from %s import *' into
     _rewrite_wildcard_into = ("import %s as __module\n"
+                              "import six as __six\n"
                               "for name in dir(__module):\n"
-                              "    exec '%%s = __module.%%s' %% (name, name)\n"
-                              "del __module\n")
+                              "    __six.exec_('%%s = __module.%%s' %% (name, name))\n"
+                              "del __module, __six\n")
 
     ###########################################################################
     # Transformer public interface

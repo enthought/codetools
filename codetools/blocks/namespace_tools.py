@@ -11,6 +11,8 @@
 """
 from __future__ import absolute_import
 
+from six import exec_
+
 from .decorators import func2str
 
 ##############################################################################
@@ -76,7 +78,7 @@ def namespace(function):
         ns.update(positional)
         globs = function.func_globals
 
-        exec code_object in globs, ns
+        exec_(code_object, globs, ns)
 
         # Save the original function name in the namespace as
         # the attribute '_func_name'.

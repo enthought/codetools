@@ -20,7 +20,7 @@ A graph is represented by a dictionary which represents the adjacency relation,
 where node ``a`` has an arc to node ``b`` if and only if ``b in d[a]``.
 """
 
-import __builtin__
+from __future__ import print_function
 from itertools import chain
 
 # Expose the topological sort function from traits.util here too.
@@ -28,6 +28,7 @@ from traits.util.toposort import CyclicGraph, topological_sort
 
 from .cbook import flatten
 from .dict import map_items, map_values
+from six.moves import range
 
 
 def closure(graph, sorted=True):
@@ -58,12 +59,12 @@ def closure(graph, sorted=True):
     retval = {}
     for node, node_reachable in reachable.items():
         if not sorted:
-            retval[node] = node_reachable.keys()
+            retval[node] = list(node_reachable.keys())
         else:
             # Create a tuple list so the faster built-in sort
             # comparator can be used.
             tmp = []
-            reachable_list = node_reachable.keys()
+            reachable_list = list(node_reachable.keys())
             for n in reachable_list:
                 tmp.append((idxorder[n], n))
             tmp.sort()
@@ -91,7 +92,7 @@ def map(f, graph):
         >>> map(str, { 1:[2,3] })
         {'1': ['2', '3']}
     '''
-    return map_items(lambda k,v: (f(k), __builtin__.map(f,v)), graph)
+    return map_items(lambda k,v: (f(k), [f(x) for x in v]), graph)
 
 # FIXME Implement graphs with sets of values instead of lists of values
 def eq(g1, g2):
@@ -100,8 +101,8 @@ def eq(g1, g2):
 def reachable_graph(graph, nodes):
     ''' Return the subgraph of the given graph reachable from the given nodes.
 
-        >>> reachable_graph({'a':'bc', 'b':'c' }, 'a')
-        {'a': 'bc', 'b': 'c'}
+        >>> sorted(reachable_graph({'a':'bc', 'b':'c' }, 'a').items())
+        [('a', 'bc'), ('b', 'c')]
         >>> reachable_graph({'a':'bc', 'b':'c' }, 'b')
         {'b': 'c'}
         >>> reachable_graph({'a':'bc', 'b':'c' }, 'c')
@@ -110,7 +111,7 @@ def reachable_graph(graph, nodes):
     ret = {}
     closed = closure(graph)
     for n in chain(nodes, flatten([ closed[n] for n in nodes ])):
-        if n in graph.keys():
+        if n in list(graph.keys()):
             ret[n] = graph[n]
     return ret
 
@@ -119,7 +120,7 @@ if __name__ == "__main__":
          2:[3,4],
          6:[3],
          4:[6]}
-    print topological_sort(g)
-    print closure(g)
+    print((topological_sort(g)))
+    print((closure(g)))
 
 #### EOF ######################################################################

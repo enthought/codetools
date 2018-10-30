@@ -1,10 +1,9 @@
-# Numeric imports
+from __future__ import print_function
+
 from numpy import ndarray
 
-# ETS imports
 from scimath.units.api import UnitArray
 
-# Local imports
 from .data_context import DataContext
 
 
@@ -56,8 +55,8 @@ if __name__ == '__main__':
     g['depth'] = UnitArray(arange(0., 5000., 100.), units = feet)
     g['foo'] = arange(30, 530.0, 10.)
 
-    print g.context_names
-    print g.get_index()
+    print(g.context_names)
+    print(g.get_index())
 
 
 ### EOF ------------------------------------------------------------------------

@@ -12,7 +12,7 @@
 from __future__ import absolute_import
 
 from itertools import chain
-from UserDict import DictMixin
+from collections import MutableMapping as DictMixin
 
 from traits.api import (Bool, List, Str, Undefined, Supports,
     adapt, provides, on_trait_change)
@@ -42,6 +42,12 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
 
 
     #### IContext interface ####################################################
+
+    def __iter__(self):
+        return iter(self.keys())
+
+    def __len__(self):
+        return len(list(self.keys()))
 
     def __contains__(self, key):
         for c in self.subcontexts:
@@ -139,7 +145,7 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
             raise ValueError('Disallowed mapping: %s = %s' % (key, safe_repr(value)))
 
     def keys(self):
-        return list(set(chain(*[c.keys() for c in self.subcontexts])))
+        return list(set(chain(*[list(c.keys()) for c in self.subcontexts])))
 
 
     # Expose DictMixin's get method over HasTraits'.
@@ -189,12 +195,12 @@ class MultiContext(ListenableMixin, PersistableMixin, DictMixin):
         # Add to the list of items added
         if len(event.added):
             for context in event.added:
-                added.extend(context.keys())
+                added.extend(list(context.keys()))
 
         # Add to the list of items removed
         if len(event.removed):
             for context in event.removed:
-                removed.extend(context.keys())
+                removed.extend(list(context.keys()))
 
         self._fire_event(added=added, removed=removed)
 

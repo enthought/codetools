@@ -1,6 +1,6 @@
 'Non-standard dictionary functions'
 
-from sequence import intersect
+from .sequence import intersect
 
 def map_keys(f, d):
     ''' Map a function over the keys in a dictionary.
@@ -78,7 +78,7 @@ def sub_dict(d, keys):
         ...     sub_dict({1: 2}, [1, 3])
         ...     assert False
         ... except KeyError:
-        ...     print 'Key error!'
+        ...     print('Key error!')
         Key error!
     '''
     return dict([ (k, d[k]) for k in keys ])

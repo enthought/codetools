@@ -14,6 +14,7 @@ from traits.api import HasTraits, Dict, Str, provides
 # Local imports
 from .i_adapter import IAdapter
 
+
 @provides(IAdapter)
 class NameAdapter(HasTraits):
     """ Maps more descriptive names provided by the user to names in the context
@@ -46,4 +47,4 @@ class NameAdapter(HasTraits):
         """ Returns a list containing any keys (names) defined by this
             adapter.
         """
-        return self.map.keys()
+        return list(self.map.keys())

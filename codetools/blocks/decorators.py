@@ -118,7 +118,7 @@ def func2str(func,backframes=1):
     callframe = sys._getframe(backframes)
     filename = callframe.f_code.co_filename
     if filename == '<stdin>':
-        raise ValueError, "Decorator can't be used here."
+        raise ValueError("Decorator can't be used here.")
     elif filename == '<ipython console>':
         s = findsource_ipython(callframe, func.func_name)
     else:

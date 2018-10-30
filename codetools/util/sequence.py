@@ -11,9 +11,6 @@ def is_sequence(x):
     except TypeError:
         return False
 
-all = lambda l: False not in map(bool, l)
-any = lambda l: True in map(bool, l)
-
 ###############################################################################
 # list
 ###############################################################################
@@ -31,7 +28,8 @@ def concat(lists):
         []
     '''
     l = []
-    map(l.extend, lists)
+    for sublist in lists:
+        l.extend(sublist)
     return l
 
 ###############################################################################
@@ -49,7 +47,8 @@ def union(sets):
         set([])
     '''
     s = set()
-    map(s.update, sets)
+    for subset in sets:
+        s.update(subset)
     return s
 
 def intersect(sets):
@@ -60,13 +59,14 @@ def intersect(sets):
         >>> intersect([set('ab'), set('bc'), set('ac')])
         set([])
         >>> try: intersect([])
-        ... except: print 'bad'
+        ... except: print('bad')
         ...
         bad
     '''
     sets = iter(sets)
-    s = copy(sets.next())
-    map(s.intersection_update, sets)
+    s = copy(next(sets))
+    for subset in sets:
+        s.intersection_update(subset)
     return s
 
 def disjoint(*sets):

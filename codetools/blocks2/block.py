@@ -4,6 +4,8 @@ Updated to use Python's new version of the Abstract Syntax Tree
 from the old compiler.ast module.  -Anthony Scopatz
 """
 
+from __future__ import print_function
+
 import ast
 #from ast import mod, stmt, expr, expr_context, slice, boolop, operator, \
 #    unaryop, cmpop, comprehension, excepthandler, arguments, keyword, alias
@@ -13,6 +15,8 @@ from traceback import format_exc
 import types
 from uuid import UUID, uuid4
 
+from six import exec_
+
 from traits.api import (Bool, Dict, Either, HasTraits,
                                   Instance, List, Property, Str,
                                   cached_property, Event)
@@ -21,9 +25,9 @@ from ..util.dict import map_keys, map_values
 from ..util import graph
 from ..util.sequence import is_sequence
 
-from analysis import NameFinder
+from .analysis import NameFinder
 
-from block_transformer import BlockTransformer
+from .block_transformer import BlockTransformer
 from codetools.blocks.compiler_unparse import unparse
 
 ###############################################################################
@@ -252,15 +256,15 @@ class Block(HasTraits):
         """ Only to be used for debugging- prints each node of the graph
             with its immediate dependents following
         """
-        print "--------------------------------------"
+        print("--------------------------------------")
         for k in graph.keys():
             if isinstance(k, Block):
-                print k.ast
+                print(k.ast)
                 for dep in graph[k]:
                     if isinstance(dep, Block):
-                        print "    %s" % dep.ast
+                        print("    %s" % dep.ast)
                     else:
-                        print "    '%s'" % dep[0]
+                        print("    '%s'" % dep[0])
 
     ###########################################################################
     # Block public interface
@@ -297,14 +301,14 @@ class Block(HasTraits):
                not continue_on_errors:
             if self.filename:
                 local_context['__file__'] = self.filename
-            exec self._code in global_context, local_context
+            exec_(self._code, global_context, local_context)
         else:
             if continue_on_errors:
                 exceptions = []
                 for block in self.sub_blocks:
                     try:
                         block.execute(local_context, global_context)
-                    except Exception, e:
+                    except Exception as e:
                         # save the current traceback
                         e.traceback = format_exc()
                         exceptions.append(e)
@@ -584,7 +588,7 @@ class Block(HasTraits):
         leno = len(outputs)
         def simplefunc(*args):
             if len(args) != leni:
-                raise ValueError, "Must have %d inputs" % leni
+                raise ValueError("Must have %d inputs" % leni)
             namespace = {}
             for i, arg in enumerate(args):
                 namespace[inputs[i]] = arg

@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 # Standard imports
 from numpy import ndarray, ones, NaN
+import six
 
 # Enthought library imports
 from traits.api import Any, HasTraits, provides
@@ -66,7 +67,7 @@ class WithMaskAdapter(HasTraits):
         """
 
         # Condition for keeping the old array value
-        cond_keep_array = context.has_key(name) and \
+        cond_keep_array = name in context and \
                              isinstance(context[name], ndarray) and \
                              context[name].shape == self.mask.shape
 
@@ -77,12 +78,12 @@ class WithMaskAdapter(HasTraits):
 
             # If the new value is a singleton that has to be applied to the
             # masked values alone.
-            elif type(value) in [float, int, str, unicode]:
+            elif isinstance(value, (float, int, bytes) + six.string_types):
                 context[name][self.mask] = value
 
             return name, context[name]
         else:
-            if context.has_key(name):
+            if name in context:
                 old_value = context[name]
                 if isinstance(old_value, ndarray):
                     old_value = old_value[0]
