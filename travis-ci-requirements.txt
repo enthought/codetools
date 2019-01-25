@@ -2,7 +2,7 @@ numpy
 coverage
 futures
 pillow
-scimath
+git+http://github.com/enthought/scimath.git#egg=scimath
 git+http://github.com/enthought/traits.git#egg=traits
 traitsui
 pyface
