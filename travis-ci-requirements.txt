@@ -3,7 +3,7 @@ coverage
 futures
 pillow
 scimath
-traits
+git+http://github.com/enthought/traits.git#egg=traits
 traitsui
 pyface
 apptools
