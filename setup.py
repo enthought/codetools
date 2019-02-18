@@ -4,6 +4,7 @@
 import os
 import re
 import subprocess
+import sys
 
 from setuptools import setup, find_packages
 
@@ -15,6 +16,19 @@ MICRO = 0
 IS_RELEASED = False
 
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
+
+if sys.version_info >= (3,):
+    # `codetools.blocks`, `codetools.blocks2` and `codetools.execution` are not
+    # supported on Python 3 at the moment so we exclude them from the package.
+    kwargs = {
+        'exclude' : [
+            "*.blocks", "*.blocks.*",
+            "*.blocks2", "*.blocks2.*",
+            "*.execution", "*.execution.*"
+        ]
+    }
+else:
+    kwargs = {'exclude': []}
 
 
 # Return the git revision as a string
@@ -130,7 +144,7 @@ if __name__ == "__main__":
           package_data={'codetools': ['contexts/images/*.png']},
           install_requires=__requires__,
           license='BSD',
-          packages=find_packages(),
+          packages=find_packages(**kwargs),
           platforms=["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
           zip_safe=False,
           )
