@@ -17,7 +17,7 @@ IS_RELEASED = False
 
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 
-if sys.version_info[0] == 3:
+if sys.version_info >= (3,):
     # `codetools.blocks`, `codetools.blocks2` and `codetools.execution` are not
     # supported on Python 3 at the moment so we exclude them from the package.
     kwargs = {
