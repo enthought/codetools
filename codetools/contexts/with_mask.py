@@ -121,7 +121,7 @@ from codetools.contexts.i_context import ICheckpointable
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.multi_context import MultiContext
 from codetools.contexts.adapted_data_context import AdaptedDataContext
-from traits.protocols.api import adapt
+from traits.adaptation.api import adapt
 
 # Local imports
 from .with_mask_adapter import WithMaskAdapter
