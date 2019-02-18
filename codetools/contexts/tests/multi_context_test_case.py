@@ -5,6 +5,8 @@ import sys
 import unittest
 
 import nose
+from nose.plugins.skip import SkipTest
+import six
 
 # Enthought library imports
 from traits.api import Any
@@ -116,6 +118,8 @@ class MultiContextTestCase(AbstractContextTestCase):
 def test_persistence():
     """ Checking if the data persists correctly when saving and loading back
     """
+    if six.PY2:
+        raise SkipTest("Pickling MultiContext instances is broken on Python 2.")
     d1 = DataContext(name = 'test_context1',
                      subcontext = {'a':1, 'b':2})
     d2 = DataContext(name = 'test_context2',
