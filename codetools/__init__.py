@@ -7,6 +7,10 @@ except ImportError:
     __version__ = 'not-built'
 
 __requires__ = [
+    'apptools',
+    'futures',
+    'numpy',
+    'scimath',
     'six',
     'traits',
 ]
