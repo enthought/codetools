@@ -1,10 +1,30 @@
 Codetools Changelog
 ===================
 
+Release 4.3.0
+-------------
 
-What's new in Codetools 4.3.0
------------------------------
+*NOTE* : Pickling `MultiContext` instances is broken on Python 2.
+See https://github.com/enthought/codetools/issues/30 for further details.
 
+New Features
+
+* Support for Python 3.5 and 3.6 (#22)
+
+* New `IDataContext` interface and relevant concrete implementations -
+  `DataContext` and `MultiContext` (#18)
+
+* Provide adaptation offers for dictionaty to IContext adaptation (#15)
+
+Enhancements
+
+* Use PEP 440 compliant development version (#19)
+
+Fixes
+
+* Remove deprecated traits api (#27)
+
+* Remove unused imports and dependence on `unittest2` (#13)
 
 
 Release 4.2.0
