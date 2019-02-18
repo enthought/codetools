@@ -4,6 +4,8 @@ Codetools Changelog
 Release 4.3.0
 -------------
 
+Released : 18 February 2019
+
 *NOTE* : Pickling `MultiContext` instances is broken on Python 2.
 See https://github.com/enthought/codetools/issues/30 for further details.
 
