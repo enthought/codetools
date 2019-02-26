@@ -127,7 +127,12 @@ if __name__ == "__main__":
           description='code analysis and execution tools',
           long_description=open('README.rst').read(),
           include_package_data=True,
-          package_data={'codetools': ['contexts/images/*.png']},
+          package_data={
+              'codetools': [
+                  'contexts/images/*.png',
+                  'contexts/tests/with_mask_codes*.py',
+              ],
+          },
           install_requires=__requires__,
           license='BSD',
           packages=find_packages(),
