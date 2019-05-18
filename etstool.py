@@ -53,9 +53,7 @@ you can run tests in all supported runtimes::
 
     python etstool.py test-all
 
-Currently supported runtime values are ``2.7`` and ``3.5``.  Not all
-combinations of runtimes will work, but the tasks will fail with
-a clear error if that is the case.
+Currently supported runtime values are ``2.7.13``, ``3.5.2`` and ``3.6.0``.
 
 Tests can still be run via the usual means in other environments if that suits
 a developer's purpose.
