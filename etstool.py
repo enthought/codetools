@@ -148,7 +148,8 @@ def install(runtime, environment, docs):
 @cli.command()
 @click.option('--runtime', default='3.6')
 @click.option('--environment', default=None)
-def test(runtime, environment):
+@click.option('--integration/--no-intergation', default=False)
+def test(runtime, environment, integration):
     """ Run the test suite in a given environment.
 
     """
@@ -174,6 +175,14 @@ def test(runtime, environment):
         os.environ.update(environ)
         execute(commands, parameters)
     click.echo('Done test')
+
+    if integration:
+        commands = [
+            "edm run -e {environment} -- coverage run -a -m nose.core -v integrationtests/"
+        ]
+        os.environ.update(environ)
+        execute(commands, parameters)
+        click.echo('Done running integration tests')
 
 
 @cli.command()

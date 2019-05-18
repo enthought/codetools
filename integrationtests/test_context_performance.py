@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 # Standard library imports
 import unittest
 import timeit
@@ -208,16 +210,14 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
                 "context['depth'] = UnitArray(arange(1000),units=meters)\n" \
                 "compiled = compile('depth2 = depth + depth','foo','exec')\n"
 
-        code = "exec compiled in globals(), context\n"
+        code = "exec(compiled, globals(), context)\n"
         adp = timeit.Timer(code, setup)
         adp_res = adp.timeit(N)
 
-
         slowdown = adp_res/std_res
         msg = 'actual slowdown, time: %f' % slowdown, adp_res/N
-        print "[actual slowdown=%3.2f]  " % slowdown,
+        print("[actual slowdown=%3.2f]  " % slowdown)
         assert slowdown < allowed_slowdown, msg
-
 
 
 if __name__ == '__main__':
