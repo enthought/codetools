@@ -1,38 +1,50 @@
-language: python
-sudo: false
-python:
-  - 2.7
-  - 3.4
-  - 3.5
-  - 3.6
-addons:
-  apt:
-    packages:
-    - ccache
-    - swig
+language: generic
+
+env:
+  global:
+    - INSTALL_EDM_VERSION=1.10.0
+      PYTHONUNBUFFERED="1"
+
 matrix:
- allow_failures:
-    - python: 3.4
+  include:
+    - env: RUNTIME=2.7
+    - env: RUNTIME=3.5
+    - env: RUNTIME=3.6
+    - os: osx
+      env: RUNTIME=2.7
+    - os: osx
+      env: RUNTIME=3.5
+    - os: osx
+      env: RUNTIME=3.6
+  fast_finish: true
+
 cache:
-  apt: true
   directories:
-    - $HOME/.cache/pip
-    - $HOME/.ccache
+    - "~/.cache"
+
 before_install:
-  - ccache -s
-  - pip install --upgrade pip
-  - export PATH=/usr/lib/ccache:${PATH}
+  - mkdir -p "${HOME}/.cache/download"
+  - export DISPLAY=:99.0
+  - if [[ ${TRAVIS_OS_NAME} == "linux" ]] ; then sh -e /etc/init.d/xvfb start; fi
+  - if [[ ${TRAVIS_OS_NAME} == 'linux' ]]; then ./install-edm-linux.sh; export PATH="${HOME}/edm/bin:${PATH}"; fi
+  - if [[ ${TRAVIS_OS_NAME} == 'osx' ]]; then ./install-edm-osx.sh; export PATH="${PATH}:/usr/local/bin"; fi
+  - edm install -y wheel click coverage
 install:
-  - pip install cython
-  - pip install -r travis-ci-requirements.txt
-  - python setup.py develop
-before_script:
-  - cp .coveragerc integrationtests
-  - cd integrationtests
+  - edm run -- python etstool.py install --runtime=${RUNTIME} || exit
 script:
-  - coverage run -m nose.core codetools -v
+  - edm run -- python etstool.py test --runtime=${RUNTIME} || exit
+  # Building docs on python 3 is broken at the moment
+  # - edm run -- python etstool.py docs --runtime=${RUNTIME} || exit
   # Do not run the integration tests (see issue #21)
+  # - cp .coveragerc integrationtests
+  # - cd integrationtests
   # - coverage run -a -m nose.core integrationtests/ -v
+
 after_success:
-  - pip install codecov
-  - codecov
+  - edm run -- coverage combine
+  - edm run -- pip install codecov
+  - edm run -- codecov
+
+notifications:
+  email:
+    - travis-ci@enthought.com

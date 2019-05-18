@@ -1,0 +1,38 @@
+build: false
+environment:
+
+  global:
+    PYTHONUNBUFFERED: "1"
+    INSTALL_EDM_VERSION: "1.9.2"
+    # We're having trouble setting up EDM 1.10.0.
+    # See PR #420 for details.
+
+  matrix:
+
+    - RUNTIME: '2.7'
+    - RUNTIME: '3.5'
+    - RUNTIME: '3.6'
+
+matrix:
+  fast_finish: true
+
+cache:
+  - C:\Users\appveyor\.cache -> appveyor-clean-cache.txt
+  - C:\Users\appveyor\AppData\Local\pip\Cache -> appveyor-clean-cache.txt
+
+init:
+  - ps: $Env:path = "C:/Enthought/edm;" + $Env:path
+  - ps: md C:/Users/appveyor/.cache -Force
+
+install:
+  - install-edm-windows.cmd
+  - edm install -y wheel click coverage
+  - edm run -- python etstool.py install --runtime=%runtime%
+test_script:
+  - edm run -- python etstool.py test --runtime=%runtime%
+  # Building docs on Python 3 is broken at the moment
+  # - edm run -- python etstool.py docs --runtime=%runtime%
+on_success:
+  - edm run -- coverage combine
+  - edm run -- pip install codecov
+  - edm run -- codecov
