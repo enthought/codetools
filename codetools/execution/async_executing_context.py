@@ -14,7 +14,7 @@ from concurrent.futures import Executor, Future
 from concurrent.futures import ThreadPoolExecutor
 
 from traits.api import (Instance, Dict, Event, Code, Any, on_trait_change,
-        Bool, Undefined, Supports)
+        Bool, Undefined, Supports, OBJECT_IDENTITY_COMPARE)
 
 from codetools.contexts.data_context import DataContext
 from .executing_context import ExecutingContext
@@ -43,7 +43,7 @@ class AsyncExecutingContext(ExecutingContext):
 
     # The local execution namespace
     subcontext = Supports(IListenableContext, factory=DataContext,
-        rich_compare=False)
+        comparison_mode=OBJECT_IDENTITY_COMPARE)
 
     # Fired when an exception occurs during execution.
     # Carries the exception.

@@ -11,7 +11,7 @@ namespace.
 from __future__ import absolute_import
 
 from traits.api import (Bool, HasTraits, List, Str, Supports,
-    Undefined, adapt, provides, on_trait_change)
+    Undefined, adapt, provides, on_trait_change, OBJECT_IDENTITY_COMPARE)
 
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.i_context import IContext, IListenableContext
@@ -51,7 +51,7 @@ class ExecutingContext(DataContext):
 
     # Override to provide a more specific requirement.
     subcontext = Supports(IListenableContext, factory=DataContext,
-        rich_compare=False)
+        comparison_mode=OBJECT_IDENTITY_COMPARE)
 
     executable = Supports(IExecutable, factory=CodeExecutable)
 
