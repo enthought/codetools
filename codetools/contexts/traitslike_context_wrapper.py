@@ -15,7 +15,7 @@ from __future__ import absolute_import
 from contextlib import contextmanager
 
 from traits.api import (Any, Bool, HasTraits, Supports, Trait,
-    Undefined, on_trait_change)
+    Undefined, on_trait_change, OBJECT_IDENTITY_COMPARE)
 
 from .i_context import IListenableContext
 
@@ -28,7 +28,9 @@ class TraitslikeContextWrapper(HasTraits):
     # that mirror the context.
 
     # The context we are wrapping.
-    _context = Supports(IListenableContext, rich_compare=False)
+    _context = Supports(
+        IListenableContext, comparison_mode=OBJECT_IDENTITY_COMPARE
+    )
 
     # Whether the communication between traits and context is currently active
     # or not.
