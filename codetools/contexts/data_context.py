@@ -16,7 +16,6 @@ from collections import MutableMapping as DictMixin
 from contextlib import contextmanager
 import pickle
 
-from apptools import sweet_pickle
 from apptools.persistence.versioned_unpickler import VersionedUnpickler
 from traits.adaptation.api import (
     AdaptationOffer, get_global_adaptation_manager)
