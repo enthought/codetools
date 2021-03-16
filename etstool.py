@@ -103,7 +103,7 @@ python2_dependencies = {
     "mock",
 }
 
-supported_runtimes = ["2.7.13", "3.5.2", "3.6.0"]
+supported_runtimes = ["3.6"]
 
 @click.group()
 def cli():
