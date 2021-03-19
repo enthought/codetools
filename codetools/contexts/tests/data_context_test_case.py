@@ -1,14 +1,30 @@
 
 # Standard Library Imports
 from io import BytesIO
+import os
 import sys
 
+from importlib_resources import files
 import nose
 
 # Local library imports
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
 
+
+def create_data_context_pickle():
+    """ Used to create a pickled DataContext stored in
+    codetools/contexts/tests/data/data_context.pickle.
+    
+    """
+    d = DataContext(name='test_context')
+    d['a'] = 1
+    d['b'] = 2
+
+    filename = os.fspath(
+        files('codetools.contexts.tests') / 'data' / 'data_context.pickle'
+    )
+    d.save(filename)
 
 class DataContextTestCase(AbstractContextTestCase):
 
@@ -41,6 +57,18 @@ def test_persistence():
     assert set(d2.keys()) == set(['a', 'b'])
     assert d2['a'] == d['a']
     assert d2['b'] == d['b']
+    
+
+def test_long_term_persistence():
+    filename = os.fspath(
+        files('codetools.contexts.tests') / 'data' / 'data_context.pickle'
+    )
+    d = DataContext.load(filename)
+
+    assert d.name == 'test_context'
+    assert set(d.keys()) == set(['a', 'b'])
+    assert d['a'] == 1
+    assert d['b'] == 2
 
 
 class RestrictedValues(DataContext):
