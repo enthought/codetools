@@ -12,7 +12,7 @@ from codetools.contexts.data_context import DataContext
 from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
 
 
-def create_data_context_pickle():
+def _create_data_context_pickle():
     """ Used to create a pickled DataContext stored in
     codetools/contexts/tests/data/data_context.pickle.
 
@@ -61,7 +61,7 @@ def test_persistence():
     assert d2['b'] == d['b']
     
 
-def test_long_term_persistence():
+def test_persistence_backwards_compatibility():
     filename = os.fspath(
         files('codetools.contexts.tests') / 'data' / 'data_context.pickle'
     )
@@ -148,4 +148,3 @@ def test_comparison():
 
     assert a == b
     assert a != c
-
