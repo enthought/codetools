@@ -15,7 +15,9 @@ from codetools.contexts.tests.abstract_context_test_case import AbstractContextT
 def create_data_context_pickle():
     """ Used to create a pickled DataContext stored in
     codetools/contexts/tests/data/data_context.pickle.
-    
+
+    Function is kept for reference. Do not rerun unless you need to override
+    the existing pickled DataContext to be tested.
     """
     d = DataContext(name='test_context')
     d['a'] = 1
