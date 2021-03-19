@@ -144,6 +144,7 @@ if __name__ == "__main__":
           package_data={
               'codetools': [
                   'contexts/images/*.png',
+                  'contexts/tests/data/*',
                   'contexts/tests/with_mask_codes*.py',
               ],
           },
