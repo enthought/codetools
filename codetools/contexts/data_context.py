@@ -14,8 +14,9 @@ from __future__ import absolute_import
 
 from collections import MutableMapping as DictMixin
 from contextlib import contextmanager
+import pickle
 
-from apptools import sweet_pickle
+from apptools.persistence.versioned_unpickler import VersionedUnpickler
 from traits.adaptation.api import (
     AdaptationOffer, get_global_adaptation_manager)
 from traits.api import (
@@ -191,7 +192,7 @@ class PersistableMixin(ABCHasTraits):
             file_object = open(file_or_path, 'rb')
 
         try:
-            data_context = sweet_pickle.load(file_object)
+            data_context = VersionedUnpickler(file_object).load()
         finally:
             if should_close:
                 file_object.close()
@@ -224,7 +225,7 @@ class PersistableMixin(ABCHasTraits):
             for item in self.keys():
                 if isinstance(self[item], tuple(NonPickleable)):
                     del self[item]
-            sweet_pickle.dump(self, file_object, 1)
+            pickle.dump(self, file_object, 1)
         finally:
             if should_close:
                 file_object.close()
