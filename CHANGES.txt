@@ -1,6 +1,37 @@
 Codetools Changelog
 ===================
 
+Release 4.4.0
+-------------
+
+Released : 26 March 2021
+
+Fixes
+
+* Add manifest file (#36)
+
+* Exclude unsupported submodules on Py3 (#39)
+
+Build
+
+* Use etstool module in CI setup (#41)
+
+* Update CI (#44)
+
+* Disable macOS builds on Travis CI (#46)
+
+Maintenance
+
+* Replace deprecated rich_compare kwarg (#43)
+
+* Replace use of apptools sweetpickle (#48)
+
+Test
+
+* Create a data_context.pickle and add a simple test for the data context
+  stored in that pickle file (#49)
+
+
 Release 4.3.0
 -------------
 
@@ -56,4 +87,3 @@ Enhancements
 Fixes
 
  * a couple of old-style classes fixed
-
