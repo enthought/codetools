@@ -1,10 +1,10 @@
 Codetools Changelog
 ===================
 
-Release 4.3.1
+Release 4.4.0
 -------------
 
-Released : 23 March 2021
+Released : 26 March 2021
 
 Fixes
 
@@ -24,7 +24,7 @@ Maintenance
 
 * Replace deprecated rich_compare kwarg (#43)
 
-* Replace use of apptools sweetpickle
+* Replace use of apptools sweetpickle (#48)
 
 Test
 
@@ -87,4 +87,3 @@ Enhancements
 Fixes
 
  * a couple of old-style classes fixed
-
