@@ -2,4 +2,5 @@ include CHANGES.txt
 include LICENSE.txt
 include image_LICENSE.txt
 include README.rst
+recursive-include codetools/contexts/tests/data *.pickle
 recursive-include codetools/contexts/tests/with_mask_codes *.py
