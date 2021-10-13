@@ -33,7 +33,7 @@ def create_sample_hdf5_file(filename):
     group2 = fileh.create_group(root, "group2")
 
     # Now, create an array in root group
-    array1 = fileh.create_array(root, "array1", ["string", "array"], "String array")
+    array1 = fileh.create_array(root, "array1", [b"string", b"array"], "String array")
     # Create 2 new tables in group1
     table1 = fileh.create_table(group1, "table1", Particle)
     table2 = fileh.create_table("/group2", "table2", Particle)
@@ -89,7 +89,7 @@ class Hdf5ContextTest(unittest.TestCase):
                               path=['root', 'root.group1', 'root.group2'])
             array1 = context['array1']
             assert_equal( len(array1), 2)
-            assert_equal( array1, ['string', 'array'])
+            assert_equal( array1, [b'string', b'array'])
             assert_equal(context.location('array1'), 'root')
 
     def test_get_array2(self):

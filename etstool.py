@@ -91,6 +91,7 @@ common_dependencies = {
     "numpy",
     "pillow",
     "pyface",
+    "pytables",
     "scimath",
     "Sphinx",
     "traits",
