@@ -2,10 +2,6 @@
 codetools: code analysis and execution tools
 ============================================
 
-.. image:: http://codecov.io/github/enthought/codetools/coverage.svg?branch=master
-   :target: http://codecov.io/github/enthought/codetools?branch=master
-   :alt: Coverage report
-
 The codetools project includes packages that simplify meta-programming
 and help the programmer separate data from code in Python. This
 library contains classes that allow defining simple snippets, or
