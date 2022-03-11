@@ -3,25 +3,18 @@ import unittest
 
 # Geo library imports
 from codetools.contexts.name_filter_context import NameFilterContext
+from codetools.contexts.tests.test_case_with_adaptation import (
+    TestCaseWithAdaptation,
+)
 
 
-class NameFilterContextTestCase(unittest.TestCase):
+class NameFilterContextTestCase(TestCaseWithAdaptation):
     """ Test whether the context filters values by their name appropriately.
 
         Note: We can't run all the AbstractContextTestCases on this class
               because it is picky about what variables it allows to be
               assigned into it, and many of the tests will fail.
     """
-
-    ##########################################################################
-    # TestCase interface
-    ##########################################################################
-
-    def setUp(self):
-        unittest.TestCase.setUp(self)
-
-    def tearDown(self):
-        unittest.TestCase.tearDown(self)
 
     ##########################################################################
     # NameFilterContextTestCase interface
@@ -68,38 +61,36 @@ class NameFilterContextTestCase(unittest.TestCase):
         self.assertEqual(context1.names, ['foo'])
         self.assertEqual(context2.names, ['bar'])
 
+    def test_checkpoint(self):
+        d = NameFilterContext(names=['a', 'b'])
+        d['a'] = object()
+        d['b'] = object()
+        copy = d.checkpoint()
+        assert copy is not d
+        assert copy.subcontext is not d.subcontext
+        assert set(copy.keys()) == set(d.keys())
+        assert copy['a'] is d['a']
+        assert copy['b'] is d['b']
 
-def test_checkpoint():
-    d = NameFilterContext(names=['a', 'b'])
-    d['a'] = object()
-    d['b'] = object()
-    copy = d.checkpoint()
-    assert copy is not d
-    assert copy.subcontext is not d.subcontext
-    assert set(copy.keys()) == set(d.keys())
-    assert copy['a'] is d['a']
-    assert copy['b'] is d['b']
+        assert copy.names == d.names
+        assert copy.names is not d.names
 
-    assert copy.names == d.names
-    assert copy.names is not d.names
+    def test_checkpoint_nested(self):
+        d = NameFilterContext(names=['a', 'b'], subcontext=NameFilterContext(names=['a', 'b']))
+        d['a'] = object()
+        d['b'] = object()
+        copy = d.checkpoint()
+        assert copy is not d
+        assert copy.subcontext is not d.subcontext
+        assert copy.subcontext.subcontext is not d.subcontext.subcontext
+        assert set(copy.keys()) == set(d.keys())
+        assert copy['a'] is d['a']
+        assert copy['b'] is d['b']
 
-
-def test_checkpoint_nested():
-    d = NameFilterContext(names=['a', 'b'], subcontext=NameFilterContext(names=['a', 'b']))
-    d['a'] = object()
-    d['b'] = object()
-    copy = d.checkpoint()
-    assert copy is not d
-    assert copy.subcontext is not d.subcontext
-    assert copy.subcontext.subcontext is not d.subcontext.subcontext
-    assert set(copy.keys()) == set(d.keys())
-    assert copy['a'] is d['a']
-    assert copy['b'] is d['b']
-
-    assert copy.names == d.names
-    assert copy.names is not d.names
-    assert copy.subcontext.names == d.subcontext.names
-    assert copy.subcontext.names is not d.subcontext.names
+        assert copy.names == d.names
+        assert copy.names is not d.names
+        assert copy.subcontext.names == d.subcontext.names
+        assert copy.subcontext.names is not d.subcontext.names
 
 
 if __name__ == '__main__':

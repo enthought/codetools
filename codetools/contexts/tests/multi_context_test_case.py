@@ -1,22 +1,19 @@
 # Standard library imports
 from io import BytesIO
-import os
-import sys
-import unittest
-
-import nose
-from nose.plugins.skip import SkipTest
 
 # Enthought library imports
 from traits.api import Any
 
 # Geo library imports
-from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
 from codetools.contexts.data_context import DataContext
 from codetools.contexts.multi_context import MultiContext
+from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
+from codetools.contexts.tests.test_case_with_adaptation import (
+    TestCaseWithAdaptation,
+)
 
 
-class MultiContextTestCase(AbstractContextTestCase):
+class MultiContextTestCase(TestCaseWithAdaptation, AbstractContextTestCase):
 
     ############################################################################
     # AbstractContextTestCase interface
@@ -112,79 +109,73 @@ class MultiContextTestCase(AbstractContextTestCase):
         m.subcontexts.pop(0)
         self.assertTrue(len(list(m.keys())) == 3)
 
+    def test_persistence(self):
+        """ Checking if the data persists correctly when saving and loading back
+        """
+        d1 = DataContext(name = 'test_context1',
+                        subcontext = {'a':1, 'b':2})
+        d2 = DataContext(name = 'test_context2',
+                        subcontext = {'foo':100, 'bar':200, 'baz':300})
+        m = MultiContext(d1, d2, name='test_mc')
 
-def test_persistence():
-    """ Checking if the data persists correctly when saving and loading back
-    """
-    d1 = DataContext(name = 'test_context1',
-                     subcontext = {'a':1, 'b':2})
-    d2 = DataContext(name = 'test_context2',
-                     subcontext = {'foo':100, 'bar':200, 'baz':300})
-    m = MultiContext(d1, d2, name='test_mc')
+        f = BytesIO()
+        m.save(f)
+        f.seek(0, 0)
+        new_m = MultiContext.load(f)
 
-    f = BytesIO()
-    m.save(f)
-    f.seek(0, 0)
-    new_m = MultiContext.load(f)
+        assert m.name == new_m.name
 
-    assert m.name == new_m.name
+        # Test keys of new_m
+        assert set(new_m.keys()) == set(m.keys())
 
-    # Test keys of new_m
-    assert set(new_m.keys()) == set(m.keys())
+        # Check values
+        assert new_m['a'] == m['a']
+        assert new_m['b'] == m['b']
+        assert new_m['foo'] == m['foo']
+        assert new_m['bar'] == m['bar']
 
-    # Check values
-    assert new_m['a'] == m['a']
-    assert new_m['b'] == m['b']
-    assert new_m['foo'] == m['foo']
-    assert new_m['bar'] == m['bar']
+        # Check contexts
+        assert new_m.subcontexts == m.subcontexts
 
-    # Check contexts
-    assert new_m.subcontexts == m.subcontexts
+    def test_checkpoint(self):
+        d1 = DataContext()
+        d1['a'] = object()
+        d2 = DataContext()
+        d2['b'] = object()
+        m = MultiContext(d1, d2)
+        copy = m.checkpoint()
+        assert copy is not m
+        assert copy.subcontexts is not m.subcontexts
+        assert len(copy.subcontexts) == len(m.subcontexts)
+        for csc, msc in zip(copy.subcontexts, m.subcontexts):
+            assert csc is not msc
+            assert set(csc.keys()) == set(msc.keys())
+            for key in msc.keys():
+                assert csc[key] is msc[key]
 
+        assert set(copy.keys()) == set(m.keys())
+        assert copy['a'] is m['a']
+        assert copy['b'] is m['b']
 
-def test_checkpoint():
-    d1 = DataContext()
-    d1['a'] = object()
-    d2 = DataContext()
-    d2['b'] = object()
-    m = MultiContext(d1, d2)
-    copy = m.checkpoint()
-    assert copy is not m
-    assert copy.subcontexts is not m.subcontexts
-    assert len(copy.subcontexts) == len(m.subcontexts)
-    for csc, msc in zip(copy.subcontexts, m.subcontexts):
-        assert csc is not msc
-        assert set(csc.keys()) == set(msc.keys())
-        for key in msc.keys():
-            assert csc[key] is msc[key]
+    def test_checkpoint_nested(self):
+        d1 = DataContext()
+        d1['a'] = object()
+        d2 = DataContext()
+        d2['b'] = object()
+        m1 = MultiContext(d1, d2)
+        m = MultiContext(m1)
+        copy = m.checkpoint()
+        assert copy is not m
+        assert copy.subcontexts is not m.subcontexts
+        assert len(copy.subcontexts) == len(m.subcontexts)
+        csc1 = copy.subcontexts[0]
+        msc1 = m.subcontexts[0]
+        for csc, msc in zip(csc1.subcontexts, msc1.subcontexts):
+            assert csc is not msc
+            assert set(csc.keys()) == set(msc.keys())
+            for key in msc.keys():
+                assert csc[key] is msc[key]
 
-    assert set(copy.keys()) == set(m.keys())
-    assert copy['a'] is m['a']
-    assert copy['b'] is m['b']
-
-
-def test_checkpoint_nested():
-    d1 = DataContext()
-    d1['a'] = object()
-    d2 = DataContext()
-    d2['b'] = object()
-    m1 = MultiContext(d1, d2)
-    m = MultiContext(m1)
-    copy = m.checkpoint()
-    assert copy is not m
-    assert copy.subcontexts is not m.subcontexts
-    assert len(copy.subcontexts) == len(m.subcontexts)
-    csc1 = copy.subcontexts[0]
-    msc1 = m.subcontexts[0]
-    for csc, msc in zip(csc1.subcontexts, msc1.subcontexts):
-        assert csc is not msc
-        assert set(csc.keys()) == set(msc.keys())
-        for key in msc.keys():
-            assert csc[key] is msc[key]
-
-    assert set(copy.keys()) == set(m.keys())
-    assert copy['a'] is m['a']
-    assert copy['b'] is m['b']
-
-
-
+        assert set(copy.keys()) == set(m.keys())
+        assert copy['a'] is m['a']
+        assert copy['b'] is m['b']
