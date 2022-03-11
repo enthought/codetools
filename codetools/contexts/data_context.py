@@ -386,8 +386,3 @@ def register_i_context_adapter_offers(adaptation_manager):
     """
 
     adaptation_manager.register_offer(data_context_offer)
-
-
-# For backward compatibility, we register the adapters from `dict` globally
-# at import time.
-register_i_context_adapter_offers(get_global_adaptation_manager())
