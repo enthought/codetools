@@ -28,4 +28,4 @@ jobs:
         run: edm run -- python etstool.py install
 
       - name: Run tests
-        run: edm run -- python etstool.py install
+        run: edm run -- python etstool.py test
