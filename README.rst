@@ -2,10 +2,6 @@
 codetools: code analysis and execution tools
 ============================================
 
-.. image:: https://api.travis-ci.org/enthought/codetools.png?branch=master
-   :target: https://travis-ci.org/enthought/codetools
-   :alt: Build status
-
 .. image:: http://codecov.io/github/enthought/codetools/coverage.svg?branch=master
    :target: http://codecov.io/github/enthought/codetools?branch=master
    :alt: Coverage report
