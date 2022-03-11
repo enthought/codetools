@@ -79,7 +79,6 @@ class TestPersistence(TestCaseWithAdaptation):
         assert d2['a'] == d['a']
         assert d2['b'] == d['b']
 
-
     def test_persistence_backwards_compatibility(self):
         filename = os.fspath(
             files('codetools.contexts.tests') / 'data' / 'data_context.pickle'
@@ -90,7 +89,6 @@ class TestPersistence(TestCaseWithAdaptation):
         assert set(d.keys()) == set(['a', 'b'])
         assert d['a'] == 1
         assert d['b'] == 2
-
 
     def test_allows_values(self):
         r = RestrictedValues()
@@ -104,7 +102,6 @@ class TestPersistence(TestCaseWithAdaptation):
         else:
             assert False, "should have raised ValueError"
 
-
     def test_allows_keys(self):
         r = RestrictedKeys()
         # This should work.
@@ -117,7 +114,6 @@ class TestPersistence(TestCaseWithAdaptation):
         else:
             assert False, "should have raised ValueError"
 
-
     def test_checkpoint(self):
         d = DataContext()
         d['a'] = object()
@@ -128,7 +124,6 @@ class TestPersistence(TestCaseWithAdaptation):
         assert set(copy.keys()) == set(d.keys())
         assert copy['a'] is d['a']
         assert copy['b'] is d['b']
-
 
     def test_checkpoint_nested(self):
         d = DataContext(subcontext=DataContext())
