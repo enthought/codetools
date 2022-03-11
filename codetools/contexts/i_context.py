@@ -124,7 +124,7 @@ class IListenableContext(IContext):
     # and when reverted to false, one single event fires that represents the net
     # change since 'defer_events' was set.
     defer_events = Bool(False)
-    
+
     @contextmanager
     def deferred_events(self):
         """ Context manager that sets defer_events to False """
@@ -264,8 +264,3 @@ def register_dict_to_context_adapter_offers(adaptation_manager):
 
     adaptation_manager.register_offer(dict_to_i_context_offer)
     adaptation_manager.register_offer(dict_to_i_checkpointable_offer)
-
-
-# For backward compatibility, we register the adapters from `dict` globally
-# at import time.
-register_dict_to_context_adapter_offers(get_global_adaptation_manager())
