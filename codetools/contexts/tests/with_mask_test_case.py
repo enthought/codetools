@@ -8,12 +8,14 @@ import os, unittest
 from numpy import arange, zeros
 import six
 
-# ETS imports
-from codetools.contexts.with_mask import Mask
+# Geo library imports
 from codetools.contexts.data_context import DataContext
+from codetools.contexts.tests.test_case_with_adaptation import (
+    TestCaseWithAdaptation,
+)
 
 
-class WithMaskTestCase(unittest.TestCase):
+class WithMaskTestCase(TestCaseWithAdaptation):
     """ Test whether the masking works with 'with' statement.
     """
 
@@ -22,16 +24,14 @@ class WithMaskTestCase(unittest.TestCase):
     #---------------------------------------------------------------------------
 
     def setUp(self):
-        unittest.TestCase.setUp(self)
+        TestCaseWithAdaptation.setUp(self)
+
         dc = DataContext(name='dc')
         self.context = DataContext(subcontext=dc)
         dc['depth'] = arange(0.,10000., 1000.)
         self.context['context'] = dc.subcontext
         self.code_dir = os.path.join(os.path.dirname(__file__),
                                      'with_mask_codes')
-
-    def tearDown(self):
-        unittest.TestCase.tearDown(self)
 
     #---------------------------------------------------------------------------
     # WithTestCase interface

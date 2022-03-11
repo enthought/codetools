@@ -2,9 +2,6 @@
 import sys
 import unittest
 
-# Third Party Libary imports
-import nose
-
 # Numeric Libary imports
 from numpy import all
 
@@ -134,5 +131,4 @@ class UnitConversionContextAdapterTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    import sys
     unittest.main(argv=sys.argv)
