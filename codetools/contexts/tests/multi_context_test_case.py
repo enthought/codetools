@@ -2,34 +2,17 @@
 from io import BytesIO
 
 # Enthought library imports
-from traits.adaptation.api import (
-    AdaptationManager,
-    get_global_adaptation_manager,
-    set_global_adaptation_manager,
-)
 from traits.api import Any
 
 # Geo library imports
-from codetools.contexts.data_context import (
-    DataContext, register_i_context_adapter_offers)
-from codetools.contexts.i_context import (
-    register_dict_to_context_adapter_offers)
 from codetools.contexts.multi_context import MultiContext
 from codetools.contexts.tests.abstract_context_test_case import AbstractContextTestCase
+from codetools.contexts.tests.test_case_with_adaptation import (
+    TestCaseWithAdaptation,
+)
 
 
-class MultiContextTestCase(AbstractContextTestCase):
-
-    def setUp(self):
-        self._old_adaptation_manager = get_global_adaptation_manager()
-        adaptation_manager = AdaptationManager()
-        set_global_adaptation_manager(adaptation_manager)
-
-        register_i_context_adapter_offers(adaptation_manager)
-        register_dict_to_context_adapter_offers(adaptation_manager)
-
-    def tearDown(self):
-        set_global_adaptation_manager(self._old_adaptation_manager)
+class MultiContextTestCase(TestCaseWithAdaptation, AbstractContextTestCase):
 
     ############################################################################
     # AbstractContextTestCase interface
